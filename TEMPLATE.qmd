@@ -16,83 +16,34 @@ format:
 | Iteration |  {{< var round >}} |
 
 
-
-> {REPLICATOR} Every line which looks like this one, that is, it starts with {REPLICATOR} and has this formatting (there is a grey bar on the left 👀), is an **instruction for the replicator**. When you are done with editing this file, _there should be no such line left_ - you should delete all of them.
-
-> {REPLICATOR} Next to {REPLICATOR} for you, the replicator, there are instructions for the authors/data editor. Those are labelled either {REQUIRED} or {SUGGESTED}. You should delete those *only if specifically instructed*.
-
-> {REPLICATOR} Also compile document TEMPLATE-APPENDIX.qmd. It contains potentially useful information for you, like lists of suspicious files or other noteworthy content.
-
-> {REPLICATOR}: You should look at additional [Step by step guidance from Data Editor for Replicators](https://jpe-reproducibility.github.io/jpereplicators)
-
-::: {.callout-tip}
-
-# {Replicator}: Glossary (delete this before you submit your report!)
-
-_A brief explanation of important terms, before we start!_
-
-1. Dropbox: a location where authors upload their package and where the journal office uploads pdfs of paper and appendix. You download the package from there via the URL contained in your assignment email.
-2. `gh`: Github.com.
-3. Github Repository (_repo_): The location on `gh` where we store the _code_ of a given package (not the data!). It is also the location where you should file an issue tagging `@jpedataeditor` in the text, in case you encounter any problems or have questions. The github repo associated with this package was in your assignment email for this package. Let me print it here again for you (keep a browser tab open): [{{< var repo >}}]({{< var repo >}})
-4. `round`: the iteration number of this package. Notice that on the repo, each iteration has their own branch. Notice that you start on `round1`.
-5. manuscript/paper: The PDFs of accepted paper and appendices, which we want to verify. You should copy both paper and appendix into the root of this repo
-
-:::
-
-
-Some useful information up front:
-
-- [JPE Data and Code Availability Policy](https://www.journals.uchicago.edu/journals/jpe/datapolicy)
-- [Step by step guidance from Data Editor for Authors](https://jpedataeditor.github.io/) 
-- [Template README](https://social-science-data-editors.github.io/template_README/)
-
-
-
-> {REPLICATOR} the file you are looking at lives in a git repository on your computer. You should place the repository in a location on your computer where you have read and write access (I would not put it on any cloud storage to avoid issues). 
-
-
-> {REPLICATOR} you will edit _this_ file (`./TEMPLATE.qmd`). It is the source of your report. The package of the authors lives in folder `replication-package/`. We call the lowest level of this repo (marked by the dot `.` in `./TEMPLATE.qmd`) the _root of the repo_. Do not get confused if the authors talk about the _root of their package_, which would be location `./replication-package/` in this case.
-
-
-
 # Summary
-
-> {REPLICATOR} The Data Editor will fill this part out. It will be based on any {REQUIRED} and {SUGGESTED} action items that the report makes a note of.
-
 
 In assessing compliance with our [Data and Code Availability Policy](https://www.journals.uchicago.edu/journals/jpe/datapolicy), our reproducibility team has identified the following issues, which we ask you to address:
 
 # General
 
-
-> {REPLICATOR} Check off the following sections/elements that you find in either the README provided by the authors, or in the authors' online appendix (rare).
-
 - [ ] Data Availability and Provenance Statements
   - [ ] Statement about Rights - Part 1: Right to use the data (e.g. *did the authors lawfully obtain the data*)
   - [ ] Statement about Rights - Part 2: Right to publish the data (e.g. *are human subjects involved and did permission been granted to publish their data?*)
   - [ ] License for Data (optional, but recommended)
-  - [ ] Details on each Data Source
-- [ ] Dataset list
-- [ ] Computational requirements
-  - [ ] Software Requirements
+  - [x] Details on each Data Source
+- [x] Dataset list
+- [x] Computational requirements
+  - [x] Software Requirements
   - [ ] Controlled Randomness (as necessary)
-  - [ ] Memory, Runtime, and Storage Requirements
-- [ ] Description of programs/code
+  - [x] Memory, Runtime, and Storage Requirements
+- [x] Description of programs/code
   - [ ] License for Code (Optional, but recommended) 
-- [ ] {REPLICATOR} to Replicators
-  - [ ] Details (as necessary)
 - [ ] List of tables and programs
 - [ ] References (Optional, but recommended) 
 
 
 # High-level Description of Research Project
 
-> {REPLICATOR} Tick all applicable boxes. You tick a box by placing an `x` between the square brackets (don't change anything else).
-
 *This research project...*
 
-- [ ] uses observational data.
-- [ ] uses *confidential* observational data.
+- [x] uses observational data.
+- [x] uses *confidential* observational data.
 - [ ] uses data generated via experiment or trial by the authors (in field or lab).
   - [ ] For lab experiments: The code to implement the experimental protocol (z-Tree, o-Tree etc) is included in the package.
   - [ ] A PDF copy of IRB approval is contained in the package.
@@ -108,8 +59,6 @@ In assessing compliance with our [Data and Code Availability Policy](https://www
 
 # Data description
 
-> {REPLICATOR} If the project has any confidential or restricted data, please leave the following statements here. If not, delete until next heading (`## Data Sources`).
-
 For any data that cannot be provided as part of the replication package, please provide the following information as part of the README.
 
 > {REQUIRED}  Please specify how long the data will be preserved in the restricted-access location.
@@ -124,89 +73,73 @@ For any data that cannot be provided as part of the replication package, please 
 
 ## Data Sources
 
-> {REPLICATOR} Identify all INPUT data sources, i.e. raw data files. Fill out the table below (regardless of whether the authors do provide a similar table in their readme). For each data source, list in THIS document presence or absence of source, codebook/information on the data, and summary statistics. Summary statistics and codebook may not be necessary if they are available for public use data. In all cases, if the author of the article points to an online location for such information, that is OK. Point out only a summary of shortcomings. For all data sources, check for a data citation. Oftentimes authors will cite the **paper** in which a dataset is originally used, but this is not a *data* citation. If you have found what you think to be a data citation, quote it in the report as shown below for the "Example data". When filling out the table, you should go through this mental list for each data source:
-> 
-> - [ ] Dataset is provided in public (dataverse) deposit (yes/no)
-> - [ ] Dataset is PRIVATELY provided (not for publication)
-> - [ ] DOI or URL is provided, and works: (PROVIDE URL OR DOI HERE)
-> - [ ] Access conditions are described:
->   - {REPLICATOR}: summarize the access conditions here.
-> - [ ] Data are not cited, but a working paper, article, or other document is cited > (not a data citation)
-> - [ ] Data are cited
->   - [ ] in the manuscript
->   - [ ] in the README
->
-> if anything needs adding, for a particular dataset, just add below the table. See Example.
+| file/name | public | private | DOI/URL | Access described | cited readme | cited paper |
+| ---- | --- | --- | --- | --- | --- | --- |
+| BLS LAUS | yes | no | yes | yes | no | no |
+| BLS JOLTS | yes | no | yes | yes | no | no |
+| BLS QCEW | yes | no | yes | yes | no | no |
+| Census LEHD QWI | yes | no | yes | yes | no | no |
+| Census LODES | yes | no | yes | yes | no | no |
+| BEA state GDP | yes | no | yes | yes | no | no |
+| BEA CA25N industry employment | yes | no | yes | yes | no | no |
+| FHFA HPI | yes | no | yes | yes | no | no |
+| IRS SOI county income (via replication archive) | yes | no | yes | yes | no | no |
+| NY Fed / Equifax county debt-to-income | yes | no | yes | yes | no | no |
+| Saiz (2010) housing supply elasticity and WRLURI | yes | no | yes | yes | no | no |
+| Census state tax revenue | yes | no | yes | yes | no | no |
+| State business-policy indices | yes | no | yes | yes | no | no |
+| USDA SNAP policy database | yes | no | yes | yes | no | no |
+| Recovery.gov ARRA awards + geocorr crosswalk | yes | no | yes | yes | no | no |
+| Census population estimates | yes | no | yes | yes | no | no |
+| Shimer CPS separation series | yes | no | yes | yes | no | no |
+| DOL / state UI benefit policy triggers | yes | no | yes | yes | no | no |
+| County UI claims + UI tax receipts | yes | no | yes | yes | no | no |
+| Census geography | yes | no | yes | yes | no | no |
+| Conference Board HWOL vacancies (proprietary; synthetic stand-in provided) | no | yes | yes | yes | no | no |
 
-| file/name            | public | private | DOI/URL | Access described| cited readme | cited paper |
-| ----                 | ---    | ---     | ---     | ---             | ----         | ----        | 
-| data/raw/example.dta | yes    | no      | yes     | no              | yes          | yes         |
-| example2.dta         | yes    | no      | -       | no              | no           | yes         |
-| BLS                  | no     | no      | yes     | no              | yes          | yes          |
-
-### Example data: Bureau of Labor Statistics
-
-> {REPLICATOR}: **Example data: Bureau of Labor Statistics** In this example, data are not provided, a link is provided in the README, and that's about it. Here's how you would fill that out:
-
-- [ ] Dataset is provided in public deposit
-- [ ] Dataset is PRIVATELY provided (not for publication)
-- [x] DOI or URL is provided, and works: http://data.bls.gov/cgi-bin/surveymost?sm+08
-- [ ] Access conditions are described:
-  - No information on access conditions.
-- [ ] Data are not cited, but a working paper, article, or other document is cited (not a data citation)
-- [x] Data are cited
-  - [x] in the manuscript
-  - [x] in the README:
-
-> Bureau of Labor Statistics. 2000–2010. “Current Employment Statistics: Colorado, Total Nonfarm, Seasonally adjusted - SMS08000000000000001.” United States Department of Labor. http://data.bls.gov/cgi-bin/surveymost?sm+08 (accessed February 9, 2011).
-
+Note: These are not formal data citations; the data citations should look like paper citations and be present in references in a consistent format. Please correct them, include year of the dataset and the access date. Add (permanent) urls.
 
 
 
 # Requirements 
 
-> {REPLICATOR}: Check that these requirements are met. 
-
-- [ ] README is in TXT, MD, or PDF format
-- [ ] README is accessible at the root of the package (not inside a folder)
+- [x] README is in TXT, MD, or PDF format
+- [x] README is accessible at the root of the package (not inside a folder)
 - [ ] Title conforms to guidance (starts with "Data and Code for: Title of Paper" or "Code for: Title of Paper", is properly capitalized)
-- [ ] Authors (with affiliations) are listed in the same order as on the paper
-
-> {REPLICATOR}: If any of the above are NOT checked, leave the related {REQUIRED} element here. Otherwise, delete the line.
-
-> {REQUIRED} Please ensure that a ASCII (txt), Markdown (md), or PDF version of the README are available in the data and code deposit.
+- [x] Authors (with affiliations) are listed in the same order as on the paper
 
 > {REQUIRED} Please review the title of the deposit as per our guidelines.
-
-> {REQUIRED} Please review authors and affiliations on the deposit. In general, they are the same, and in the same order, as for the manuscript; however, authors can deviate from that order.
 
 
 ## Stated Requirements
 
-> {REPLICATOR}: The authors may have specified specific requirements in terms of software, computer hardware, etc. Please list them here. This is **different** from the Computing Environment of the Replicator. You have the option to amend these with unstated requirements later. If all requirements are listed, check the box "Requirements are complete".
-
 - [ ] No requirements specified
-- [ ] Software Requirements specified as follows:
-  - Software 1
-  - Software 2
-- [ ] Computational Requirements specified as follows:
-  - Cluster size, etc.
-- [ ] Time Requirements specified as follows:
-  - Length of necessary computation (hours, weeks, etc.)
+- [x] Software Requirements specified as follows:
+  - **Stata/MP** (the build and the `egen`-heavy steps assume MP). All required user-written
+  commands install **automatically from SSC**: `code/config.do` — which every pipeline
+  script sources — checks for and installs `regife` (interactive fixed effects, the
+  Stata-side IFE cross-checks), `reghdfe`, `ivreg2` (+ its dependency `ranktest`),
+  `outreg2`, `binscatter`, `ftools`, `coefplot`, `tuples`, `hdfe`, and `mat2txt` on first
+  run (an internet connection is needed once). No packages are bundled in the archive;
+  in particular `regife` is **not** redistributed — it loads from SSC like the rest.
+  - **MATLAB** (developed on R2025b; the factor model and bootstrap reproduce across MATLAB
+    versions) for the factor model, block bootstrap, and the structural model.
+  - **Python 3** for `code/tex/make_tables.py` (standard library only) and a TeX distribution to
+    compile the paper.
+- [x] Computational Requirements specified as follows:
+  - Peak disk while running: the built `data/processed/` master datasets are ~5 GB; the shipped archive itself (raw + provided inputs + code, no built files) is smaller.
+- [x] Time Requirements specified as follows:
+  - The Stata build (`data/processed` from `data/raw`) runs in a few minutes on a multi-core machine.
+  - The factor-model **block bootstrap** (≈200 reps over ~1,100 county pairs) is the expensive step —
+  **hours** per specification, and there are ~30 of them; the full `do_rep.sh` run is on the order of 10–15 hours on a multi-core machine. The bootstrap result CSVs are written to `output/factor_results/` as the run proceeds (the archive ships no pre-computed outputs).
 
 - [ ] Requirements are complete.
 
-> {REPLICATOR}: If the requirements are NOT complete, please leave this line in. If unsure, leave this line in:
-
 For missing requirements, see the list of required changes in @sec-findings
-
-> {REPLICATOR}: If easier, simply copy-and-paste the authors' stated requirements here:
 
 
 
 # Analyzing Data and Code Files
-
-> {REPLICATOR} Here I provide you with a list of what I identified as *data files* based on file endings. Please check the list and amend if there are obvious mistakes. Watch out for Personally Identifiable Information (PII)!
 
 {{< include generated/report-pii.md >}}
 
@@ -219,225 +152,352 @@ For missing requirements, see the list of required changes in @sec-findings
 {{< include generated/report-large-files.md >}}
 
 
-
-
-> {REPLICATOR}: no need to commit a compiled version of `TEMPLATE-APPENDIX.qmd`. However, you should compile it and have a look at what is contained in that file!
-
-
-
 ## Code description
-
-> {REPLICATOR}: Review the code (but do not run it yet). Identify programs that create "analysis files" ("data preparation code"). Identify programs that create tables and figures. Not every deposit will have separate programs for this.
-
-> {REPLICATOR}: Identify all **Figure, Table, and any in-text numbers**. Create a list, mapping each of them to a particular program and line number within the program (use [this template](package-output-map.xlsx)). Commit that list. You will come back to the list in your findings. IN THIS SECTION, point out only a summary description, including of shortcomings. E.g.
-
-> {REPLICATOR}: For example, you could write "There are four provided Stata do files, three Matlab .m files, including a "master.do"."
-> {REPLICATOR}: And you could list the issues you encounter:
-> {REPLICATOR}: - Table 5: could not identify code that produces Table 5
-> {REPLICATOR}: - Neither the program codes, nor the README, identify which tables are produced by what program.
 
 {{< include generated/report-cloc.md >}}
 
 
-- [ ] The replication package contains a "main" or "master" file(s) which calls all other auxiliary programs.
+- [x] The replication package contains a "main" or "master" file(s) which calls all other auxiliary programs.
 
-> {REPLICATOR}: If the above checkbox for "main" file is NOT checked, leave the following SUGGESTION in the report!
+### Summary of output-producing code
+The package contains a master code in [replication-package/JPEReplicationKitFinal/code/RunBuild.do](replication-package/JPEReplicationKitFinal/code/RunBuild.do#L37-L120) that runs the raw-data build steps and the processed-data construction stages. The paper tables are assembled by [replication-package/JPEReplicationKitFinal/code/tex/make_tables.py](replication-package/JPEReplicationKitFinal/code/tex/make_tables.py#L384-L1138), which reads CSV outputs generated by the Stata and Matlab analysis scripts and writes .tex fragments into the output/tables directory. The main figures are produced directly by [replication-package/JPEReplicationKitFinal/code/analysis/Binscatter_Figures.do](replication-package/JPEReplicationKitFinal/code/analysis/Binscatter_Figures.do#L60-L96), [replication-package/JPEReplicationKitFinal/code/analysis/MO_Tightness_Figures.do](replication-package/JPEReplicationKitFinal/code/analysis/MO_Tightness_Figures.do#L70-L120), [replication-package/JPEReplicationKitFinal/code/analysis/Make_CountyMap.py](replication-package/JPEReplicationKitFinal/code/analysis/Make_CountyMap.py#L3-L55), and [replication-package/JPEReplicationKitFinal/code/analysis/Make_BenefitMaps.py](replication-package/JPEReplicationKitFinal/code/analysis/Make_BenefitMaps.py#L3-L77). A small set of inline policy numbers is derived in [replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do](replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do#L1-L145).
 
-> {SUGGESTED} We strongly advise the use of a single (or a small number of) main control file(s) to automatically reproduce all figures and tables in the paper, without manual interaction.
+### Data Preparation Code
+| Program | Dataset or analysis file created | Reproduced? |
+| --- | --- | --- |
+| [replication-package/JPEReplicationKitFinal/code/RunBuild.do](replication-package/JPEReplicationKitFinal/code/RunBuild.do#L37-L120) | Main orchestrator for the full raw-data rebuild and the processed-data build. | Yes |
+| [replication-package/JPEReplicationKitFinal/code/build/MakeDataSetsMainPaper_v5_newvac.do](replication-package/JPEReplicationKitFinal/code/build/MakeDataSetsMainPaper_v5_newvac.do#L1-L40) | Builds the main analysis panel used in the paper regressions. | Yes |
+| [replication-package/JPEReplicationKitFinal/code/build/MakeDataControls.do](replication-package/JPEReplicationKitFinal/code/build/MakeDataControls.do#L1-L80) | Builds the control-variable panel used by the analysis scripts. | Yes |
+| [replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do](replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do#L1-L145) | Writes the derived policy-scenario CSV that underlies the paper's inline policy numbers. | Yes |
 
-> NOTE: In-text numbers that reference numbers in tables do not need to be listed. Only in-text numbers that correspond to no table or figure need to be listed.
+### Tables and Figures
+| Output in paper | Program and line number(s) | Reproduced? |
+| --- | --- | --- |
+| Table 1 / tab:Benefits_on_unemp | [replication-package/JPEReplicationKitFinal/code/tex/make_tables.py](replication-package/JPEReplicationKitFinal/code/tex/make_tables.py#L384-L484) | Yes |
+| Table 2 / tab:Forward_Spec | [replication-package/JPEReplicationKitFinal/code/tex/make_tables.py](replication-package/JPEReplicationKitFinal/code/tex/make_tables.py#L661-L702) and [replication-package/JPEReplicationKitFinal/code/matlab/ProcessQDK.m](replication-package/JPEReplicationKitFinal/code/matlab/ProcessQDK.m#L107-L125) | Yes |
+| Table 3 / tab:Benefits_on_JobCreation | [replication-package/JPEReplicationKitFinal/code/tex/make_tables.py](replication-package/JPEReplicationKitFinal/code/tex/make_tables.py#L997-L1030) | Yes |
+| Table 4 / tab:Benefits_on_Wages | [replication-package/JPEReplicationKitFinal/code/tex/make_tables.py](replication-package/JPEReplicationKitFinal/code/tex/make_tables.py#L737-L827) | Yes |
+| Figure 1(a) and Figure 1(b) / fig:binscatter_du and fig:binscatter_qdu | [replication-package/JPEReplicationKitFinal/code/analysis/Binscatter_Figures.do](replication-package/JPEReplicationKitFinal/code/analysis/Binscatter_Figures.do#L60-L96) | Yes |
+| Figure A-1 / fig:MO_vacPuD | [replication-package/JPEReplicationKitFinal/code/analysis/MO_Tightness_Figures.do](replication-package/JPEReplicationKitFinal/code/analysis/MO_Tightness_Figures.do#L70-L120) | Yes |
+| Figure A-2 / fig:Tightness_MO_Borders | [replication-package/JPEReplicationKitFinal/code/analysis/MO_Tightness_Figures.do](replication-package/JPEReplicationKitFinal/code/analysis/MO_Tightness_Figures.do#L70-L120) | Yes |
+| Table A-1 / tab:MO_V_U | [replication-package/JPEReplicationKitFinal/code/tex/make_tables.py](replication-package/JPEReplicationKitFinal/code/tex/make_tables.py#L1070-L1099) and [replication-package/JPEReplicationKitFinal/code/analysis/MO_Tightness_Figures.do](replication-package/JPEReplicationKitFinal/code/analysis/MO_Tightness_Figures.do#L104-L120) | Yes |
+| Figure A-3 / fig:initial-guess | [replication-package/JPEReplicationKitFinal/code/tex/make_tables.py](replication-package/JPEReplicationKitFinal/code/tex/make_tables.py#L1138-L1160) and [replication-package/JPEReplicationKitFinal/code/matlab/RunMonteCarlo.m](replication-package/JPEReplicationKitFinal/code/matlab/RunMonteCarlo.m#L1-L30) | No |
+| Table A-2 / tab:Monte-Carlo-Results | [replication-package/JPEReplicationKitFinal/code/tex/make_tables.py](replication-package/JPEReplicationKitFinal/code/tex/make_tables.py#L1138-L1160) and [replication-package/JPEReplicationKitFinal/code/matlab/RunMonteCarlo.m](replication-package/JPEReplicationKitFinal/code/matlab/RunMonteCarlo.m#L1-L30) | Yes |
+| Table A-3 / tab:Benefits_on_unemp_OLS | [replication-package/JPEReplicationKitFinal/code/tex/make_tables.py](replication-package/JPEReplicationKitFinal/code/tex/make_tables.py#L293-L381) | Yes |
+| Table A-4 / tab:Endog_Vars | [replication-package/JPEReplicationKitFinal/code/tex/make_tables.py](replication-package/JPEReplicationKitFinal/code/tex/make_tables.py#L878-L919) and [replication-package/JPEReplicationKitFinal/code/analysis/Endog_Vars.do](replication-package/JPEReplicationKitFinal/code/analysis/Endog_Vars.do#L34-L84) | Yes |
+| Figure A-4 / fig:endogeneity_test_unemp | [replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do](replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do#L1-L145) | No |
+| Table A-7 / tab:Mobility_LODES | [replication-package/JPEReplicationKitFinal/code/tex/make_tables.py](replication-package/JPEReplicationKitFinal/code/tex/make_tables.py#L923-L952) and [replication-package/JPEReplicationKitFinal/code/analysis/Mobility_LODES.do](replication-package/JPEReplicationKitFinal/code/analysis/Mobility_LODES.do#L29-L172) | Yes |
+| Table A-8 / tab:Imputed_Results | [replication-package/JPEReplicationKitFinal/code/tex/make_tables.py](replication-package/JPEReplicationKitFinal/code/tex/make_tables.py#L956-L993) and [replication-package/JPEReplicationKitFinal/code/analysis/Imputed_Results.do](replication-package/JPEReplicationKitFinal/code/analysis/Imputed_Results.do#L28-L166) | Yes |
+| Table A-9 / app_tab:A-1 | [replication-package/JPEReplicationKitFinal/code/tex/make_tables.py](replication-package/JPEReplicationKitFinal/code/tex/make_tables.py#L831-L876) and [replication-package/JPEReplicationKitFinal/code/analysis/TableA2.do](replication-package/JPEReplicationKitFinal/code/analysis/TableA2.do#L110-L168) | Yes |
+| Table A-11 / tab:Benefits_on_unemp_beg | [replication-package/JPEReplicationKitFinal/code/tex/make_tables.py](replication-package/JPEReplicationKitFinal/code/tex/make_tables.py#L488-L605) | Yes |
+| Table A-13 / tab:Benefits_on_unemp_SNAP_Mortgage | [replication-package/JPEReplicationKitFinal/code/tex/make_tables.py](replication-package/JPEReplicationKitFinal/code/tex/make_tables.py#L167-L197) | Yes |
+| Table A-14 / tab:Benefits_on_unemp_stimulus_taxes | [replication-package/JPEReplicationKitFinal/code/tex/make_tables.py](replication-package/JPEReplicationKitFinal/code/tex/make_tables.py#L239-L290) | Yes |
+| Table A-15 / tab:Benefits_on_unemp_other_policies | [replication-package/JPEReplicationKitFinal/code/tex/make_tables.py](replication-package/JPEReplicationKitFinal/code/tex/make_tables.py#L200-L236) | Yes |
+| Figure A-5 / fig:Counties_Map | [replication-package/JPEReplicationKitFinal/code/analysis/Make_CountyMap.py](replication-package/JPEReplicationKitFinal/code/analysis/Make_CountyMap.py#L3-L55) | Yes |
+| Figure A-6 and Figure 6(a-j) / fig:Benefit_Maps and fig:Benefit_Maps_42 through fig:Benefit_Maps_96 | [replication-package/JPEReplicationKitFinal/code/analysis/Make_BenefitMaps.py](replication-package/JPEReplicationKitFinal/code/analysis/Make_BenefitMaps.py#L3-L77) | Yes |
+| Table A-16 / tab:app_Benefits_on_Wages | [replication-package/JPEReplicationKitFinal/code/tex/make_tables.py](replication-package/JPEReplicationKitFinal/code/tex/make_tables.py#L737-L827) | Yes |
+
+### In-Text Numbers
+| In-text numbers | Program | Line Number | Reproduced? |
+| --- | --- | --- | --- |
+| 16,000 | [replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do](replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do) | Not identified | Not yet verified |
+| 93% | [replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do](replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do) | Not identified | Not yet verified |
+| 5% | [replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do](replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do) | Not identified | Not yet verified |
+| 2% | [replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do](replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do) | Not identified | Not yet verified |
+| 1,172 | [replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do](replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do) | Not identified | Not yet verified |
+| 1,132 | [replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do](replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do) | Not identified | Not yet verified |
+| 14 | [replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do](replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do) | Not identified | Not yet verified |
+| 0 to 18 | [replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do](replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do) | Not identified | Not yet verified |
+| 1,113 | [replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do](replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do) | Not identified | Not yet verified |
+| 59 | [replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do](replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do) | Not identified | Not yet verified |
+| 282 / 9,024 | [replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do](replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do) | Not identified | Not yet verified |
+| 26 to 99 | [replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do](replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do) | Not identified | Not yet verified |
+| 13 or 20 | [replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do](replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do) | Not identified | Not yet verified |
+| 4 | [replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do](replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do) | Not identified | Not yet verified |
+| 10.7% | [replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do](replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do) | Not identified | Not yet verified |
+| 16 | [replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do](replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do) | Not identified | Not yet verified |
+| 13 | [replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do](replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do) | Not identified | Not yet verified |
+| 3.02 and 2.15 | [replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do](replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do) | Not identified | Not yet verified |
+| 5% to 9.6% | [replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do](replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do) | Not identified | Not yet verified |
+| 95% to 90.4% | [replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do](replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do) | Not identified | Not yet verified |
+| 10% | [replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do](replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do) | Not identified | Not yet verified |
+| 0.4 to 0.5 | [replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do](replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do) | Not identified | Not yet verified |
+| 0.0528 | [replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do](replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do) | Not identified | Not yet verified |
+| 73 | [replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do](replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do) | Not identified | Not yet verified |
+| 7.3 to 14.6 | [replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do](replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do) | Not identified | Not yet verified |
+| 5/27 | [replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do](replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do) | Not identified | Not yet verified |
+| 0.78% | [replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do](replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do) | Not identified | Not yet verified |
+| 30 | [replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do](replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do) | Not identified | Not yet verified |
+| 10,000 | [replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do](replication-package/JPEReplicationKitFinal/code/analysis/Derived_Policy_Calcs.do) | Not identified | Not yet verified |
 
 ## Computing Environment of the Replicator
-
-> {REPLICATOR}: You are now running the code!
-
-> {REPLICATOR}: This might be automated, for now, please fill in manually. Remove examples that are not relevant, adjust examples to fit special circumstances. Some of this is available from the standard log output in Stata or R. Some frequently used details are below. Some of these details can be found as follows:
->
-> - (Windows) by right-clicking on "This PC"
-> - (Mac) Apple-menu > "About this Mac"
-> - (Linux) see code in `tools/linux-system-info.sh`
->
-> Some options are listed below. Choose the one that applies.
-
-- Mac Laptop M2 MacBook Pro, MacOS 10.14.6, 8 GB of memory, (M2 Processor, 8 cores)
-- RedCloud Servers: Intel Xeon Processor (Skylake) 3.09 GHz (18 processors), Installed Ram 176 GB, 64-bit operating system, x64-based processor
-- CCSS Cloud: Windows Server AMD EPYC 7763 64-Core Processor 2.44 GHz, 128GB
-- BioHPC Linux server, Rocky Linux 9.0, AMD Opteron Processor 6380 / 16 cores/ 125 GB memory (adjust as necessary from output of linux-system-info.sh)
-- WholeTale (describe the environment chosen)
-- CodeOcean (describe the type of capsule chosen) Intel(R) Xeon(R) Platinum 8259CL CPU @ 2.50GHz (16 cores), 128 GB Memory
-- Bitbucket Pipelines, "Ubuntu 20.04.2 LTS", Intel(R) Xeon(R) Platinum 8259CL CPU @ 2.50GHz, 8 cores, 9GB memory
-- Codespaces, "Ubuntu 20.04.2 LTS", Intel(R) Xeon(R) Platinum 8272CL CPU @ 2.60GHz, 2 core, 8GB/ 4-core, 16GB/ 8-core, 32 GB/ 16-core, 64GB (choose appropriately)
-
-
-> {REPLICATOR}: Please also list the software you used (specific versions). List only the ones you used, add any not listed in the examples:
-
-- Stata/MP 18.0
-- Matlab R2022a
-- Intel Compiler 3.14152 (note: there is no such thing, so please verify the version!)
+- Nuvolos v16, 64GB RAM
+- Stata/MP 19.5
+- Matlab R2024b
+- Python 3.12.12
+- pdfTeX 3.141592653-2.6-1.40.27
 
 # Replication
 
-> {REPLICATOR}: provide details about your process of accessing the code and data.
-> 
-> - Do NOT detail things like "I save them on my Desktop".
-> - DO describe actions that you did as per {REPLICATOR} ("I added a config.do")
-> - DO describe any other actions you needed to do ("I had to make changes in multiple programs"), without going into TOO much detail.
-> 
-> BUT:
-> 
-> - DO provide ENOUGH detail so that an author, without access to the logs, can understand what needed to be fixed, including a copy-paste of the error message.
-> - DO commit to git before EACH new run with corrected code.
-> - DO (after all debugging is completed) a full run through the data, top-to-bottom, once all bugs are fixed, using the approriate method (command line or right-click).
+The code and data were accessed via the provided replication package. Several modifications were required to execute the code successfully on the Nuvolos platform. 
 
-Example:
+## Fixes Applied
 
-- Downloaded code and data from dropbox.
-- Commited code to git repo.
-- Added the config.do generating system information.
-- Ran code as per README, but the third step did not work. (describe the problem HERE, and paste the full log in an issue on the github repo of this package - do not forget to add the tag @jpedataeditor whenever you open an issue!) 
+### Fix a Missing MATLAB Library
 
-```R
-error: command distinct unknown
-```
-
-- Had to add undocumented package `distinct` to the install portion of the config file. Ran again.
-- Code failed because of a typo in the name of the file "`superdata.dta`" (was: `superdta.dta`). Fixed. Ran again.
-- Code ran to completion. 
-
-> {REPLICATOR}: You are done now with the actual replication task. We now move to writing your report.
-
-# Findings {#sec-findings}
-
-> {REPLICATOR}: Describe your findings both positive and negative in some detail, for each **Data Preparation Code, Figure, Table, and any in-text numbers**. You can re-use the Excel file created under *Code Description*. When errors happen, be as precise as possible. For differences in figures, provide both a screenshot of what the manuscript contains, as well as the figure produced by the code you ran. For differences in numbers, provide both the number as reported in the manuscript, as well as the number replicated. If too many numbers, contact your supervisor.
->
-> Screenshots are best added to this `.qmd` file via the VScode extension [markdown paste](https://marketplace.visualstudio.com/items/?itemName=telesoho.vscode-markdown-paste-image). You need to find out how your OS can screenshot to the system clipboard (on my mac I have to do shift+control+cmd+4 instead of only the usual shift+cmd+4 to achieve this). Once you took the screen shot, you can use the markdown paste extension to literally *paste* the image into this qmd. It will create a filename with a timestamp. I set the preferences for the extension (in hidden folder `.vscode`) so that your screenshots go to the `images/` folder automatically. You want to commit that folder together with this file. Go into the command console of VScode and type "Markdown Paste" and memorize the shortcut (or just hit enter). You can modify the filename - no need. You end up with something like this:
-
-![DELETE THIS image FROM THE REPO before you commit](images/screenshot-20250627144043.png){width=80%}
-
-
-
-> If you can, add **textual output instead of screenshots**. I.e. if a script spits out an error, copy and paste the error into a code block (the thing delimited by three backticks ````` below), don't take a screen shot of your terminal. Here is an example (notice you should decorate the code block with the relevant language):
-
-```julia
-
-julia> using RES
-[ Info: Welcome to RES.jl
-[ Info: First tell us which journal you are handling in this session.
-❯❯❯ Which Journal are you working on? 
-  EJ, EctJ
-EJ
-[ Info: Setting up email
-[ Info: Running in production mode
-┌ Warning: not in test mode!
-└ @ RES ~/git/EJData/RES.jl/src/gsheets.jl:53
-Python error:
-PyError ($(Expr(:escape, :(ccall(#= /Users/floswald/.julia/packages/PyCall/1gn3u/src/pyfncall.jl:43 =# @pysym(:PyObject_Call), PyPtr, (PyPtr, PyPtr, PyPtr), o, pyargsptr, kw))))) <class 'google.auth.exceptions.RefreshError'>
-RefreshError('invalid_grant: Token has been expired or revoked.', {'error': 'invalid_grant', 'error_description': 'Token has been expired or revoked.'})
-  File "/Users/floswald/.julia/conda/3/aarch64/lib/python3.10/site-packages/google/oauth2/credentials.py", line 344, in refresh
-    ) = reauth.refresh_grant(
-  File "/Users/floswald/.julia/conda/3/aarch64/lib/python3.10/site-packages/google/oauth2/reauth.py", line 365, in refresh_grant
-    _client._handle_error_response(response_data, retryable_error)
-  File "/Users/floswald/.julia/conda/3/aarch64/lib/python3.10/site-packages/google/oauth2/_client.py", line 72, in _handle_error_response
-    raise exceptions.RefreshError(
+The code crashed immediately because the system was missing `libgtk-x11-2.0.so.0`. Even though MATLAB was running without a visual interface, it still needed this file to initialize. It was installed to the local user profile using Conda:
 
 ```
+conda install -c conda-forge gtk2
+export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
+```
+
+This is nuvolos-specific error, do not bother correcting it in your instructions in ReadMe.
+
+### Bypass Nuvolos Platform Startup Error
+
+Stata repeatedly crashed with "file not found" or "I/O error". The system's forced startup script (`sysprofile.do`) automatically attempts to read database token files from `/tmp`, but deletes them immediately after reading. Because the main script cycles Stata multiple times, subsequent runs crashed.
+
+To resolve this, the `run_stata` function inside `do_rep.sh` was modified to recreate the dummy files immediately before Stata is called on every step:
+
+```
+run_stata () {
+    local script="$1"
+    local logname; logname="$(basename "${script%.do}").log"
+    say "Stata: $script"
+
+    # Nuvolos Initialization Bypass
+    echo "dummy_db" > /tmp/.dbpath1
+    echo "dummy_schema" > /tmp/.dbpath2
+
+    ( cd "$CODE" && "$STATA" -e do "$script" )
+    # [Error handling and log movement logic remains unchanged]
+}
+```
+
+### Keep Stata Packages Installed
+
+The script crashed because it could not find the `reghdfe` package, despite an earlier installation script. This occurred because each Stata step ran in an isolated session that did not retain installed packages.
+
+This was fixed by creating a `profile.do` file at the top of `do_rep.sh` to force Stata to save and search for packages in a persistent local directory:
+
+```
+mkdir -p "$CODE/ado/plus"
+echo "sysdir set PLUS \"$CODE/ado/plus\"" > "$CODE/profile.do"
+echo "sysdir set PERSONAL \"$CODE/ado/plus\"" >> "$CODE/profile.do"
+```
+
+### Python Geopandas / Shapefile Error
+
+The following error occurred during the map generation step because the expected shapefile directory was still compressed:
+
+```
+==== python maps ====
+ERROR 1: PROJ: proj_create_from_database: Open of /usr/local/lib/conda/share/proj failed
+Traceback (most recent call last):
+  File "/files/JPE-Mitman-2016256/replication-package/JPEReplicationKitFinal/code/analysis/Make_BenefitMaps.py", line 47, in <module>
+    gdf = gpd.read_file(SHP)
+          ^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/conda/lib/python3.12/site-packages/geopandas/io/file.py", line 316, in _read_file
+    return _read_file_pyogrio(
+           ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/conda/lib/python3.12/site-packages/geopandas/io/file.py", line 576, in _read_file_pyogrio
+    return pyogrio.read_dataframe(path_or_bytes, bbox=bbox, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/conda/lib/python3.12/site-packages/pyogrio/geopandas.py", line 382, in read_dataframe
+    result = read_func(
+             ^^^^^^^^^^
+  File "/usr/local/lib/conda/lib/python3.12/site-packages/pyogrio/raw.py", line 200, in read
+    return ogr_read(
+           ^^^^^^^^^
+  File "pyogrio/_io.pyx", line 1412, in pyogrio._io.ogr_read
+  File "pyogrio/_io.pyx", line 262, in pyogrio._io.ogr_open
+pyogrio.errors.DataSourceError: /files/JPE-Mitman-2016256/replication-package/JPEReplicationKitFinal/code/analysis/../../data/raw/cb_2025_us_county_20m/cb_2025_us_county_20m.shp: No such file or directory
+FAILED: map figures
+```
+
+This was resolved by manually unzipping the archive in `data/raw`:
+
+```
+unzip cb_2025_us_county_20m.zip -d cb_2025_us_county_20m
+```
+
+
+### Python Directory Path Fix
+
+In `make_tables.py` (line 1144), an incorrect directory reference caused an issue. The code was manually corrected from `HERE` to `IN_DIR`:
+
+```
+_mc = IN_DIR / "SenseResultsMonteCarlo.csv"
+```
+
+### PDFLaTeX Error
+
+The script reported a compilation failure:
+
+```
+==== pdflatex ====
+FAILED: paper compile
+```
+
+However, upon inspection, the PDF compiled successfully despite the terminal flag.
+
+
+## Findings {#sec-findings}
+
+### General Issues
+
+- **Missing licensed data:** The README states that to reproduce the published vacancy numbers, the Data Editor replaces the synthetic files in `synthetic-data/` with the licensed HWOL data. These licensed files are not present in the package, meaning true reproduction of the vacancy numbers cannot be achieved as provided.
+- **Controlled randomness:** No information is provided regarding controlled randomness (e.g., setting a seed) for any stochastic processes in the code.
 
 ## Missing Requirements
 
-> {REPLICATOR}: If the replication package contains Stata programs run `tools/Stata_scan_code/scan_packages.do`, ensuring that you update the global `codedir` first. If the data is accessible, add any packages not mentioned in the README to the `config.do` and paste the excel output as a table below. If the data is restricted-access and not obtainable in a reasonable amount of time, paste the excel output as a table below.
-
-> {REPLICATOR}: If it turns out that some requirements were not stated/ are incomplete (software, packages, operating system), please list the *missing* list of requirements here. Remove lines that are not necessary. If the stated requirements are complete, delete this entire section, including the [REQUIRED] tag at the end.
-
-- [ ] Software Requirements 
-  - [ ] Stata
-    - [ ] Version
-    - Packages go here
-  - [ ] Matlab
-    - [ ] Version
-  - [ ] R
-    - [ ] Version
-    - R packages go here
-  - [ ] Python
-    - [ ] Version
-    - Python package go here
-  - [ ] REPLACE ME WITH OTHER
-- [ ] Computational Requirements specified as follows:
-  - Cluster size, disk size, memory size, etc.
-- [ ] Time Requirements 
-  - Length of necessary computation (hours, weeks, etc.)
-
-> [REQUIRED] Please amend README to contain complete requirements. 
-
-You can copy the section above, amended if necessary.
+- [ ] Data Availability and Provenance Statements
+  - [ ] Statement about Rights - Part 1: Right to use the data (e.g. *did the authors lawfully obtain the data*)
+  - [ ] Statement about Rights - Part 2: Right to publish the data (e.g. *are human subjects involved and did permission been granted to publish their data?*)
+  - [ ] License for Data (optional, but recommended)
+- [ ] Computational requirements
+  - [ ] Controlled Randomness (as necessary)
+- [ ] List of tables and programs
+- [ ] References (Optional, but recommended) 
 
 
 ## Data Preparation Code
 
-Examples:
-
-- Program `1-create-data.do` ran without error, output expected data
-- Program `2-create-appendix-data.do` failed to produce any output.
+After all modifications, programs ran without errors.
 
 ## Tables and Figures
 
-> {REPLICATOR}: Insert the filled-out `package-output-map.xlsx` here (complete the column `Reproduced?`), using the VS Code Plugins [Excel to Markdown table](https://marketplace.visualstudio.com/items?itemName=csholmq.excel-to-markdown-table). Then describe in more detail the issues that may have arisen.
+### Figures
 
-Examples:
+::: {#fig-1 layout-ncol="2"}
+![Manuscript](images/Fig1_paper.png){width=80%}
 
-- Table 1: Looks the same
-- Table 2: (contains no data)
-- Table 3: Minor differences in row 5, column 3, 0.003 instead of 0.3
+![Replication](images/Fig1_rep.png){width=80%}
 
-> {REPLICATOR}: For tables, simple comparisons can be listed out as above. More complex differences can be described by using screenshots of the original table and the reproduced table, highlighting the differences.
- 
-> {REPLICATOR}: Please provide a comparison with the paper when describing that figures look different. Use a screenshot for the paper, and the graph generated by the programs for the comparison. Reference the graph generated by the programs as a local file within the repository.
-
-Example:
-
-- Figure 1: Looks the same
-- Figure 2: no program provided
-- Figure 3: Paper version looks different from the one generated by programs:
-
-::: {#fig-three layout-ncol=2}
-
-![Paper version](images/heman.png)
-
-![Replicated version](images/skeletor.png)
-
-Figure 3 [DELETE THIS FIGURE]
-
+Figure 1
 :::
 
-## In-Text Numbers
+**Finding:** Reproduced, but styling is noticeably different from the paper. Variations are present in the grid, the number of scales (horizontal vs. vertical), and the legend formatting.
 
-> {REPLICATOR}: list page and line number of in-text numbers. If ambiguous, cite the surrounding text, i.e., "the rate fell to 52% of all jobs: verified".
+::: {#fig-a1 layout-ncol="2"}
+![paper](images/FigA1_paper.png){width=80%}
 
-- [ ] In-text numbers not verified.
+![Replication](images/FigA1_rep.png){width=80%}
 
-- [ ] There are no in-text numbers, or all in-text numbers stem from tables and figures.
+Figure A-1
+:::
 
-- [ ] There are in-text numbers, but they are not identified in the code
+**Finding:** Results differ significantly from the paper. Visual styling is also entirely different.
 
-- Page 21, line 5: Same
+**Figure A-3 (`initial_guess.pdf`)**
 
-## Other Issues
+**Finding:** Not reproduced by the code.
 
-> {REPLICATOR}: List here any other issue that was not recalled previously. Delete the entire section if no additional issues were found. Don't forget to amend the examples provided. 
+::: {#fig-a5 layout-ncol="2"}
+![paper](images/FigA5_paper.png){width=80%}
 
+![Replication](images/FigA5_rep.png){width=80%}
 
-Example:
+Figure A-5
+:::
 
-- Title of the Readme does not match title of the paper. 
+**Finding:** Reproduced, but features a completely different style and look compared to the published paper.
 
-- One or multiple scripts include hard-coded numbers whose origin is unknown.
+::: {#fig-a6 layout-ncol="2"}
+![paper](images/FigA6_paper.png){width=80%}
 
-- Readme recalls scripts that are not provided in the replication package. 
+![Replication](images/FigA6_rep.png){width=80%}
+
+Figure A-6
+:::
+
+**Finding:** Reproduced, but features a completely different style and look compared to the published paper.
+
+**`StateUCrop.pdf`**
+
+**Finding:** Not reproduced by the code.
+
+### Tables
+
+::: {#tbl-a1 layout-ncol="2"}
+![paper](images/TableA1_paper.png){width=80%}
+
+![Replication](images/TableA1_rep.png){width=80%}
+
+Table A-1
+:::
+
+**Finding:** The calculated change in vacancies and tightness differ from the reported numbers in the paper.
+
+::: {#tbl-a16 layout-ncol="2"}
+![paper](images/TableA16_paper.png){width=80%}
+
+![Replication](images/TableA16_rep.png){width=80%}
+
+Table A-16
+:::
+
+**Finding:** The replicated table yields a different number of observations and different overall results compared to the paper.
+
+The same issue also appears for Tables A-2, A-3, A-4, A-7, A-11, and A-12, which show discrepancies relative to the published tables.
+
+::: {#tbl-a2 layout-ncol="2"}
+![paper](images/TableA2_paper.png){width=80%}
+
+![Replication](images/TableA2_rep.png){width=80%}
+
+Table A-2
+:::
+
+::: {#tbl-a3 layout-ncol="2"}
+![paper](images/TableA3_paper.png){width=80%}
+
+![Replication](images/TableA3_rep.png){width=80%}
+
+Table A-3
+:::
+
+::: {#tbl-a4 layout-ncol="2"}
+![paper](images/TableA4_paper.png){width=80%}
+
+![Replication](images/TableA4_rep.png){width=80%}
+
+Table A-4
+:::
+
+::: {#tbl-a7 layout-ncol="2"}
+![paper](images/TableA7_paper.png){width=80%}
+
+![Replication](images/TableA7_rep.png){width=80%}
+
+Table A-7
+:::
+
+::: {#tbl-a11 layout-ncol="2"}
+![paper](images/TableA11_paper.png){width=80%}
+
+![Replication](images/TableA11_rep.png){width=80%}
+
+Table A-11
+:::
+
+::: {#tbl-a12 layout-ncol="2"}
+![paper](images/TableA12_paper.png){width=80%}
+
+![Replication](images/TableA12_rep.png){width=80%}
+
+Table A-12
+:::
+
+## Other issues
+- As mentioned before, please correct data citations.
+- Please add information on controlled randomness.
+- Make sure that when unzipping your replication package, the content is directly in `replication-package` folder. Now, it is double zipped under `JPEReplicationKitFinal`.
 
 
 # Classification
 
-> {REPLICATOR}: Make an assessment here.
->
 > Full reproduction can include a small number of apparently insignificant changes in the numbers in the table. Full reproduction also applies when changes to the programs needed to be made, but were successfully implemented.
 >
 > Partial reproduction means that a significant number (>25%) of programs and/or numbers are different.
@@ -450,45 +510,19 @@ Example:
 
 - [ ] full reproduction
 - [ ] full reproduction with minor issues
-- [ ] partial reproduction (see above)
+- [x] partial reproduction (see above)
 - [ ] not able to reproduce most or all of the results (reasons see above)
 
 ## Reason for incomplete reproducibility
 
-> {REPLICATOR}: mark the reasons here why full reproduciblity was not achieved, and enter this information in new issue on the github repo of this package. When results are fully reproduced, leave this section here, and mark "None".
-
 - [ ] None.
-- [ ] `Discrepancy in output` (either figures or numbers in tables or text differ)
-- [ ] `Bugs in code` that were fixable by the replicator (but should be fixed in the final deposit)
+- [x] `Discrepancy in output` (either figures or numbers in tables or text differ)
+- [x] `Bugs in code` that were fixable by the replicator (but should be fixed in the final deposit)
 - [ ] `Code missing`, in particular if it prevented the replicator from completing the reproducibility check
   - [ ] `Data preparation code missing` should be checked if the code missing seems to be data preparation code
 - [ ] `Code not functional` is more severe than a simple bug: it prevented the replicator from completing the reproducibility check
 - [ ] `Software not available to replicator` may happen for a variety of reasons, but in particular (a) when the software is commercial, and the replicator does not have access to a licensed copy, or (b) the software is open-source, but a specific version required to conduct the reproducibility check is not available.
 - [ ] `Insufficient time available to replicator` is applicable when (a) running the code would take weeks or more (b) running the code might take less time if sufficient compute resources were to be brought to bear, but no such resources can be accessed in a timely fashion (c) the replication package is very complex, and following all (manual and scripted) steps would take too long.
-- [ ] `Data missing` is marked when data *should* be available, but was erroneously not provided, or is not accessible via the procedures described in the replication package
+- [x] `Data missing` is marked when data *should* be available, but was erroneously not provided, or is not accessible via the procedures described in the replication package
 - [ ] `Data not available` is marked when data requires additional access steps, for instance purchase or application procedure. 
 - [ ] `Missing README` is marked if there is no README to guide the replicator, or the README is not in compliance with JPE requirements
-
-
-
-> {REPLICATOR} You are done! Time to submit your report now!
->
-> You must commit everything you want the Data Editor to be able to see to this git repository and push to the github remote. In particular, commit all files needed to compile your report, as well as the pdf version of your compiled report. 
->
-> Your commit message should reflect the state of this package; i.e. which round, whether it's complete (or not), if not, brief issue description.
-
-> {REPLICATOR} Don't forget to delete all those REPLICATOR instructions before you commit the files!!!
-
-
-> {REPLICATOR} I leave this here 👇 as a reminder for you. Please delete those commands before you commit your report:
-
-```bash
-git add package-output-map.xlsx
-git add images # for your screenshots
-git add TEMPLATE.qmd  # your edits
-git add TEMPLATE.pdf  # the compiled version of your report
-git add TEMPLATE-APPENDIX.qmd  # if you made any edits
-git commit -m 'first round report. code breaks. missing citations.'
-# which round is this? fill in for which_round={round1, round2, ...}
-git push origin which_round
-```
