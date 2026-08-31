@@ -1,0 +1,85 @@
+clear; format short;
+
+%%
+% tab:Benefits_on_JobCreation -- Employment column (QCEW employment IFE).
+% Reads output/factor_inputs/EmpQCEW/ (code/exporters/OutputDataSetsUIMacro_EmpQCEW.do).
+% Single regressor (benefit weeks at QBLS col 4), drop=60 / trunc=8, Bai-Ng PC
+% factor selection + clustered residual bootstrap:
+%   Employment = qdk1_logqcew_emp  (QBLS col 5, var_ind 5)  -- paper Col (3)
+%   (the published table reports 4 factors here.)
+%
+% NOT vacancy-gated -- QCEW county employment is public, so this column is fully
+% reproducible/shippable on either DataControls vintage.
+%
+% Output SaveDir/SenseResultsEmpQCEW.csv: one column, rows =
+% [coef; %>0; 2.5pct; 97.5pct; std; numfactors; R^2; Nobs]. Full bootstrap draws
+% -> EmpQCEW_boot.csv.
+
+config;   % sets InputBaseDir, SaveDir, paths (run from code/matlab)
+FactorModelCodeDir=pwd;
+
+seed=15;
+quarterly=1;
+factors_to_run_base=[6 5 4 3 2 1];
+nowks=0;
+perfect_foresight=0;
+
+rand('seed',seed) %#ok<RAND>
+
+if(quarterly==1)
+    T=100;
+else
+    T=276;
+end
+
+p = 1;
+splitwks = 0;
+nowks = 0;
+drop = 0;
+trunc = 0;
+placebo=0;
+fixedloadings=0;
+inc_constant = 0;
+exo_var_1=1;
+exo_var_2=1;
+exo_var_3=1;
+exo_var_4=1;
+exo_var_5=1;
+exorange=4;   % placeholder; p=1 so exovars are read but never consumed
+
+SepMethod = 'EmpQCEW';
+N = importdata([InputBaseDir SepMethod '/N.txt']);
+
+p=1;
+var_ind=5;
+drop=60;
+trunc=8;
+T=100;
+exorange=4;
+varoi='qcewemp'; %#ok<NASGU>
+
+RunFactorModel;
+
+numfactors=factors_to_run(optfac);
+nrun=200;
+clusterborder=1;
+T=100;
+RunPValsFactor_newbs_v4_nowks;
+
+distresults = [
+    beta_est(1,1);
+    sum(sbeta_est(:,1)>0)/nrun*100;
+    sbeta_est(round(0.025*nrun),1);
+    sbeta_est(round(0.975*nrun),1);
+    std(sbeta_est(:,1));
+    numfactors;
+    (1-ssr/ssy);
+    Nobs ];
+
+cd(SaveDir)
+dlmwrite('EmpQCEW_boot.csv', sbeta_est);
+dlmwrite('SenseResultsEmpQCEW.csv', distresults);
+cd(FactorModelCodeDir)
+
+disp(['EmpQCEW done; beta_b=' num2str(beta_est(1,1)) ...
+      ', numfactors=' num2str(numfactors) ', Nobs=' num2str(Nobs)]);

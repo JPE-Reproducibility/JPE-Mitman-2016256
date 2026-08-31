@@ -1,0 +1,360 @@
+
+  ___  ____  ____  ____  ____ ®
+ /__    /   ____/   /   ____/      StataNow 19.5
+___/   /   /___/   /   /___/       MP—Parallel Edition
+
+ Statistics and Data Science       Copyright 1985-2025 StataCorp LLC
+                                   StataCorp
+                                   4905 Lakeway Drive
+                                   College Station, Texas 77845 USA
+                                   800-782-8272        https://www.stata.com
+                                   979-696-4600        service@stata.com
+
+Stata license: Unlimited-user 2-core network, expiring  8 Jun 2027
+Serial number: 501909302568
+  Licensed to: wiktorze
+               Sciences Po
+
+Notes:
+      1. Stata is running in batch mode.
+      2. Unicode is supported; see help unicode_advice.
+      3. More than 2 billion observations are allowed; see help obs_advice.
+      4. Maximum number of variables is set to 5,000 but can be increased;
+          see help set_maxvar.
+
+. do verify/recompute_intext.do 
+
+. * ---------------------------------------------------------------------------
+. * recompute_intext.do
+. *
+. * Recomputes the four in-text numbers that do not reproduce.
+. * Run from the package root (the directory holding code/, data/, output/):
+. *     do verify/recompute_intext.do
+. *
+. * Inputs (all ship in the archive):
+. *   data/processed/UIMacro_DataControls.dta   -> 1,132 ; 1,113 ; 59
+. *   data/processed/UIMacro_RevisionData.dta   -> 1.121 / 0.415
+. *   data/raw/claims_quarterly.dta             -> 1.121 / 0.415
+. *   data/raw/population_age.dta               -> 1.121 / 0.415
+. * ---------------------------------------------------------------------------
+. set more off
+
+. local proc "data/processed"
+
+. local raw  "data/raw"
+
+. 
+. * ============================== 1,132 ==============================
+. * Paper: of 1,172 pairs, 1,132 differ in benefits for at least one quarter;
+. * median 14 quarters; range 0 to 18.
+. * DataControls is already one row per pair-quarter (county_index==1) and
+. * carries the within-pair log benefit gap as diff_logmeanwks.
+. use pair_id_numeric year diff_logmeanwks using "`proc'/UIMacro_DataControls.d
+> ta", clear
+
+. keep if inrange(year,2008,2012)
+(93,760 observations deleted)
+
+. gen byte differs = abs(diff_logmeanwks) > 1e-9 & !missing(diff_logmeanwks)
+
+. collapse (sum) ndiff=differs, by(pair_id_numeric)
+
+. 
+. count
+  1,172
+
+. di as txt "1,172 pairs total          -> " as res r(N)
+1,172 pairs total          -> 1172
+
+. count if ndiff > 0
+  1,142
+
+. di as txt "1,132 differing >=1 qtr    -> " as res r(N) as txt "   [MISS: +" a
+> s res r(N)-1132 as txt "]"
+1,132 differing >=1 qtr    -> 1142   [MISS: +10]
+
+. count if ndiff == 0
+  30
+
+. di as txt "   pairs never differing   -> " as res r(N) as txt " (paper implie
+> s 40)"
+   pairs never differing   -> 30 (paper implies 40)
+
+. qui sum ndiff, detail
+
+. di as txt "14 median diff quarters    -> " as res r(p50)
+14 median diff quarters    -> 14
+
+. di as txt "0 to 18 range              -> " as res r(min) as txt " to " as res
+>  r(max)
+0 to 18 range              -> 0 to 18
+
+. count if inrange(ndiff,1,3)
+  23
+
+. di as txt "   pairs differing in <=3 quarters: " as res r(N) as txt " (a smal
+> l series shift moves the count easily)"
+   pairs differing in <=3 quarters: 23 (a small series shift moves the count ea
+> sily)
+
+. 
+. * ========================== 1,113 and 59 ===========================
+. * emp_share is built in code/build/MakeDataSetsMainPaper_v5_newvac.do L164-L1
+> 66
+. * as emp_laus/emp_state_u in 2012q4, carried as a pair-constant.
+. * This mirrors code/analysis/Bias_Sim_Shares.do L26-L37.
+. use pair_id_numeric emp_share using "`proc'/UIMacro_DataControls.dta", clear
+
+. collapse (mean) emp_share, by(pair_id_numeric)
+
+. drop if missing(emp_share)
+(0 observations deleted)
+
+. 
+. count if emp_share < 0.15
+  1,108
+
+. di as txt "1,113 below 15%            -> " as res r(N) as txt "   [MISS: " as
+>  res r(N)-1113 as txt "]"
+1,113 below 15%            -> 1108   [MISS: -5]
+
+. count if emp_share >= 0.15
+  64
+
+. di as txt "59 at/above 15%            -> " as res r(N) as txt "   [MISS: +" a
+> s res r(N)-59 as txt "]"
+59 at/above 15%            -> 64   [MISS: +5]
+
+. qui sum emp_share if emp_share < 0.15
+
+. di as txt "2% avg share (small)       -> " as res %4.1f 100*r(mean)
+2% avg share (small)       ->  2.0
+
+. qui sum emp_share if emp_share >= 0.15
+
+. di as txt "35% avg share (large)      -> " as res %4.1f 100*r(mean)
+35% avg share (large)      -> 34.3
+
+. 
+. * Where the five pairs sit. The archived vintage puts five MORE pairs at or
+. * above the cutoff than the published text did, so recovering 1,113/59 needs
+. * the five lowest pairs ABOVE the line to fall below it.
+. sort emp_share
+
+. list emp_share if emp_share >= 0.15 & _n <= 1172, clean noobs
+
+    emp_sh~e  
+    .1502418  
+    .1506971  
+     .160686  
+     .160686  
+    .1615156  
+    .1615156  
+    .1615156  
+    .1615156  
+    .1615156  
+    .1615156  
+    .1615156  
+    .1685856  
+    .1685856  
+    .1712721  
+    .1712721  
+    .1719815  
+    .1719815  
+    .1719815  
+    .1737856  
+    .1737856  
+    .1767922  
+    .1767922  
+    .1767922  
+    .2002997  
+    .2002997  
+    .2002997  
+    .2002997  
+    .2027007  
+    .2027007  
+    .2076159  
+    .2076159  
+    .2193831  
+    .2193831  
+    .2228168  
+    .2228168  
+    .2387283  
+    .2475044  
+    .2565187  
+    .2565187  
+    .2565187  
+    .2631618  
+    .2631618  
+    .2713344  
+    .3106478  
+    .3106478  
+    .3106478  
+    .3910711  
+     .572715  
+     .572715  
+     .572715  
+     .572715  
+    .6214025  
+    .6214025  
+    .6214025  
+    .6214025  
+    .6214025  
+    .6214025  
+    .7183625  
+    .7183625  
+    .7183625  
+    1.010614  
+    1.010614  
+    1.010614  
+    1.010614  
+
+. di as txt "   (the five lowest values above 0.15 are the ones that would have
+>  to move)"
+   (the five lowest values above 0.15 are the ones that would have to move)
+
+. 
+. * ======================= 1.121 and 0.415 ===========================
+. * NOTE: this one CANNOT come from UIMacro_DataControls.dta -- that file keeps
+. * only county_index==1, and the regression needs BOTH counties of each pair.
+. * Use UIMacro_RevisionData.dta.  Mirrors code/analysis/TableA2.do L113-L160.
+. use "`raw'/claims_quarterly.dta", clear
+
+. merge m:1 fipsnumeric year using "`raw'/population_age.dta", keep(match) keep
+> using(popestimate) nogen
+(variable fipsnumeric was long, now double to accommodate using data's
+       values)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             0
+    Matched                            87,828  
+    -----------------------------------------
+
+. gen fipsstate  = floor(fipsnumeric/1000)
+
+. gen claimspop  = cont_claims/popestimate
+
+. 
+. * State aggregate: sum claims over ALL counties / sum population.
+. preserve
+
+.     bysort fipsnumeric year: keep if _n==1
+(65,871 observations deleted)
+
+.     collapse (sum) state_pop=popestimate, by(fipsstate year)
+
+.     tempfile sp
+
+.     save `sp'
+file /var/folders/yv/gy9l8r0n7q96t36797h3fbd00000gn/T//St39646.000002 saved
+    as .dta format
+
+. restore
+
+. preserve
+
+.     collapse (sum) state_cc=cont_claims, by(fipsstate year quarter)
+
+.     merge m:1 fipsstate year using `sp', keep(match) nogen
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             0
+    Matched                             1,400  
+    -----------------------------------------
+
+.     gen state_claimspop = state_cc/state_pop
+
+.     keep fipsstate year quarter state_claimspop
+
+.     tempfile st
+
+.     save `st'
+file /var/folders/yv/gy9l8r0n7q96t36797h3fbd00000gn/T//St39646.000004 saved
+    as .dta format
+
+. restore
+
+. keep fipsnumeric year quarter claimspop
+
+. tempfile cp
+
+. save `cp'
+file /var/folders/yv/gy9l8r0n7q96t36797h3fbd00000gn/T//St39646.000005 saved
+    as .dta format
+
+. 
+. use pair_id_numeric fipsnumeric year quarter county_index fipsstate ///
+>     using "`proc'/UIMacro_RevisionData.dta", clear
+
+. merge m:1 fipsnumeric year quarter using `cp', keep(master match) nogen
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                       168,880
+        from master                   168,880  
+        from using                          0  
+
+    Matched                            65,520  
+    -----------------------------------------
+
+. merge m:1 fipsstate  year quarter using `st', keep(master match) nogen
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                       168,880
+        from master                   168,880  
+        from using                          0  
+
+    Matched                            65,520  
+    -----------------------------------------
+
+. 
+. * "Other county" = the adjacent out-of-state county in the same pair-quarter.
+. sort pair_id_numeric year quarter county_index
+
+. by pair_id_numeric year quarter: gen cp1 = claimspop[1]
+(168,992 missing values generated)
+
+. by pair_id_numeric year quarter: gen cp2 = claimspop[2]
+(168,768 missing values generated)
+
+. gen othercp = cp1 if county_index==2
+(201,696 missing values generated)
+
+. replace othercp = cp2 if county_index==1
+(32,816 real changes made)
+
+. 
+. reg claimspop othercp state_claimspop if year==2007
+
+      Source |       SS           df       MS      Number of obs   =     9,344
+-------------+----------------------------------   F(2, 9341)      =   5576.09
+       Model |  .091940834         2  .045970417   Prob > F        =    0.0000
+    Residual |  .077009144     9,341  8.2442e-06   R-squared       =    0.5442
+-------------+----------------------------------   Adj R-squared   =    0.5441
+       Total |  .168949978     9,343  .000018083   Root MSE        =    .00287
+
+------------------------------------------------------------------------------
+   claimspop | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+     othercp |   .3116272   .0080618    38.65   0.000     .2958243    .3274302
+state_clai~p |   .8911967   .0135322    65.86   0.000     .8646706    .9177228
+       _cons |  -.0009585   .0000812   -11.81   0.000    -.0011176   -.0007994
+------------------------------------------------------------------------------
+
+. di as txt "1.121 state coefficient    -> " as res %5.3f _b[state_claimspop] a
+> s txt "   [MISS]"
+1.121 state coefficient    -> 0.891   [MISS]
+
+. di as txt "0.415 adjacent coefficient -> " as res %5.3f _b[othercp]         a
+> s txt "   [MISS]"
+0.415 adjacent coefficient -> 0.312   [MISS]
+
+. di as txt "   original producing script was lost; the shipped version is a re
+> construction"
+   original producing script was lost; the shipped version is a reconstruction
+
+. 
+end of do-file

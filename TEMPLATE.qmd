@@ -287,7 +287,15 @@ Figure A-5
 Figure A-6
 :::
 
-**Finding:** Reproduced, but features a completely different style and look compared to the published paper.
+**Finding:** Content does not match and features a completely different style and look compared to the published paper. Please look at the panel (f) below:
+
+::: {#fig-a6 layout-ncol="2"}
+![paper](images/FigA6f_paper.png){width=80%}
+
+![Replication](images/FigA6f_rep.png){width=80%}
+
+Figure A-6 (f)
+:::
 
 ## Other issues
 

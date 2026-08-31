@@ -1,0 +1,574 @@
+
+  ___  ____  ____  ____  ____ ®
+ /__    /   ____/   /   ____/      StataNow 19.5
+___/   /   /___/   /   /___/       MP—Parallel Edition
+
+ Statistics and Data Science       Copyright 1985-2025 StataCorp LLC
+                                   StataCorp
+                                   4905 Lakeway Drive
+                                   College Station, Texas 77845 USA
+                                   800-782-8272        https://www.stata.com
+                                   979-696-4600        service@stata.com
+
+Stata license: Unlimited-user 2-core network, expiring  8 Jun 2027
+Serial number: 501909302568
+  Licensed to: wiktorze
+               Sciences Po
+
+Notes:
+      1. Stata is running in batch mode.
+      2. Unicode is supported; see help unicode_advice.
+      3. More than 2 billion observations are allowed; see help obs_advice.
+      4. Maximum number of variables is set to 5,000 but can be increased;
+          see help set_maxvar.
+
+. do analysis/Derived_Policy_Calcs.do 
+
+. * ---------------------------------------------------------------------------
+. * Derived_Policy_Calcs.do  ->  output/factor_results/Derived_Policy_Calcs.csv
+. *
+. * Reproduces the DERIVED inline policy-scenario numbers in the paper -- close
+> d-form
+. * extrapolations of the benchmark estimates via the model formulas (no new fa
+> ctor-model
+. * runs). Four groups:
+. *
+. * (A) Permanent unanticipated 26->99-week extension (eq:partial_sum, n=infini
+> ty),
+. *     §baseline_results (~L780) + footnote + employment analog (~L1081):
+. *       permanent multiplier  = alpha / (1 - beta(1-s))                      
+>  -> 0.488
+. *       permanent log-effect  = mult * (log(99) - log(26))                   
+>  -> 0.653
+. *       long-run u            = 5% * exp(log-effect)                         
+>  -> 9.6%
+. *       long-run employment   = 1 - u                                95% ->  
+>  -> 90.4%  (4.6pp)
+. *     alpha = 0.0532 (benchmark Table 1 Col 1), s = 0.10 (avg JOLTS quarterly
+>  sep),
+. *     beta = 0.99.
+. *
+. * (B) Tightness -> unemployment decomposition, §macro_effects (~L1055): with 
+> matching
+. *     function f = mu*theta^(1-gamma), the benefit-induced change in u (via t
+> ightness)
+. *       Du = (1-u)(1-gamma) * |tightness coef|                               
+>  -> 0.0528
+. *     tightness coef = 0.101 (tab:Benefits_on_JobCreation), gamma = 0.45, u =
+>  0.05.
+. *
+. * (C) Perfect-foresight scenario, §baseline_results (~L776) + intro (~L247): 
+> if 26-week
+. *     durations had prevailed, u in 2010 / 2011 would have been 3.02 / 2.15 p
+> p lower.
+. *     Computed as the discounted forward sum of the
+. *     national perfect-foresight log-benefit deviation, evaluated at the star
+> t (Q1) of
+. *     each year, times alpha, converted to a level pp change u*(1-exp(-effect
+> )):
+. *       partial_sum_t = sum_{m>=0} [prod 0.99(1-s)] * (log(weeks_pf_{t+m}) - 
+> log(26))
+. *       effect_t      = alpha * partial_sum_t
+. *       pp_t          = u_act_t * (1 - exp(-effect_t))
+. *     Inputs: benefit_weeks.dta (pf_meanwks, perfect-foresight weeks) + jolts
+> 2013.dta (agg sep
+. *     rate), both public, in $maindirectory. Actual national annual u: 2010=9
+> .6, 2011=8.9.
+. *
+. * (D) Discount-factor robustness (0.484 / 0.491 at beta=0.9975 / 0.98) is NOT
+>  reproduced
+. *     here: per the paper footnote it RE-ESTIMATES alpha under each beta (the
+>  quasi-
+. *     difference discount changes), so it needs two new factor-model runs, no
+> t a derived
+. *     calc. The beta=0.99 baseline 0.488 is the (A) multiplier above.
+. * ---------------------------------------------------------------------------
+. 
+. do "config.do"
+
+. * ===========================================================================
+. * config.do  --  single path configuration for the replication archive.
+. *
+. * HOW TO RUN: from a Stata session whose working directory is `code/`, first
+. *     do "config.do"
+. * then run any pipeline script (also from `code/`), e.g. `do build/UIMacro_Bu
+> ildData.do`.
+. * Each pipeline script re-runs this file itself, so you can also run them dir
+> ectly
+. * from `code/`. EDIT THE ONE LINE below to this archive's location on your ma
+> chine.
+. * ===========================================================================
+. 
+. global root "/Users/mac/JPE-replications/JPE-Mitman-2016256/replication-packa
+> ge/replication-package"          //  <-- EDIT: path to this archive
+
+. 
+. * --- derived locations (do not edit) ---
+. global code          "${root}/code"
+
+. global rawdata       "${root}/data/raw"
+
+. global processed     "${root}/data/processed"
+
+. global output        "${root}/output"
+
+. global tables        "${output}/tables"
+
+. global figures       "${output}/figures"
+
+. global factor_csv    "${output}/factor_results"      // analysis/Matlab resul
+> t CSVs (make_tables reads)
+
+. global factor_inputs "${output}/factor_inputs"       // per-pair QBLS handoff
+>  (regenerated by exporters)
+
+. global synthetic     "${root}/synthetic-data"
+
+. 
+. * --- analysis convenience: cd "${maindirectory}"; use "${CurrentData}" / "${
+> DataControls}.dta" ---
+. global maindirectory "${processed}/"
+
+. global CurrentData   "UIMacro_RevisionData.dta"
+
+. global DataControls  "UIMacro_DataControls"
+
+. global Wages         "ProcessedWages.dta"
+
+. global outdirectory  "${factor_inputs}/"             // exporters write QBLS 
+> here
+
+. global latexdir      "${factor_csv}/"                // analysis/Matlab resul
+> t CSVs (make_tables reads)
+
+. 
+. * --- vacancy data switch ---------------------------------------------------
+. * vacfile/statefile are the two PROVIDED synthetic stand-ins for the propriet
+> ary HWOL
+. * inputs (synthetic-data/; the confidential HWOL data are NOT in this archive
+> ). To reproduce the PUBLISHED (HWOL)
+. * vacancy numbers, the Data Editor replaces these two files with the licensed
+>  Conference
+. * Board HWOL data and re-runs. See code/build/SYNTHETIC_VACANCY_PATH.md.
+. global vacfile      "${synthetic}/new_vac_synthetic.dta"
+
+. global statefile    "${synthetic}/StateMonthlyBorderData_synthetic.dta"
+
+. * ImputedDataBorder is a BUILT intermediate, NOT shipped: the replicator gene
+> rates it by
+. * running the imputation (analysis/Impute_Input.do -> matlab/Run_Impute_Borde
+> r.m ->
+. * analysis/Impute_to_Stata.do) on ${vacfile}; it lands in data/processed/ (sy
+> nthetic by
+. * default, the real version if the Data Editor swaps in HWOL).
+. global ImputedFile  "${processed}/ImputedDataBorder.dta"
+
+. 
+. * --- figure styling: the published figures were drawn under the classic
+. * s2color scheme; Stata 18+ defaults to stcolor, which changes gridlines,
+. * markers, and legend styling. Pin the scheme so regenerated figures match.
+. cap set scheme s2color
+
+. 
+. * ensure the built-output folders exist (the archive ships them empty / absen
+> t)
+. cap mkdir "${processed}"
+
+. cap mkdir "${output}"
+
+. cap mkdir "${tables}"
+
+. cap mkdir "${figures}"
+
+. cap mkdir "${factor_csv}"
+
+. cap mkdir "${factor_inputs}"
+
+. 
+. local ssc_packages "reghdfe binscatter regife outreg2 ftools coefplot tuples 
+> hdfe mat2txt ivreg2 ranktest"
+
+. if !missing("`ssc_packages'") { 
+.         foreach pkg in `ssc_packages' {
+  2.                 capture which `pkg' 
+  3.                 if _rc == 111 {
+  4.                         dis "Installing `pkg'"
+  5.                         ssc install `pkg', replace
+  6.                         }
+  7.                 which `pkg' 
+  8.                 }
+/Users/mac/Library/Application Support/Stata/ado/plus/r/reghdfe.ado
+*! version 6.13.1 10Jan2026
+/Users/mac/Library/Application Support/Stata/ado/plus/b/binscatter.ado
+*! version 7.02  24nov2013  Michael Stepner, stepner@mit.edu
+/Users/mac/Library/Application Support/Stata/ado/plus/r/regife.ado
+/Users/mac/Library/Application Support/Stata/ado/plus/o/outreg2.ado
+*! outreg2 2.3.2  17aug2014 by roywada@hotmail.com
+*! based on outreg 3.0.6/4.0.0 by john_gallup@alum.swarthmore.edu
+/Users/mac/Library/Application Support/Stata/ado/plus/f/ftools.ado
+*! version 2.50.0 09jan2026
+/Users/mac/Library/Application Support/Stata/ado/plus/c/coefplot.ado
+*! version 1.8.6  22feb2023  Ben Jann
+/Users/mac/Library/Application Support/Stata/ado/plus/t/tuples.ado
+*! version 4.3.0  25sep2025
+/Users/mac/Library/Application Support/Stata/ado/plus/h/hdfe.ado
+*! reghdfe 3.2.9 21feb2016
+*! Sergio Correia (sergio.correia@duke.edu)
+/Users/mac/Library/Application Support/Stata/ado/plus/m/mat2txt.ado
+*! 1.1.2 Ben Jann 24 Nov 2004
+*! 1.1.1 M Blasnik 18 Feb 2004
+/Users/mac/Library/Application Support/Stata/ado/plus/i/ivreg2.ado
+*! ivreg2 4.1.12  14aug2024
+*! authors cfb & mes
+*! see end of file for version comments
+/Users/mac/Library/Application Support/Stata/ado/plus/r/ranktest.ado
+*! ranktest 2.0.04  21sept2020
+*! authors mes & fw; KP stat based on code by fk
+*! see end of file for version comments
+. }
+
+. 
+end of do-file
+
+. global maindirectory "${processed}/"
+
+. global latexdir "${factor_csv}/"
+
+. set more off, perm
+(set more preference recorded)
+
+. 
+. * ---- shared parameters ----
+. scalar alpha = 0.0532          // benchmark effect of benefits on unemploymen
+> t (Col 1)
+
+. scalar beta  = 0.99
+
+. scalar s     = 0.10            // avg quarterly JOLTS separation rate
+
+. scalar u0    = 0.05            // equilibrium u with 26 weeks
+
+. scalar w1    = 26
+
+. scalar w2    = 99
+
+. 
+. * ===== (A) permanent 26->99 extension =====
+. scalar perm_mult   = alpha/(1-beta*(1-s))
+
+. scalar perm_logeff = perm_mult*(ln(w2)-ln(w1))
+
+. scalar u_perm      = u0*exp(perm_logeff)
+
+. scalar emp_base    = 1-u0
+
+. scalar emp_perm    = 1-u_perm
+
+. 
+. * ===== (B) tightness -> unemployment decomposition =====
+. scalar tight_coef = 0.101
+
+. scalar gamma      = 0.45
+
+. scalar du_tight   = (1-u0)*(1-gamma)*tight_coef
+
+. 
+. * ===== (C) perfect-foresight scenario (2010/2011) =====
+. use "${rawdata}/jolts2013.dta", clear
+
+. collapse jolts_agg_seprate_q, by(year quarter)
+
+. * perfect-foresight weeks now live in the consolidated benefit_weeks input
+. * (pf_meanwks, quarter-constant; one row per state-quarter kept, so the
+. * cross-state mean below is over exactly the same 51 state values as before)
+. preserve
+
+. use fipsstate year quarter pf_meanwks using "${rawdata}/benefit_weeks.dta", c
+> lear
+(Benefit weeks (consolidated provided input): patched monthly meanwks + quarter
+> ly)
+
+. bys fipsstate year quarter: keep if _n==1
+(10,200 observations deleted)
+
+. rename pf_meanwks meanwks_pf
+
+. tempfile pfq
+
+. save `pfq'
+file /var/folders/yv/gy9l8r0n7q96t36797h3fbd00000gn/T//St80309.000002 saved
+    as .dta format
+
+. restore
+
+. merge 1:m year quarter using `pfq'
+(variable year was int, now float to accommodate using data's values)
+(variable quarter was byte, now float to accommodate using data's values)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                         2,346
+        from master                         0  (_merge==1)
+        from using                      2,346  (_merge==2)
+
+    Matched                             2,754  (_merge==3)
+    -----------------------------------------
+
+. keep if _merge==3
+(2,346 observations deleted)
+
+. collapse meanwks_pf jolts_agg_seprate_q, by(year quarter)
+
+. drop if missing(meanwks_pf)
+(17 observations deleted)
+
+. sort year quarter
+
+. gen tq = yq(year,quarter)
+
+. * pad the tail to 2019q4 with benefits back at 26 (log-deviation 0) so the fo
+> rward sum
+. * converges (the perfect-foresight measure has returned to ~26 weeks by 2013q
+> 4-2014)
+. local lasts  = jolts_agg_seprate_q[_N]
+
+. local lasttq = tq[_N]
+
+. local nadd   = yq(2019,4)-`lasttq'
+
+. set obs `=_N+`nadd''
+Number of observations (_N) was 37, now 60.
+
+. forvalues k=1/`nadd'{
+  2.         replace tq                  = `lasttq'+`k' if _n==_N-`nadd'+`k'
+  3.         replace meanwks_pf          = 26            if _n==_N-`nadd'+`k'
+  4.         replace jolts_agg_seprate_q = `lasts'       if _n==_N-`nadd'+`k'
+  5. }
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+
+. replace year    = year(dofq(tq))
+(23 real changes made)
+
+. replace quarter = quarter(dofq(tq))
+(23 real changes made)
+
+. sort tq
+
+. replace meanwks_pf = ln(meanwks_pf)-ln(26)
+(60 real changes made)
+
+. gen cum_sep_0     = 0.99*(1-jolts_agg_seprate_q)
+
+. gen partial_sum_0 = meanwks_pf*cum_sep_0
+
+. forvalues tt=1/28{
+  2.         local y=`tt'-1
+  3.         gen cum_sep_`tt'     = 0.99*(1-jolts_agg_seprate_q[_n+`tt'])*cum_s
+> ep_`y'
+  4.         gen partial_sum_`tt' = partial_sum_`y'+meanwks_pf[_n+`tt']*cum_sep
+> _`tt'
+  5. }
+(1 missing value generated)
+(1 missing value generated)
+(2 missing values generated)
+(2 missing values generated)
+(3 missing values generated)
+(3 missing values generated)
+(4 missing values generated)
+(4 missing values generated)
+(5 missing values generated)
+(5 missing values generated)
+(6 missing values generated)
+(6 missing values generated)
+(7 missing values generated)
+(7 missing values generated)
+(8 missing values generated)
+(8 missing values generated)
+(9 missing values generated)
+(9 missing values generated)
+(10 missing values generated)
+(10 missing values generated)
+(11 missing values generated)
+(11 missing values generated)
+(12 missing values generated)
+(12 missing values generated)
+(13 missing values generated)
+(13 missing values generated)
+(14 missing values generated)
+(14 missing values generated)
+(15 missing values generated)
+(15 missing values generated)
+(16 missing values generated)
+(16 missing values generated)
+(17 missing values generated)
+(17 missing values generated)
+(18 missing values generated)
+(18 missing values generated)
+(19 missing values generated)
+(19 missing values generated)
+(20 missing values generated)
+(20 missing values generated)
+(21 missing values generated)
+(21 missing values generated)
+(22 missing values generated)
+(22 missing values generated)
+(23 missing values generated)
+(23 missing values generated)
+(24 missing values generated)
+(24 missing values generated)
+(25 missing values generated)
+(25 missing values generated)
+(26 missing values generated)
+(26 missing values generated)
+(27 missing values generated)
+(27 missing values generated)
+(28 missing values generated)
+(28 missing values generated)
+
+. gen effect = alpha*partial_sum_28
+(28 missing values generated)
+
+. gen uact   = .
+(60 missing values generated)
+
+. replace uact = 9.6 if year==2010
+(4 real changes made)
+
+. replace uact = 8.9 if year==2011
+(4 real changes made)
+
+. gen pp = uact*(1-exp(-effect))
+(52 missing values generated)
+
+. qui sum pp if year==2010 & quarter==1
+
+. scalar pp_2010 = r(mean)
+
+. qui sum pp if year==2011 & quarter==1
+
+. scalar pp_2011 = r(mean)
+
+. 
+. * ===== report + write CSV =====
+. di as txt "================ Derived policy-scenario calcs ================"
+================ Derived policy-scenario calcs ================
+
+. di as txt "(A) permanent 26->99:  mult="     as res %6.4f perm_mult   as txt 
+> " (paper 0.488)"
+(A) permanent 26->99:  mult=0.4881 (paper 0.488)
+
+. di as txt "    perm log-effect="              as res %6.4f perm_logeff as txt
+>  " ; long-run u=" as res %5.3f u_perm as txt " (paper 9.6%)"
+    perm log-effect=0.6526 ; long-run u=0.096 (paper 9.6%)
+
+. di as txt "    employment "                   as res %5.3f emp_base   as txt 
+> " -> " as res %5.3f emp_perm as txt " (paper 95% -> 90.4%, 4.6pp)"
+    employment 0.950 -> 0.904 (paper 95% -> 90.4%, 4.6pp)
+
+. di as txt "(B) tightness->u:      Du="        as res %6.4f du_tight   as txt 
+> " (paper 0.0528)"
+(B) tightness->u:      Du=0.0528 (paper 0.0528)
+
+. di as txt "(C) perfect foresight: 2010="      as res %5.3f pp_2010    as txt 
+> " pp ; 2011=" as res %5.3f pp_2011 as txt " pp (paper 3.02 / 2.15)"
+(C) perfect foresight: 2010=3.019 pp ; 2011=2.154 pp (paper 3.02 / 2.15)
+
+. di as txt "==============================================================="
+===============================================================
+
+. 
+. file open f using "${latexdir}Derived_Policy_Calcs.csv", write replace
+(file
+    /Users/mac/JPE-replications/JPE-Mitman-2016256/replication-package/replic
+    > ation-package/output/factor_results/Derived_Policy_Calcs.csv not found)
+
+. file write f "label,value,published" _n
+
+. file write f "permanent_multiplier,"        (perm_mult)        ",0.488" _n
+
+. file write f "permanent_log_effect,"        (perm_logeff)      ",0.65"  _n
+
+. file write f "permanent_u_pct,"             (100*u_perm)       ",9.6"   _n
+
+. file write f "permanent_emp_base_pct,"      (100*emp_base)     ",95"    _n
+
+. file write f "permanent_emp_pct,"           (100*emp_perm)     ",90.4"  _n
+
+. file write f "tightness_du,"                (du_tight)         ",0.0528" _n
+
+. file write f "perfect_foresight_2010_pp,"   (pp_2010)          ",3.02"  _n
+
+. file write f "perfect_foresight_2011_pp,"   (pp_2011)          ",2.15"  _n
+
+. file close f
+
+. 
+end of do-file

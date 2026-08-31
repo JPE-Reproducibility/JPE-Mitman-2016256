@@ -1,0 +1,47 @@
+This is BibTeX, Version 0.99d (TeX Live 2025/Homebrew)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: MacroElasticity_JPE_Rev3_1_I.aux
+The style file: jpe.bst
+Database file #1: articles.bib
+Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
+You've used 88 entries,
+            3072 wiz_defined-function locations,
+            1093 strings with 22616 characters,
+and the built_in function-call counts, 47532 in all, are:
+= -- 4107
+> -- 2004
+< -- 7
++ -- 709
+- -- 582
+* -- 3058
+:= -- 8134
+add.period$ -- 467
+call.type$ -- 88
+change.case$ -- 534
+chr.to.int$ -- 85
+cite$ -- 88
+duplicate$ -- 3407
+empty$ -- 3457
+format.name$ -- 700
+if$ -- 9379
+int.to.chr$ -- 4
+int.to.str$ -- 1
+missing$ -- 665
+newline$ -- 474
+num.names$ -- 353
+pop$ -- 1355
+preamble$ -- 1
+purify$ -- 498
+quote$ -- 0
+skip$ -- 1265
+stack$ -- 0
+substring$ -- 2066
+swap$ -- 1668
+text.length$ -- 7
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 786
+warning$ -- 0
+while$ -- 409
+width$ -- 0
+write$ -- 1174

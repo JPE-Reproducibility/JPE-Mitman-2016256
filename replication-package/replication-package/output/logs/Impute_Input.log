@@ -1,0 +1,500 @@
+
+  ___  ____  ____  ____  ____ ®
+ /__    /   ____/   /   ____/      StataNow 19.5
+___/   /   /___/   /   /___/       MP—Parallel Edition
+
+ Statistics and Data Science       Copyright 1985-2025 StataCorp LLC
+                                   StataCorp
+                                   4905 Lakeway Drive
+                                   College Station, Texas 77845 USA
+                                   800-782-8272        https://www.stata.com
+                                   979-696-4600        service@stata.com
+
+Stata license: Unlimited-user 2-core network, expiring  8 Jun 2027
+Serial number: 501909302568
+  Licensed to: wiktorze
+               Sciences Po
+
+Notes:
+      1. Stata is running in batch mode.
+      2. Unicode is supported; see help unicode_advice.
+      3. More than 2 billion observations are allowed; see help obs_advice.
+      4. Maximum number of variables is set to 5,000 but can be increased;
+          see help set_maxvar.
+
+. do analysis/Impute_Input.do 
+
+. * ---------------------------------------------------------------------------
+. * Impute_Input.do  ->  builds the border-segment input for the search imputat
+> ion
+. *                      (the upstream of tab:Imputed_Results / impute_border_s
+> earch.m)
+. *
+. * *** VACANCY-GATED: uses proprietary vacancy data (synthetic stand-in availa
+> ble;
+. * see SYNTHETIC_VACANCY_PATH.md). ***
+. *
+. * Builds the border-segment input on the current base (${CurrentData}). The i
+> mputation runs at
+. * the BORDER-SEGMENT x STATE-SIDE level (paper sec:mobility: "aggregate all
+. * counties on both sides of a border segment"). For each segment side we sum,
+. * over the UNIQUE counties on that side, the unemployed, labor force, working
+> -age
+. * population, and (proprietary) vacancies, then compute the observed job-find
+> ing
+. * rate phi (eq:JFR_Data) and the vacancy-filling rate q.
+. *
+. * Mapping to the model (eqs 2101-2135):
+. *   searchers  s = ũ + zeta*(p - n),  zeta = 5/27           (search base, eq:
+> utilde)
+. *   ũ = unemp_count_laus,  n = labor_laus,  p = popestimate (total county pop
+> , from
+. *       population_age.dta) -- NOT the age-restricted working_pop (see below)
+. *   delta = 3*separation   (Shimer/CPS mean MONTHLY rate from cpssep.dta -> q
+> uarterly
+. *                           flow = 3x)
+. *   phi^A = (ũ^A_t - ũ^A_{t+1} + delta*(n^A - ũ^A)) / ũ^A    (eq:JFR_Data)
+. *   q^A   = 1 - (v^A_{t+1} - v^{A,new}_{t+1}) / v^A_t        (vacancy-filling
+>  rate)
+. *   v = total_vacancies_county,  v^new = total_newvacancies_county
+. *
+. * Sample 2005Q2-2011Q4 (105 segments x 2 sides). Aggregation choices: (1) p =
+>  popestimate
+. * (total population, so outlabor = Pop - labor); (2) sum over ALL pair-appear
+> ances (no dedup
+. * to unique counties). phi uses uncapped U-dynamics (eq:JFR_Data).
+. *
+. * Output: Impute_Input.txt -- one row per (bordersegment, quarter_index) with
+>  the
+. * A/B side aggregates + phiA/phiB + qratio=qA/qB, consumed by the Matlab driv
+> er
+. * that calls impute_border_search.m. A = lower fipsstate side, B = higher.
+. *
+. * Inputs to copy into ${rawdata}/ (done): population_age.dta
+. * (popestimate, keyed fipsnumeric year), cpssep.dta (separation, keyed year q
+> uarter).
+. * total_newvacancies_county is re-derived from the proprietary HWOL monthly s
+> ource
+. * new_vac_april2017.dta (under ${hwol}) -- referenced in place, not copied, a
+> s it
+. * is vacancy-gated; this is part of what the synthetic-vacancy path must repl
+> ace.
+. * ---------------------------------------------------------------------------
+. 
+. do "config.do"
+
+. * ===========================================================================
+. * config.do  --  single path configuration for the replication archive.
+. *
+. * HOW TO RUN: from a Stata session whose working directory is `code/`, first
+. *     do "config.do"
+. * then run any pipeline script (also from `code/`), e.g. `do build/UIMacro_Bu
+> ildData.do`.
+. * Each pipeline script re-runs this file itself, so you can also run them dir
+> ectly
+. * from `code/`. EDIT THE ONE LINE below to this archive's location on your ma
+> chine.
+. * ===========================================================================
+. 
+. global root "/Users/mac/JPE-replications/JPE-Mitman-2016256/replication-packa
+> ge/replication-package"          //  <-- EDIT: path to this archive
+
+. 
+. * --- derived locations (do not edit) ---
+. global code          "${root}/code"
+
+. global rawdata       "${root}/data/raw"
+
+. global processed     "${root}/data/processed"
+
+. global output        "${root}/output"
+
+. global tables        "${output}/tables"
+
+. global figures       "${output}/figures"
+
+. global factor_csv    "${output}/factor_results"      // analysis/Matlab resul
+> t CSVs (make_tables reads)
+
+. global factor_inputs "${output}/factor_inputs"       // per-pair QBLS handoff
+>  (regenerated by exporters)
+
+. global synthetic     "${root}/synthetic-data"
+
+. 
+. * --- analysis convenience: cd "${maindirectory}"; use "${CurrentData}" / "${
+> DataControls}.dta" ---
+. global maindirectory "${processed}/"
+
+. global CurrentData   "UIMacro_RevisionData.dta"
+
+. global DataControls  "UIMacro_DataControls"
+
+. global Wages         "ProcessedWages.dta"
+
+. global outdirectory  "${factor_inputs}/"             // exporters write QBLS 
+> here
+
+. global latexdir      "${factor_csv}/"                // analysis/Matlab resul
+> t CSVs (make_tables reads)
+
+. 
+. * --- vacancy data switch ---------------------------------------------------
+. * vacfile/statefile are the two PROVIDED synthetic stand-ins for the propriet
+> ary HWOL
+. * inputs (synthetic-data/; the confidential HWOL data are NOT in this archive
+> ). To reproduce the PUBLISHED (HWOL)
+. * vacancy numbers, the Data Editor replaces these two files with the licensed
+>  Conference
+. * Board HWOL data and re-runs. See code/build/SYNTHETIC_VACANCY_PATH.md.
+. global vacfile      "${synthetic}/new_vac_synthetic.dta"
+
+. global statefile    "${synthetic}/StateMonthlyBorderData_synthetic.dta"
+
+. * ImputedDataBorder is a BUILT intermediate, NOT shipped: the replicator gene
+> rates it by
+. * running the imputation (analysis/Impute_Input.do -> matlab/Run_Impute_Borde
+> r.m ->
+. * analysis/Impute_to_Stata.do) on ${vacfile}; it lands in data/processed/ (sy
+> nthetic by
+. * default, the real version if the Data Editor swaps in HWOL).
+. global ImputedFile  "${processed}/ImputedDataBorder.dta"
+
+. 
+. * --- figure styling: the published figures were drawn under the classic
+. * s2color scheme; Stata 18+ defaults to stcolor, which changes gridlines,
+. * markers, and legend styling. Pin the scheme so regenerated figures match.
+. cap set scheme s2color
+
+. 
+. * ensure the built-output folders exist (the archive ships them empty / absen
+> t)
+. cap mkdir "${processed}"
+
+. cap mkdir "${output}"
+
+. cap mkdir "${tables}"
+
+. cap mkdir "${figures}"
+
+. cap mkdir "${factor_csv}"
+
+. cap mkdir "${factor_inputs}"
+
+. 
+. local ssc_packages "reghdfe binscatter regife outreg2 ftools coefplot tuples 
+> hdfe mat2txt ivreg2 ranktest"
+
+. if !missing("`ssc_packages'") { 
+.         foreach pkg in `ssc_packages' {
+  2.                 capture which `pkg' 
+  3.                 if _rc == 111 {
+  4.                         dis "Installing `pkg'"
+  5.                         ssc install `pkg', replace
+  6.                         }
+  7.                 which `pkg' 
+  8.                 }
+/Users/mac/Library/Application Support/Stata/ado/plus/r/reghdfe.ado
+*! version 6.13.1 10Jan2026
+/Users/mac/Library/Application Support/Stata/ado/plus/b/binscatter.ado
+*! version 7.02  24nov2013  Michael Stepner, stepner@mit.edu
+/Users/mac/Library/Application Support/Stata/ado/plus/r/regife.ado
+/Users/mac/Library/Application Support/Stata/ado/plus/o/outreg2.ado
+*! outreg2 2.3.2  17aug2014 by roywada@hotmail.com
+*! based on outreg 3.0.6/4.0.0 by john_gallup@alum.swarthmore.edu
+/Users/mac/Library/Application Support/Stata/ado/plus/f/ftools.ado
+*! version 2.50.0 09jan2026
+/Users/mac/Library/Application Support/Stata/ado/plus/c/coefplot.ado
+*! version 1.8.6  22feb2023  Ben Jann
+/Users/mac/Library/Application Support/Stata/ado/plus/t/tuples.ado
+*! version 4.3.0  25sep2025
+/Users/mac/Library/Application Support/Stata/ado/plus/h/hdfe.ado
+*! reghdfe 3.2.9 21feb2016
+*! Sergio Correia (sergio.correia@duke.edu)
+/Users/mac/Library/Application Support/Stata/ado/plus/m/mat2txt.ado
+*! 1.1.2 Ben Jann 24 Nov 2004
+*! 1.1.1 M Blasnik 18 Feb 2004
+/Users/mac/Library/Application Support/Stata/ado/plus/i/ivreg2.ado
+*! ivreg2 4.1.12  14aug2024
+*! authors cfb & mes
+*! see end of file for version comments
+/Users/mac/Library/Application Support/Stata/ado/plus/r/ranktest.ado
+*! ranktest 2.0.04  21sept2020
+*! authors mes & fw; KP stat based on code by fk
+*! see end of file for version comments
+. }
+
+. 
+end of do-file
+
+. global CodeDirec ="${code}/analysis/"
+
+. global CurrentData "UIMacro_RevisionData.dta"
+
+. global maindirectory "${processed}/"
+
+. global latexdir "${factor_csv}/"
+
+. 
+. set more off, perm
+(set more preference recorded)
+
+. cap log close
+
+. 
+. * Vacancy source switch (same as the build's): config.do sets ${vacfile} to t
+> he public
+. * synthetic stand-in (synthetic-data/new_vac_synthetic.dta) by
+. * default, so the whole imputation runs on shippable synthetic vacancies (bui
+> lt by
+. * build/Make_Synthetic_Vacancies.do). The Data Editor reproduces the publishe
+> d numbers by
+. * pointing ${vacfile} at the licensed HWOL file; the fallback below only fire
+> s if cleared.
+. global hwol "${synthetic}/"
+
+. if "${vacfile}"=="" global vacfile "${hwol}new_vac_april2017.dta"
+
+. 
+. cd "$maindirectory"
+/Users/mac/JPE-replications/JPE-Mitman-2016256/replication-package/replication-
+> package/data/processed
+
+. use ${CurrentData}, clear
+
+. 
+. * --- Source BOTH vacancy levels (total + new) from the monthly vacancy file 
+> and
+. *     collapse to a quarterly mean (matching how the build formed
+. *     total_vacancies_county). CurrentData's own total_vacancies_county is dr
+> opped
+. *     and re-taken from ${vacfile} so the whole imputation is consistent with
+>  the
+. *     chosen (real or synthetic) vacancy source; total_newvacancies_county is
+>  not
+. *     carried in CurrentData at all (the build's collapse drops total_new*). 
+> ---
+. capture drop total_vacancies_county total_newvacancies_county
+
+. preserve
+
+. use "${vacfile}", clear
+(SYNTHETIC county vacancies (public-data calibrated; NOT HWOL))
+
+. gen quarter = floor((month-1)/3)+1
+
+. collapse (mean) total_vacancies_county total_newvacancies_county, by(fipsnume
+> ric year quarter)
+
+. tempfile vac
+
+. save "`vac'"
+file /var/folders/yv/gy9l8r0n7q96t36797h3fbd00000gn/T//St79290.000002 saved
+    as .dta format
+
+. restore
+
+. merge m:1 fipsnumeric year quarter using "`vac'"
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                       140,646
+        from master                   140,646  (_merge==1)
+        from using                          0  (_merge==2)
+
+    Matched                            93,754  (_merge==3)
+    -----------------------------------------
+
+. drop if _merge==2
+(0 observations deleted)
+
+. drop _merge
+
+. 
+. * --- Merge population (annual) and the CPS separation rate (year-quarter). -
+> --
+. merge m:1 fipsnumeric year using "${rawdata}/population_age.dta"
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                       145,996
+        from master                   121,888  (_merge==1)
+        from using                     24,108  (_merge==2)
+
+    Matched                           112,512  (_merge==3)
+    -----------------------------------------
+
+. drop if _merge==2
+(24,108 observations deleted)
+
+. drop _merge
+
+. 
+. merge m:1 year quarter using "${rawdata}/cpssep.dta"
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                        14,232
+        from master                    14,064  (_merge==1)
+        from using                        168  (_merge==2)
+
+    Matched                           220,336  (_merge==3)
+    -----------------------------------------
+
+. drop if _merge==2
+(168 observations deleted)
+
+. drop _merge
+
+. capture confirm variable separation
+
+. * cpssep holds the MEAN MONTHLY separation rate (Shimer 2012). CurrentData is
+. * quarterly, so the quarterly law of motion needs the quarterly separation fl
+> ow
+. * = 3 x the monthly rate, so delta_q = 3*separation in the U-dynamics phi bel
+> ow.
+. * The imputation uses the regression-based job-finding rate (eq:JFR_Data), no
+> t the
+. * proprietary claims-based job-finding f.
+. gen delta = 3*separation
+(14,064 missing values generated)
+
+. 
+. * --- Border segment id (state-pair group), and side = min/max state. ---
+. capture drop st_min st_max bordersegment
+
+. bys pair_id_numeric: egen st_min = min(fipsstate)
+
+. by  pair_id_numeric: egen st_max = max(fipsstate)
+
+. egen bordersegment = group(st_min st_max)
+
+. 
+. * --- Per-county search base: s = unemployed + zeta*(outlabor),
+. *     outlabor = County_Population - labor; searchers = labor - emp + outlabo
+> r*5/27
+. *     (paper eq:utilde). County_Population is TOTAL county population -> pope
+> stimate
+. *     (population_age.dta), NOT the age-restricted working_pop. ---
+. gen searchers = unemp_count_laus + (5/27)*(popestimate - labor_laus)
+(121,894 missing values generated)
+
+. 
+. * --- Aggregate to the segment side by SUMMING over ALL pair-appearances (a c
+> ounty
+. *     that sits in K pairs within a segment is counted K times -- this is wha
+> t the
+. *     original egen sum(...) by(bordersegment quarter_index fipsstate) did, a
+> nd what
+. *     makes utilde match; do NOT dedup to unique counties). ---
+. collapse (sum) b_u=unemp_count_laus b_l=labor_laus b_p=popestimate ///
+>                b_vac=total_vacancies_county b_newvac=total_newvacancies_count
+> y ///
+>                b_s=searchers (mean) delta year quarter, ///
+>          by(bordersegment fipsstate st_min st_max quarter_index)
+
+. 
+. * --- phi (job-finding) and q (vacancy-filling) per segment side, over time. 
+> ---
+. sort bordersegment fipsstate quarter_index
+
+. by bordersegment fipsstate (quarter_index): gen b_u_f1   = b_u[_n+1]
+(214 missing values generated)
+
+. by bordersegment fipsstate (quarter_index): gen b_vac_f1 = b_vac[_n+1]
+(214 missing values generated)
+
+. by bordersegment fipsstate (quarter_index): gen b_newvac_f1 = b_newvac[_n+1]
+(214 missing values generated)
+
+. 
+. gen phi = (b_u - b_u_f1 + delta*(b_l - b_u)) / b_u
+(1,284 missing values generated)
+
+. * phi is a job-finding PROBABILITY (fraction of unemployed who find work), so
+>  it
+. * is bounded to (0,1]; the raw U-dynamics expression can overshoot 1 in tight
+. * labor markets (large delta*(n-u)/u term). Cap as the original did (backoutf
+>  used
+. * max(min(.,0.999),0.001)); this is exactly what produces the historical phi'
+> s
+. * 0.99 plateau in the pre-recession quarters, and keeps the solve well-behave
+> d
+. * (uncapped phi>1 is unfittable by the matching function and pushes gamma to 
+> its
+. * bound). Recession-era phi (<0.99) is unaffected and matches the historical.
+. replace phi = max(min(phi, 0.99), 0.001)
+(15,282 real changes made)
+
+. gen q   = 1 - (b_vac_f1 - b_newvac_f1) / b_vac
+(13,054 missing values generated)
+
+. 
+. * --- Restrict to the imputation sample (2005Q2-2011Q4). population_age.dta (
+> the popestimate source) only covers
+. *     2000-2011, so 2012+ rows have b_p=0 -> negative search base; drop them 
+> AFTER
+. *     the forward differences above (so 2011Q4's phi/q can reference 2012Q1).
+>  ---
+. keep if year>=2005 & year<=2011
+(15,408 observations deleted)
+
+. 
+. * --- Assign A (lower state) / B (higher state) and reshape to one row per
+. *     (bordersegment, quarter_index). ---
+. gen side = cond(fipsstate==st_min, "A", "B")
+
+. keep bordersegment quarter_index st_min st_max side b_u b_l b_p b_vac phi q
+
+. reshape wide b_u b_l b_p b_vac phi q, i(bordersegment quarter_index st_min st
+> _max) j(side) string
+(j = A B)
+
+Data                               Long   ->   Wide
+-----------------------------------------------------------------------------
+Number of observations            5,992   ->   2,996       
+Number of variables                  11   ->   16          
+j variable (2 values)              side   ->   (dropped)
+xij variables:
+                                    b_u   ->   b_uA b_uB
+                                    b_l   ->   b_lA b_lB
+                                    b_p   ->   b_pA b_pB
+                                  b_vac   ->   b_vacA b_vacB
+                                    phi   ->   phiA phiB
+                                      q   ->   qA qB
+-----------------------------------------------------------------------------
+
+. 
+. gen qratio = qA / qB
+
+. 
+. * Keep periods where the core inputs are present for both sides.
+. keep if !missing(phiA, phiB, b_vacA, b_vacB, b_uA, b_uB, b_lA, b_lB, b_pA, b_
+> pB, qratio)
+(0 observations deleted)
+
+. 
+. * st_min / st_max carry the A / B fipsstate so the driver can write the
+. * ImputedDataBorder key (bordersegment fipsstate year quarter).
+. order bordersegment quarter_index st_min st_max b_uA b_uB b_lA b_lB b_pA b_pB
+>  b_vacA b_vacB phiA phiB qratio
+
+. sort bordersegment quarter_index
+
+. 
+. * --- Export for the Matlab driver (Run_Impute_Border.m loops bordersegments,
+. *     calls impute_border_search.m). ---
+. outsheet bordersegment quarter_index st_min st_max b_uA b_uB b_lA b_lB b_pA b
+> _pB b_vacA b_vacB phiA phiB qratio ///
+>     using "${latexdir}Impute_Input.txt", replace nonames
+(file
+    /Users/mac/JPE-replications/JPE-Mitman-2016256/replication-package/replic
+    > ation-package/output/factor_results/Impute_Input.txt not found)
+
+. 
+. cd "${CodeDirec}"
+/Users/mac/JPE-replications/JPE-Mitman-2016256/replication-package/replication-
+> package/code/analysis
+
+. 
+end of do-file

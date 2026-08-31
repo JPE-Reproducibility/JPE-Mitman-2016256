@@ -1,0 +1,5057 @@
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/mac/JPE-replications/JPE-Mitman-2016256/replication-package
+> /replication-package/output/logs/BuildMacroData.log
+  log type:  text
+ opened on:  19 Aug 2026, 11:16:09
+
+. 
+. use "${rawdata}/NewLAUSBorderData2014_final24Nov16"
+
+. 
+. * Benefit weeks: ONE consolidated provided input (benefit_weeks.dta). Its
+. * monthly meanwks already carries every inline patch
+. * the build previously applied (missing->26, FullFinal totalweeks for 2011m4+
+> ,
+. * TEUC +13 for 2002m3-2003m12, NJ 1996m6-11 =39); the quarterly rec2001/
+. * vintage/pf columns are merged after the quarterly collapse inside
+. * MakeDataSetsMainPaper.
+. drop meanwks
+
+. merge m:1 fipsstate year month using "${rawdata}/benefit_weeks", keepusing(me
+> anwks)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                           600
+        from master                         0  (_merge==1)
+        from using                        600  (_merge==2)
+
+    Matched                           703,200  (_merge==3)
+    -----------------------------------------
+
+. capture drop _merge
+
+. 
+. merge m:1 fipsstate year month using "${rawdata}/StateEmp2014rev"
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                         9,036
+        from master                         0  (_merge==1)
+        from using                      9,036  (_merge==2)
+
+    Matched                           703,800  (_merge==3)
+    -----------------------------------------
+
+. drop if _merge==2
+(9,036 observations deleted)
+
+. capture drop _merge
+
+. 
+. do MakeDataSetsMainPaper_v5_newvac
+
+. * meanwks arrives fully patched from the consolidated benefit_weeks input
+. * (missing->26, FullFinal totalweeks 2011m4+, TEUC +13 2002m3-2003, NJ 1996=3
+> 9
+. * are all baked in there).
+. capture drop _merge
+
+. 
+. gen tag=1
+
+. /* Chicago-area counties: Cook 17031,  DeKalb 17037, DuPage 17043, Grundy 170
+> 63, Kane 17089, Kendall 17093, McHenry 17111, Will 17197*/
+. replace tag=0 if inlist(fipsnumeric,17031,17037,17043,17063,17089,17093,17111
+> ,17197)
+(1,200 real changes made)
+
+. 
+. sort fipsnumeric
+
+. merge m:1 fipsnumeric using ${rawdata}/LatLongData.dta
+(variable fipsnumeric was long, now double to accommodate using data's
+       values)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                         2,579
+        from master                       600  (_merge==1)
+        from using                      1,979  (_merge==2)
+
+    Matched                           703,200  (_merge==3)
+    -----------------------------------------
+
+. drop if _merge==2
+(1,979 observations deleted)
+
+. drop _merge
+
+. 
+. sort fipsnumeric year month
+
+. merge m:1 fipsnumeric year month using ${rawdata}/QCEWAllYears_2014Q4
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                     1,184,277
+        from master                     8,265  (_merge==1)
+        from using                  1,176,012  (_merge==2)
+
+    Matched                           695,535  (_merge==3)
+    -----------------------------------------
+
+. drop if _merge==2
+(1,176,012 observations deleted)
+
+. drop _merge
+
+. 
+. merge m:1 fipsnumeric year quarter using ${rawdata}/QWI_2018_09_18_t
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                       351,556
+        from master                   211,401  (_merge==1)
+        from using                    140,155  (_merge==2)
+
+    Matched                           492,399  (_merge==3)
+    -----------------------------------------
+
+. drop if _merge==2
+(140,155 observations deleted)
+
+. drop _merge
+
+. rename empendall qwi_emp_end
+
+. rename emptotalall qwi_emp_tot
+
+. 
+. replace ui_tax_rate = 1+ui_tax_rate 
+(489,867 real changes made)
+
+. replace qcew_ui_tax_rate = 1+qcew_ui_tax_rate 
+(653,379 real changes made)
+
+. 
+. gen qwi_wtot_all_t = qwi_wtot_all*ui_tax_rate
+(227,271 missing values generated)
+
+. gen qcew_wage_tot_t = qcew_wage_tot*qcew_ui_tax_rate
+(50,421 missing values generated)
+
+. gen qwi_wpay_all = payrollall/qwi_emp_tot
+(211,497 missing values generated)
+
+. gen qwi_wpay_all_t = qwi_wpay_all*ui_tax_rate
+(214,029 missing values generated)
+
+. gen qwi_wnhf_all_t = qwi_wnhf_all*ui_tax_rate
+(268,713 missing values generated)
+
+. 
+. replace latitude=latitude*0.017453
+(703,200 real changes made)
+
+. replace longitude=longitude*0.017453
+(703,200 real changes made)
+
+. sort pair_id_numeric year month county_index 
+
+. by pair_id_numeric year month: gen dist=acos(sin(latitude[1])*sin(latitude[2]
+> )+cos(latitude[1])*cos(latitude[2])*cos(longitude[2]-longitude[1]))*6371*0.62
+> 1371
+(600 missing values generated)
+
+. 
+. sort year month
+
+. 
+. merge m:1 year month using ${rawdata}/jolts2013.dta
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                       328,440
+        from master                   328,440  (_merge==1)
+        from using                          0  (_merge==2)
+
+    Matched                           375,360  (_merge==3)
+    -----------------------------------------
+
+. drop if _merge==2
+(0 observations deleted)
+
+. drop _merge
+
+. rename jolts_agg_seprate_q seprate
+
+. replace seprate=0.1 if seprate==.
+(330,786 real changes made)
+
+. 
+. merge m:1 fipsstate year month using ${rawdata}/SNAP_Policy_Database_Processe
+> d_2018_premerge
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                       170,136
+        from master                   168,912  (_merge==1)
+        from using                      1,224  (_merge==2)
+
+    Matched                           534,888  (_merge==3)
+    -----------------------------------------
+
+. drop if _merge==2
+(1,224 observations deleted)
+
+. drop _merge
+
+. replace bbce_asset2018=0 if bbce_asset2018==-9
+(389,888 real changes made)
+
+. 
+. gen tempval2=0
+
+. replace tempval2=meanwks if year==2013 & month==12
+(2,346 real changes made)
+
+. bys fipsnumeric: egen wks2013=max(tempval2)
+
+. *rename totalweeks wks2013
+. 
+. gen logwks=ln(meanwks)
+
+. ** Difference across counties
+. sort pair_id_numeric year month county_index
+
+. foreach var of varlist meanwks* logwks wks2013{
+  2.         by pair_id_numeric year month: gen diff_`var' = `var'[1] - `var'[2
+> ]
+  3. }
+
+. sort pair_id_numeric county_index year month 
+
+. foreach var of varlist meanwks* logwks wks2013{
+  2.         by pair_id_numeric county_index: gen did_`var' = diff_`var'[_n] - 
+> diff_`var'[_n-1]
+  3. }
+(2,345 missing values generated)
+(2,345 missing values generated)
+(2,345 missing values generated)
+
+. 
+. gen tempval7=-100
+
+. replace tempval7=did_meanwks if year==2014 & month==1
+(2,346 real changes made)
+
+. by pair_id_numeric: egen dwks2013=max(tempval7)
+
+. 
+. gen tempval8=-100
+
+. replace tempval8=did_logwks if year==2014 & month==1
+(2,346 real changes made)
+
+. by pair_id_numeric: egen logdwks2013=max(tempval8)
+
+. 
+. // gen bgroups=0
+. // replace bgroups=1 if logdwks2013>0
+. // gen county_index2=bgroups*(county_index*-1+3)+(1-bgroups)*county_index
+. //
+. // replace county_index=county_index2
+. 
+. /*
+> gen logemp_laus=ln(emp_laus)
+> sort pair_id_numeric fipsnumeric year month
+> by pair_id_numeric fipsnumeric: gen tdiff_logemp3=logemp_laus[_n]-logemp_laus
+> [_n-11]
+> by pair_id_numeric fipsnumeric: gen tdiff_logemp4=logemp_laus[_n]-logemp_laus
+> [_n-12]
+> bys county_index: su tdiff_logemp3 if year==2014 & month==11
+> bys county_index: su tdiff_logemp4 if year==2013 & month==12
+> stop
+> */
+. 
+. sort fipsstate year month
+
+. merge m:1 fipsstate year month using RawDataScripts/LAUS_Additivity/Output/ad
+> ditivity.dta
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                       460,336
+        from master                   460,232  (_merge==1)
+        from using                        104  (_merge==2)
+
+    Matched                           243,568  (_merge==3)
+    -----------------------------------------
+
+. drop _merge
+
+. 
+. replace tag=0 if fipsstate==11          /* for DC */
+(1,200 real changes made)
+
+. replace tag=0 if fipsnumeric==6037      /* Los Angeles (shouldn't be in the b
+> order sample, but to be safe) */
+(0 real changes made)
+
+. 
+. /* Chicago-Joliet-Naperville consists of the following counties:*/
+. /* Chicago-area counties: Cook 17031,  DeKalb 17037, DuPage 17043, Grundy 170
+> 63, Kane 17089, Kendall 17093, McHenry 17111, Will 17197*/
+. replace tag=0 if inlist(fipsnumeric,17031,17037,17043,17063,17089,17093,17111
+> ,17197)
+(0 real changes made)
+
+. 
+. /* Detrpit-Warren-Livonia consists of the following counties:*/
+. /* Lapeer 26087, Livingston 26093, Macomb 26099, Oakland 26125, St. Clair 171
+> 63, Wayne 26163*/
+. replace tag=0 if inlist(fipsnumeric,26093,26099,26125,17163,26163)
+(600 real changes made)
+
+. replace tag=0 if fipsnumeric==36061             /* New York City */
+(600 real changes made)
+
+. 
+. /* Cleveland-Elyria-Mentor county consists of*/
+. /* Cuyahoga 39035, Geauga 39055, Lake 39085, Lorain 39093, and Medina 39103*/
+. replace tag=0 if inlist(fipsnumeric,39035,39055,39085,39093,39103)
+(0 real changes made)
+
+. 
+. /* Seattle-Bellevue-Everett county consists of King 53033 and Snohomish 53061
+>  counties*/
+. replace tag=0 if inlist(fipsnumeric,53033,53061)
+(0 real changes made)
+
+. 
+. // gen unemp_add=unemp_rate_laus/unempratio if tag==1
+. gen unemphb_count=unemp_count
+(724 missing values generated)
+
+. replace unemphb_count=unemp_count/unempratio if tag==1
+(699,489 real changes made, 457,072 to missing)
+
+. 
+. gen emp_add=emp_laus
+(724 missing values generated)
+
+. replace emp_add=emp_laus/empratio if tag==1
+(699,580 real changes made, 457,072 to missing)
+
+. 
+. gen labor_add=unemphb_count+emp_add
+(457,796 missing values generated)
+
+. gen unemp_add=unemphb_count/labor_add*100
+(457,796 missing values generated)
+
+. 
+. * Vacancy source switch. Default = the real HWOL file (PROPRIETARY, cannot be
+. * redistributed). To build a SHIPPABLE, synthetic-vacancy CurrentData,
+. * first run code/build/Make_Synthetic_Vacancies.do, then set, before the buil
+> d:
+. *     global vacfile "${rawdata}/new_vac_synthetic.dta"
+. * (the synthetic file has the same fipsnumeric/year/month schema). Results bu
+> ilt on
+. * the synthetic file are demonstrative, not the published estimates.
+. if "${vacfile}"=="" global vacfile "${synthetic}/new_vac_synthetic.dta"
+
+. merge m:1 fipsnumeric year month using "${vacfile}"
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                       422,642
+        from master                   422,642  (_merge==1)
+        from using                          0  (_merge==2)
+
+    Matched                           281,262  (_merge==3)
+    -----------------------------------------
+
+. 
+. drop _merge
+
+. 
+. collapse year quarter fipsnumeric fipsstate unemp_add unemp_rate_laus unemp_c
+> ount_laus sepall sepbegall sepbegrall emp*laus labor*laus meanwks* seprate di
+> st wks2013 qcew* qwi* ui_tax_rate diff_wks2013 total_vac* state_qcew* state_u
+> nemp* xstate* state_e* bbce*, ///
+>         by(pair_id_numeric county_index quarter_index)
+
+. 
+. sort fipsnumeric year quarter
+
+. * cbsacode (county->CBSA, for samecbsa) + state employment (emp_state_sa/_u, 
+> for prod_all_old
+. * and emp_share), from the cbsacode crosswalk + the BLS state-employment prod
+> ucer:
+. merge m:1 fipsnumeric using ${rawdata}/cbsacode_xwalk
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                           601
+        from master                       601  (_merge==1)
+        from using                          0  (_merge==2)
+
+    Matched                           233,800  (_merge==3)
+    -----------------------------------------
+
+. drop if _merge==2
+(0 observations deleted)
+
+. drop _merge
+
+. merge m:1 fipsstate year quarter using ${rawdata}/state_emp_quarterly
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                        17,259
+        from master                    14,065  (_merge==1)
+        from using                      3,194  (_merge==2)
+
+    Matched                           220,336  (_merge==3)
+    -----------------------------------------
+
+. drop if _merge==2
+(3,194 observations deleted)
+
+. drop _merge
+
+. 
+. * State-policy controls (sbsi/sbtc/bhi/judicial + property/sales/income/corp/
+> total taxes) --
+. * from the Make_StatePolicies_{Indices,Taxes} producers:
+. merge m:1 fipsstate year quarter using ${rawdata}/StatePolicies_indices
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                       159,393
+        from master                   159,393  (_merge==1)
+        from using                          0  (_merge==2)
+
+    Matched                            75,008  (_merge==3)
+    -----------------------------------------
+
+. drop if _merge==2
+(0 observations deleted)
+
+. drop _merge
+
+. merge m:1 fipsstate year quarter using ${rawdata}/StatePolicies_taxes
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                        56,257
+        from master                    56,257  (_merge==1)
+        from using                          0  (_merge==2)
+
+    Matched                           178,144  (_merge==3)
+    -----------------------------------------
+
+. drop if _merge==2
+(0 observations deleted)
+
+. drop _merge
+
+. 
+. capture drop awardamount
+
+. merge m:1 fipsnumeric year quarter using ${rawdata}/spending_data
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                       230,931
+        from master                   210,843  (_merge==1)
+        from using                     20,088  (_merge==2)
+
+    Matched                            23,558  (_merge==3)
+    -----------------------------------------
+
+. drop if _merge==2
+(20,088 observations deleted)
+
+. drop _merge
+
+. 
+. gen temp_share=0
+
+. replace temp_share=emp_laus/emp_state_u if year==2012 & quarter==4 
+(2,344 real changes made)
+
+. bys pair_id_numeric: egen emp_share=max(temp_share)
+
+. drop temp_share
+
+. gen temp_share=0
+
+. sort year quarter pair_id_numeric county_index
+
+. by year quarter pair_id_numeric: replace temp_share=1 if cbsacode[1]==cbsacod
+> e[2]
+(152001 real changes made)
+
+. gen temp_share2=0
+
+. replace temp_share2=1 if temp_share==1 & year==2012 & quarter==4
+(1,520 real changes made)
+
+. bys pair_id_numeric: egen samecbsa=max(temp_share2)
+
+. drop temp_share*
+
+. * Industry-composition distance (tab:Benefits_on_unemp Col 6): the l2-distanc
+> e between the
+. * two border counties' sample-average private-nonfarm industry employment sha
+> res, built from
+. * BEA CA25N (RawDataScripts/BEA_Industry/Make_IndustryShares.do).
+. merge m:1 fipsnumeric using ${rawdata}/bea_industry_shares
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                         5,151
+        from master                     2,601  (_merge==1)
+        from using                      2,550  (_merge==2)
+
+    Matched                           231,800  (_merge==3)
+    -----------------------------------------
+
+. drop if _merge==2
+(2,550 observations deleted)
+
+. drop _merge
+
+. sort pair_id_numeric quarter_index county_index
+
+. gen double __ss=0
+
+. gen int __nn=0
+
+. foreach yy of numlist 100 200 300 400 500 600 700 800 900 1000 1100 1200 1300
+>  1400 1500 1600 1700 1800 1900 {
+  2.         by pair_id_numeric quarter_index: replace __ss = __ss + (sh`yy'[1]
+> -sh`yy'[2])^2 if !missing(sh`yy'[1]) & !missing(sh`yy'[2])
+  3.         by pair_id_numeric quarter_index: replace __nn = __nn + 1 if !miss
+> ing(sh`yy'[1]) & !missing(sh`yy'[2])
+  4. }
+(88000 real changes made)
+(88,000 real changes made)
+(123800 real changes made)
+(126,200 real changes made)
+(82800 real changes made)
+(82,800 real changes made)
+(213800 real changes made)
+(213,800 real changes made)
+(216800 real changes made)
+(216,800 real changes made)
+(194400 real changes made)
+(194,400 real changes made)
+(226400 real changes made)
+(226,400 real changes made)
+(151400 real changes made)
+(151,400 real changes made)
+(189400 real changes made)
+(189,400 real changes made)
+(208000 real changes made)
+(208,000 real changes made)
+(210600 real changes made)
+(210,600 real changes made)
+(194000 real changes made)
+(194,000 real changes made)
+(115800 real changes made)
+(148,000 real changes made)
+(192800 real changes made)
+(192,800 real changes made)
+(152800 real changes made)
+(152,800 real changes made)
+(157200 real changes made)
+(157,200 real changes made)
+(183600 real changes made)
+(183,600 real changes made)
+(183400 real changes made)
+(183,400 real changes made)
+(219200 real changes made)
+(219,200 real changes made)
+
+. gen industry=sqrt(__ss) if __nn>0
+(5,201 missing values generated)
+
+. drop __ss __nn sh100-sh1900
+
+. * Col-6 subsample flag: the 50% of border pairs with the most similar industr
+> ial
+. * composition (l2 <= median over all border pairs), per the paper.
+. preserve
+
+. bys pair_id_numeric: keep if _n==1
+(233,228 observations deleted)
+
+. qui _pctile industry if !missing(industry), p(50)
+
+. local indmed=r(r1)
+
+. restore
+
+. gen byte industry_low = (industry<=`indmed') if !missing(industry)
+(5,201 missing values generated)
+
+. 
+. merge m:1 fipsstate year quarter using ${rawdata}/BEA_GDP_State_Q.dta
+(variable fipsstate was float, now double to accommodate using data's values)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                       141,336
+        from master                   140,641  (_merge==1)
+        from using                        695  (_merge==2)
+
+    Matched                            93,760  (_merge==3)
+    -----------------------------------------
+
+. 
+. drop if _merge==2
+(695 observations deleted)
+
+. drop _merge
+
+. 
+. * Quarterly benefit-weeks series from the single consolidated benefit_weeks
+. * input: the perfect-foresight series (pf_meanwks -> meanwks_pf) plus the
+. * rec2001/vintage historical patch series used further below. The columns are
+. * quarter-constant in the monthly file, so one row per state-quarter is kept
+. * and merged at exact values.
+. preserve
+
+. use fipsstate year quarter rec2001_meanwks2 vintage_meanwks pf_meanwks using 
+> ${rawdata}/benefit_weeks, clear
+(Benefit weeks (consolidated provided input): patched monthly meanwks + quarter
+> ly)
+
+. bys fipsstate year quarter: keep if _n==1
+(10,200 observations deleted)
+
+. tempfile wksq
+
+. save `wksq'
+file /var/folders/yv/gy9l8r0n7q96t36797h3fbd00000gn/T//St07894.000004 saved
+    as .dta format
+
+. restore
+
+. merge m:1 fipsstate year quarter using `wksq'
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                           201
+        from master                         1  (_merge==1)
+        from using                        200  (_merge==2)
+
+    Matched                           234,400  (_merge==3)
+    -----------------------------------------
+
+. drop if _merge==2
+(200 observations deleted)
+
+. drop _merge
+
+. rename pf_meanwks meanwks_pf
+
+. 
+. gen prod_all = state_gdp_all/state_e_sa_pre
+(140,641 missing values generated)
+
+. gen prod_all_old = state_gdp_all/emp_state_sa
+(154,705 missing values generated)
+
+. *gen prod_allq = state_gdp_all/state_qcew_emp_tot
+. gen prod_priv = state_gdp_priv/state_qcew_emp
+(143,108 missing values generated)
+
+. gen prod_all_qcew = state_gdp_all/state_qcew_emp_tot
+(143,108 missing values generated)
+
+. 
+. sort pair_id_numeric county_index year quarter
+
+. by pair_id_numeric county_index: gen prod_allq = (prod_all[_n]+prod_all[_n+1]
+> )/2
+(142,985 missing values generated)
+
+. 
+. gen vacrate1=total_vacancies_county/labor_laus
+(140,647 missing values generated)
+
+. 
+. * vacrate2 (vacancies / employment) is the PUBLISHED Vacancies/Tightness meas
+> ure.
+. * Built from the same synthetic ${vacfile} as vacrate1/tight1, so no real HWO
+> L
+. * vacancy data enters the build.
+. gen vacrate2=total_vacancies_county/emp_laus
+(140,647 missing values generated)
+
+. 
+. gen tight1=total_vacancies_county/unemp_count_laus
+(140,647 missing values generated)
+
+. 
+. // gen qwi_emp_av=(qwi_emp+qwi_emp_end)/2
+. 
+. drop time
+
+. 
+. ** Now, generate the time variable
+. gen time=ym(year,quarter)
+(1 missing value generated)
+
+. format %tq time
+
+. order pair_id_numeric fipsnumeric year quarter time
+
+. 
+. // gen qwi_emp_nont1=qwi_emp_art+empcon+emprea+empedu+emphea+qwi_emp_foo+qwi_
+> emp_ret
+. // gen qwi_emp_trade1=emptra+qwi_emp_man+empwho
+. //
+. // gen qwi_emp_nont2=qwi_emp_art+empcon+emprea+qwi_emp_foo+qwi_emp_ret
+. // gen qwi_emp_trade2=emptra+qwi_emp_man+empwho
+. 
+. * empinf
+. // gen qwi_emp_share1=qwi_emp_nont1/qwi_emp_trade1
+. // gen qwi_emp_share2=qwi_emp_nont2/qwi_emp_trade2
+. 
+. gen mopair=0
+
+. replace mopai=1 if fipsstate==29
+(10,000 real changes made)
+
+. bys pair_id_numeric time: egen ifmo=max(mopair)
+
+. 
+. // gen katrinapair=0
+. // replace katrinapair=1 if fipsstate==22
+. // bys pair_id_numeric time: egen ifkat=max(katrinapair)
+. //
+. // gen arkansas=0
+. // replace arkansas=1 if fipsstate==5
+. // bys pair_id_numeric time: egen akpair=max(arkansas)
+. //
+. // *replace county_index=3 if county_index==1 & ifkat==1 & akpair==1
+. //
+. // gen miss=0
+. // replace miss=1 if fipsstate==28
+. // bys pair_id_numeric time: egen mipair=max(miss)
+. //
+. // gen georgia=0
+. // replace georgia=1 if fipsstate==13
+. // bys pair_id_numeric time: egen gapair=max(georgia)
+. //
+. // gen ncpair=0
+. // replace ncpair=1 if fipsstate==37
+. // bys pair_id_numeric time: egen ifnc=max(ncpair)
+. //
+. // *replace county_index=3 if county_index==1 & ifnc==1 & gapair==1
+. //
+. //
+. // gen del=0
+. // replace del=1 if fipsstate==10
+. // bys pair_id_numeric time: egen delpair=max(del)
+. //
+. // gen pa=0
+. // replace pa=1 if fipsstate==42
+. // bys pair_id_numeric time: egen papair=max(pa)
+. //
+. //
+. // gen njpair=0
+. // replace njpair=1 if fipsstate==34
+. // bys pair_id_numeric time: egen ifnj=max(njpair)
+. //
+. // gen drop2014pair=0
+. // replace drop2014pair=1 if inlist(fipsstate,12,13,20,37)
+. // bys pair_id_numeric: egen ifdrop2014=max(drop2014pair)
+. //
+. // gen drop2014pair2=0
+. // replace drop2014pair2=1 if inlist(fipsstate,12,13,20,37,8,22,24,25,26,53)
+. // bys pair_id_numeric: egen ifdrop2014_2=max(drop2014pair2)
+. 
+. *replace county_index=3 if county_index==1 & ifnj==1 & delpair==1
+. 
+. /*
+> ** Difference across counties
+> sort pair_id_numeric time county_index
+> foreach var of varlist wks2013{
+>         by pair_id_numeric time: gen diff_`var' = `var'[1] - `var'[2]
+> }
+> 
+> gen bgroups=0
+> replace bgroups=1 if diff_wks2013<0
+> gen county_index2=bgroups*(county_index*-1+3)+(1-bgroups)*county_index
+> rena
+> 
+> replace county_index=county_index2
+> */
+. 
+. sort pair_id_numeric quarter_index county_index
+
+. 
+. by pair_id_numeric quarter_index: egen pair_emp = sum(qwi_emp)
+
+. by pair_id_numeric quarter_index: egen pair_emp_end = sum(qwi_emp_end)
+
+. by pair_id_numeric quarter_index: egen pair_emp_tot = sum(qwi_emp_tot)
+
+. by pair_id_numeric quarter_index: egen pair_sepbeg_count = sum(sepbegall)
+
+. by pair_id_numeric quarter_index: egen pair_septot_count = sum(sepall)
+
+. 
+. foreach var of varlist emp_laus meanwks* unemp_rate_laus labor_laus unemp_cou
+> nt_laus qcew* qwif* qwi_* prod_all sepall sepbegall ui_tax_rate{
+  2.         bys fipsnumeric year: egen `var'_an=mean(`var')
+  3. //      replace `var'_an=`var' if year<2014
+. }
+(1 missing value generated)
+(140,641 missing values generated)
+(1 missing value generated)
+(1 missing value generated)
+(1 missing value generated)
+(253 missing values generated)
+(253 missing values generated)
+(253 missing values generated)
+(253 missing values generated)
+(9,621 missing values generated)
+(9,621 missing values generated)
+(67,625 missing values generated)
+(71,321 missing values generated)
+(75,633 missing values generated)
+(124,853 missing values generated)
+(105,741 missing values generated)
+(66,925 missing values generated)
+(66,337 missing values generated)
+(66,233 missing values generated)
+(97,657 missing values generated)
+(68,581 missing values generated)
+(76,229 missing values generated)
+(67,605 missing values generated)
+(76,309 missing values generated)
+(68,597 missing values generated)
+(67,013 missing values generated)
+(76,725 missing values generated)
+(68,993 missing values generated)
+(67,333 missing values generated)
+(77,201 missing values generated)
+(69,377 missing values generated)
+(67,537 missing values generated)
+(95,293 missing values generated)
+(84,633 missing values generated)
+(77,093 missing values generated)
+(81,209 missing values generated)
+(73,097 missing values generated)
+(69,885 missing values generated)
+(77,257 missing values generated)
+(69,389 missing values generated)
+(234,401 missing values generated)
+(81,593 missing values generated)
+(73,285 missing values generated)
+(234,401 missing values generated)
+(87,241 missing values generated)
+(78,645 missing values generated)
+(234,401 missing values generated)
+(153,841 missing values generated)
+(142,137 missing values generated)
+(234,401 missing values generated)
+(110,193 missing values generated)
+(101,093 missing values generated)
+(234,401 missing values generated)
+(67,461 missing values generated)
+(66,233 missing values generated)
+(66,681 missing values generated)
+(77,257 missing values generated)
+(140,641 missing values generated)
+(66,337 missing values generated)
+(67,029 missing values generated)
+(66,673 missing values generated)
+
+. 
+. foreach var of varlist pair_emp pair_emp_tot pair_sep* {
+  2.         bys pair_id_numeric year: egen `var'_an=mean(`var')
+  3. //      replace `var'_an=`var' if year<2014
+. }
+
+. 
+. gen pair_sepr_beg = pair_sepbeg_count/(pair_emp)
+(53,119 missing values generated)
+
+. gen pair_sepr_tot = pair_septot_count/(pair_emp_tot)
+(50,779 missing values generated)
+
+. 
+. gen pair_sepr_beg_an = pair_sepbeg_count_an/(pair_emp_an)
+(47,929 missing values generated)
+
+. gen pair_sepr_tot_an = pair_septot_count_an/(pair_emp_tot_an)
+(47,041 missing values generated)
+
+. 
+. su pair_sepr_beg_an if year==2005, d 
+
+                      pair_sepr_beg_an
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%     .1036807       .0945567
+ 5%     .1117778       .0945567
+10%     .1192373       .0945567       Obs               9,376
+25%     .1294657       .0945567       Sum of wgt.       9,376
+
+50%     .1447213                      Mean           .1492882
+                        Largest       Std. dev.      .0271127
+75%     .1651633       .2617601
+90%     .1849299       .2617601       Variance       .0007351
+95%     .1988394       .2617601       Skewness       .8894147
+99%     .2363432       .2617601       Kurtosis       4.046005
+
+. gen r_med=inrange(pair_sepr_beg_an,0,`r(p50)') if year==2005
+(225,025 missing values generated)
+
+. bys pair_id_numeric: egen sepbegtype=min(r_med)
+(1 missing value generated)
+
+. 
+. drop r_med
+
+. 
+. su pair_sepr_tot_an if year==2005, d 
+
+                      pair_sepr_tot_an
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%     .1317538       .1195523
+ 5%     .1432106       .1195523
+10%     .1526455       .1195523       Obs               9,376
+25%     .1673513       .1195523       Sum of wgt.       9,376
+
+50%     .1885781                      Mean           .1918964
+                        Largest       Std. dev.      .0331059
+75%     .2132191       .3665609
+90%     .2356639       .3665609       Variance        .001096
+95%     .2500594       .3665609       Skewness       .6121014
+99%     .2768712       .3665609       Kurtosis        3.79319
+
+. gen r_med=inrange(pair_sepr_tot_an,0,`r(p50)') if year==2005
+(225,025 missing values generated)
+
+. bys pair_id_numeric: egen septype=min(r_med)
+(1 missing value generated)
+
+. 
+. gen tight2=vacrate2/unemp_rate_laus
+(140,647 missing values generated)
+
+. 
+. merge m:1 fipsnumeric year quarter using ${rawdata}/quarterly_f.dta
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                       227,331
+        from master                   199,716  (_merge==1)
+        from using                     27,615  (_merge==2)
+
+    Matched                            34,685  (_merge==3)
+    -----------------------------------------
+
+. drop if _merge==2
+(27,615 observations deleted)
+
+. drop _merge
+
+. 
+. ** Log values
+. foreach y of varlist emp_laus* meanwks* unemp* labor_laus* qcew* qwi* vacrate
+> * tight* property general_sales income corp_income total prod* state_qcew* st
+> ate_unemp* xstate* awardamount state_gdp_all ui_tax_rate ///
+>     f_cl2_q{
+  2.         gen log`y' = ln(`y')
+  3. }
+(7 missing values generated)
+(1 missing value generated)
+(140,641 missing values generated)
+(140,641 missing values generated)
+(151,587 missing values generated)
+(17 missing values generated)
+(17 missing values generated)
+(1 missing value generated)
+(1 missing value generated)
+(7 missing values generated)
+(1 missing value generated)
+(2,602 missing values generated)
+(2,602 missing values generated)
+(3,627 missing values generated)
+(3,627 missing values generated)
+(16,608 missing values generated)
+(16,654 missing values generated)
+(265 missing values generated)
+(265 missing values generated)
+(993 missing values generated)
+(993 missing values generated)
+(9,621 missing values generated)
+(9,633 missing values generated)
+(72,622 missing values generated)
+(72,620 missing values generated)
+(70,300 missing values generated)
+(111,071 missing values generated)
+(74,828 missing values generated)
+(83,235 missing values generated)
+(73,328 missing values generated)
+(77,397 missing values generated)
+(77,394 missing values generated)
+(84,236 missing values generated)
+(77,260 missing values generated)
+(74,912 missing values generated)
+(79,731 missing values generated)
+(79,733 missing values generated)
+(79,733 missing values generated)
+(79,683 missing values generated)
+(85,276 missing values generated)
+(78,099 missing values generated)
+(75,231 missing values generated)
+(82,009 missing values generated)
+(81,876 missing values generated)
+(83,092 missing values generated)
+(82,838 missing values generated)
+(86,652 missing values generated)
+(79,275 missing values generated)
+(75,555 missing values generated)
+(85,572 missing values generated)
+(85,274 missing values generated)
+(137,779 missing values generated)
+(138,040 missing values generated)
+(120,973 missing values generated)
+(110,407 missing values generated)
+(86,969 missing values generated)
+(140,537 missing values generated)
+(139,742 missing values generated)
+(95,199 missing values generated)
+(94,678 missing values generated)
+(93,844 missing values generated)
+(85,780 missing values generated)
+(78,056 missing values generated)
+(97,465 missing values generated)
+(96,280 missing values generated)
+(85,176 missing values generated)
+(85,345 missing values generated)
+(89,262 missing values generated)
+(82,726 missing values generated)
+(234,401 missing values generated)
+(85,176 missing values generated)
+(85,355 missing values generated)
+(73,792 missing values generated)
+(99,462 missing values generated)
+(99,271 missing values generated)
+(101,748 missing values generated)
+(94,670 missing values generated)
+(234,401 missing values generated)
+(99,462 missing values generated)
+(99,309 missing values generated)
+(78,595 missing values generated)
+(108,941 missing values generated)
+(108,595 missing values generated)
+(110,208 missing values generated)
+(103,298 missing values generated)
+(234,401 missing values generated)
+(108,941 missing values generated)
+(108,740 missing values generated)
+(85,941 missing values generated)
+(189,689 missing values generated)
+(189,646 missing values generated)
+(185,232 missing values generated)
+(179,150 missing values generated)
+(234,401 missing values generated)
+(189,689 missing values generated)
+(189,790 missing values generated)
+(148,231 missing values generated)
+(150,450 missing values generated)
+(149,684 missing values generated)
+(140,450 missing values generated)
+(134,559 missing values generated)
+(234,401 missing values generated)
+(150,450 missing values generated)
+(149,944 missing values generated)
+(117,069 missing values generated)
+(75,558 missing values generated)
+(70,300 missing values generated)
+(71,144 missing values generated)
+(89,372 missing values generated)
+(67,625 missing values generated)
+(71,329 missing values generated)
+(75,793 missing values generated)
+(129,333 missing values generated)
+(106,425 missing values generated)
+(66,925 missing values generated)
+(66,337 missing values generated)
+(66,233 missing values generated)
+(102,017 missing values generated)
+(68,741 missing values generated)
+(76,881 missing values generated)
+(67,605 missing values generated)
+(76,309 missing values generated)
+(68,597 missing values generated)
+(67,013 missing values generated)
+(76,725 missing values generated)
+(68,993 missing values generated)
+(67,333 missing values generated)
+(77,201 missing values generated)
+(69,377 missing values generated)
+(67,537 missing values generated)
+(95,293 missing values generated)
+(84,633 missing values generated)
+(77,093 missing values generated)
+(81,209 missing values generated)
+(73,097 missing values generated)
+(69,885 missing values generated)
+(77,257 missing values generated)
+(69,389 missing values generated)
+(234,401 missing values generated)
+(81,593 missing values generated)
+(73,285 missing values generated)
+(234,401 missing values generated)
+(87,241 missing values generated)
+(78,645 missing values generated)
+(234,401 missing values generated)
+(153,841 missing values generated)
+(142,137 missing values generated)
+(234,401 missing values generated)
+(110,193 missing values generated)
+(101,093 missing values generated)
+(234,401 missing values generated)
+(67,461 missing values generated)
+(66,233 missing values generated)
+(66,681 missing values generated)
+(77,257 missing values generated)
+(140,647 missing values generated)
+(140,647 missing values generated)
+(140,647 missing values generated)
+(140,647 missing values generated)
+(129,379 missing values generated)
+(64,655 missing values generated)
+(76,392 missing values generated)
+(72,433 missing values generated)
+(56,561 missing values generated)
+(140,641 missing values generated)
+(154,705 missing values generated)
+(143,108 missing values generated)
+(143,108 missing values generated)
+(142,985 missing values generated)
+(140,641 missing values generated)
+(2,556 missing values generated)
+(2,556 missing values generated)
+(2,556 missing values generated)
+(1 missing value generated)
+(407 missing values generated)
+(210,939 missing values generated)
+(140,641 missing values generated)
+(71,112 missing values generated)
+(200,707 missing values generated)
+
+. 
+. replace logawardamount=0 if logawardamount==.
+(210,939 real changes made)
+
+. replace loggeneral_sales =0 if loggeneral_sales ==.
+(64,655 real changes made)
+
+. replace logincome =0 if logincome ==.
+(76,392 real changes made)
+
+. replace logcorp_income =0 if logcorp_income ==.
+(72,433 real changes made)
+
+. 
+. ** Difference across counties
+. sort pair_id_numeric time county_index
+
+. foreach var of varlist logemp_laus* logawardamount logmeanwks* logunemp* logl
+> abor_laus* logqcew* logqwi* logstate_qcew* logstate_unemp* logxstate* logvacr
+> ate* logtight* logstate_gdp_all logui_tax_rate ///
+> logproperty loggeneral_sales logincome logcorp_income logtotal bbce* bhi sbsi
+>  sbtc logprod* judicial logf_cl*{
+  2.         by pair_id_numeric time: gen diff_`var' = `var'[1] - `var'[2]
+  3. }
+(13 missing values generated)
+(1 missing value generated)
+(1 missing value generated)
+(1 missing value generated)
+(140,641 missing values generated)
+(1 missing value generated)
+(140,641 missing values generated)
+(152,373 missing values generated)
+(33 missing values generated)
+(33 missing values generated)
+(1 missing value generated)
+(1 missing value generated)
+(13 missing values generated)
+(1 missing value generated)
+(2,859 missing values generated)
+(2,859 missing values generated)
+(4,901 missing values generated)
+(4,901 missing values generated)
+(16,807 missing values generated)
+(16,899 missing values generated)
+(529 missing values generated)
+(529 missing values generated)
+(1,985 missing values generated)
+(1,985 missing values generated)
+(9,865 missing values generated)
+(9,889 missing values generated)
+(92,125 missing values generated)
+(92,117 missing values generated)
+(89,821 missing values generated)
+(146,219 missing values generated)
+(96,127 missing values generated)
+(108,353 missing values generated)
+(93,359 missing values generated)
+(96,971 missing values generated)
+(96,965 missing values generated)
+(103,627 missing values generated)
+(96,709 missing values generated)
+(94,361 missing values generated)
+(99,291 missing values generated)
+(99,283 missing values generated)
+(101,005 missing values generated)
+(100,855 missing values generated)
+(105,491 missing values generated)
+(98,215 missing values generated)
+(94,961 missing values generated)
+(103,209 missing values generated)
+(102,919 missing values generated)
+(106,571 missing values generated)
+(106,057 missing values generated)
+(107,843 missing values generated)
+(100,273 missing values generated)
+(95,489 missing values generated)
+(109,109 missing values generated)
+(108,493 missing values generated)
+(174,717 missing values generated)
+(174,953 missing values generated)
+(156,021 missing values generated)
+(145,497 missing values generated)
+(114,279 missing values generated)
+(177,209 missing values generated)
+(177,473 missing values generated)
+(122,677 missing values generated)
+(121,909 missing values generated)
+(118,919 missing values generated)
+(110,563 missing values generated)
+(99,765 missing values generated)
+(124,747 missing values generated)
+(123,267 missing values generated)
+(110,189 missing values generated)
+(110,397 missing values generated)
+(112,197 missing values generated)
+(106,143 missing values generated)
+(234,401 missing values generated)
+(110,189 missing values generated)
+(110,419 missing values generated)
+(94,221 missing values generated)
+(131,807 missing values generated)
+(131,239 missing values generated)
+(131,485 missing values generated)
+(124,825 missing values generated)
+(234,401 missing values generated)
+(131,807 missing values generated)
+(131,289 missing values generated)
+(102,467 missing values generated)
+(143,529 missing values generated)
+(142,785 missing values generated)
+(142,507 missing values generated)
+(136,463 missing values generated)
+(234,401 missing values generated)
+(143,529 missing values generated)
+(142,961 missing values generated)
+(113,833 missing values generated)
+(218,851 missing values generated)
+(218,811 missing values generated)
+(215,261 missing values generated)
+(211,773 missing values generated)
+(234,401 missing values generated)
+(218,851 missing values generated)
+(218,901 missing values generated)
+(188,519 missing values generated)
+(190,641 missing values generated)
+(189,995 missing values generated)
+(178,459 missing values generated)
+(174,111 missing values generated)
+(234,401 missing values generated)
+(190,641 missing values generated)
+(190,217 missing values generated)
+(156,867 missing values generated)
+(94,433 missing values generated)
+(89,821 missing values generated)
+(89,965 missing values generated)
+(112,197 missing values generated)
+(87,201 missing values generated)
+(93,705 missing values generated)
+(101,057 missing values generated)
+(169,825 missing values generated)
+(145,881 missing values generated)
+(85,921 missing values generated)
+(85,633 missing values generated)
+(85,425 missing values generated)
+(136,625 missing values generated)
+(89,297 missing values generated)
+(101,489 missing values generated)
+(87,113 missing values generated)
+(95,313 missing values generated)
+(88,481 missing values generated)
+(86,097 missing values generated)
+(96,097 missing values generated)
+(89,217 missing values generated)
+(86,705 missing values generated)
+(96,929 missing values generated)
+(89,849 missing values generated)
+(87,017 missing values generated)
+(124,905 missing values generated)
+(114,153 missing values generated)
+(103,097 missing values generated)
+(103,713 missing values generated)
+(96,241 missing values generated)
+(91,097 missing values generated)
+(97,081 missing values generated)
+(89,905 missing values generated)
+(234,401 missing values generated)
+(104,409 missing values generated)
+(96,449 missing values generated)
+(234,401 missing values generated)
+(113,257 missing values generated)
+(104,953 missing values generated)
+(234,401 missing values generated)
+(190,809 missing values generated)
+(180,753 missing values generated)
+(234,401 missing values generated)
+(144,241 missing values generated)
+(135,721 missing values generated)
+(234,401 missing values generated)
+(86,097 missing values generated)
+(85,425 missing values generated)
+(85,425 missing values generated)
+(97,081 missing values generated)
+(2,767 missing values generated)
+(2,767 missing values generated)
+(2,767 missing values generated)
+(1 missing value generated)
+(813 missing values generated)
+(140,653 missing values generated)
+(140,653 missing values generated)
+(140,653 missing values generated)
+(140,653 missing values generated)
+(140,641 missing values generated)
+(89,905 missing values generated)
+(172,343 missing values generated)
+(1 missing value generated)
+(1 missing value generated)
+(1 missing value generated)
+(56,865 missing values generated)
+(56,257 missing values generated)
+(56,257 missing values generated)
+(159,649 missing values generated)
+(159,649 missing values generated)
+(164,321 missing values generated)
+(140,641 missing values generated)
+(154,705 missing values generated)
+(143,231 missing values generated)
+(143,231 missing values generated)
+(142,985 missing values generated)
+(140,641 missing values generated)
+(159,649 missing values generated)
+(215,225 missing values generated)
+
+. 
+. foreach var of varlist diff_logproperty diff_loggeneral_sales diff_logincome 
+> diff_logcorp_income diff_logtotal diff_logawardamount{
+  2.         gen `var'_gdp = `var' - diff_logstate_gdp_all
+  3. 
+. }
+(209,245 missing values generated)
+(140,641 missing values generated)
+(140,641 missing values generated)
+(140,641 missing values generated)
+(159,649 missing values generated)
+(140,641 missing values generated)
+
+. 
+. ** t+k values
+. sort pair_id_numeric county_index time
+
+. foreach var of varlist logemp_laus* logmeanwks* logunemp* loglabor_laus* logq
+> cew_emp logqcew_emp_tot logqcew_wage logqcew_wage_tot logqwi*all* logvacrate*
+>  logtight* logf_cl*{
+  2.         forvalues y=1/8{
+  3.         by pair_id_numeric county_index: gen f`y'_`var'=diff_`var'[_n+`y']
+  4. }
+  5. }
+(2,357 missing values generated)
+(4,701 missing values generated)
+(7,045 missing values generated)
+(9,389 missing values generated)
+(11,733 missing values generated)
+(14,077 missing values generated)
+(16,421 missing values generated)
+(18,765 missing values generated)
+(2,345 missing values generated)
+(4,689 missing values generated)
+(7,033 missing values generated)
+(9,377 missing values generated)
+(11,721 missing values generated)
+(14,065 missing values generated)
+(16,409 missing values generated)
+(18,753 missing values generated)
+(2,345 missing values generated)
+(4,689 missing values generated)
+(7,033 missing values generated)
+(9,377 missing values generated)
+(11,721 missing values generated)
+(14,065 missing values generated)
+(16,409 missing values generated)
+(18,753 missing values generated)
+(140,641 missing values generated)
+(140,641 missing values generated)
+(140,641 missing values generated)
+(140,641 missing values generated)
+(140,641 missing values generated)
+(140,641 missing values generated)
+(140,641 missing values generated)
+(140,641 missing values generated)
+(2,345 missing values generated)
+(4,689 missing values generated)
+(7,033 missing values generated)
+(9,377 missing values generated)
+(11,721 missing values generated)
+(14,065 missing values generated)
+(16,409 missing values generated)
+(18,753 missing values generated)
+(140,641 missing values generated)
+(140,641 missing values generated)
+(140,641 missing values generated)
+(140,641 missing values generated)
+(140,641 missing values generated)
+(140,641 missing values generated)
+(140,641 missing values generated)
+(140,641 missing values generated)
+(152,373 missing values generated)
+(152,373 missing values generated)
+(152,373 missing values generated)
+(152,373 missing values generated)
+(152,373 missing values generated)
+(152,373 missing values generated)
+(152,373 missing values generated)
+(152,373 missing values generated)
+(2,377 missing values generated)
+(4,721 missing values generated)
+(7,065 missing values generated)
+(9,409 missing values generated)
+(11,749 missing values generated)
+(14,089 missing values generated)
+(16,433 missing values generated)
+(18,773 missing values generated)
+(2,377 missing values generated)
+(4,721 missing values generated)
+(7,065 missing values generated)
+(9,409 missing values generated)
+(11,749 missing values generated)
+(14,089 missing values generated)
+(16,433 missing values generated)
+(18,773 missing values generated)
+(2,345 missing values generated)
+(4,689 missing values generated)
+(7,033 missing values generated)
+(9,377 missing values generated)
+(11,721 missing values generated)
+(14,065 missing values generated)
+(16,409 missing values generated)
+(18,753 missing values generated)
+(2,345 missing values generated)
+(4,689 missing values generated)
+(7,033 missing values generated)
+(9,377 missing values generated)
+(11,721 missing values generated)
+(14,065 missing values generated)
+(16,409 missing values generated)
+(18,753 missing values generated)
+(2,357 missing values generated)
+(4,701 missing values generated)
+(7,045 missing values generated)
+(9,389 missing values generated)
+(11,733 missing values generated)
+(14,077 missing values generated)
+(16,421 missing values generated)
+(18,765 missing values generated)
+(2,345 missing values generated)
+(4,689 missing values generated)
+(7,033 missing values generated)
+(9,377 missing values generated)
+(11,721 missing values generated)
+(14,065 missing values generated)
+(16,409 missing values generated)
+(18,753 missing values generated)
+(7,241 missing values generated)
+(9,579 missing values generated)
+(11,919 missing values generated)
+(14,257 missing values generated)
+(16,595 missing values generated)
+(18,935 missing values generated)
+(21,275 missing values generated)
+(23,615 missing values generated)
+(5,199 missing values generated)
+(7,539 missing values generated)
+(9,879 missing values generated)
+(12,219 missing values generated)
+(14,559 missing values generated)
+(16,899 missing values generated)
+(19,239 missing values generated)
+(21,579 missing values generated)
+(7,241 missing values generated)
+(9,579 missing values generated)
+(11,919 missing values generated)
+(14,257 missing values generated)
+(16,595 missing values generated)
+(18,935 missing values generated)
+(21,275 missing values generated)
+(23,615 missing values generated)
+(5,199 missing values generated)
+(7,539 missing values generated)
+(9,879 missing values generated)
+(12,219 missing values generated)
+(14,559 missing values generated)
+(16,899 missing values generated)
+(19,239 missing values generated)
+(21,579 missing values generated)
+(96,971 missing values generated)
+(96,971 missing values generated)
+(96,971 missing values generated)
+(96,971 missing values generated)
+(96,971 missing values generated)
+(96,971 missing values generated)
+(97,043 missing values generated)
+(97,115 missing values generated)
+(96,965 missing values generated)
+(96,965 missing values generated)
+(96,965 missing values generated)
+(96,965 missing values generated)
+(96,965 missing values generated)
+(97,037 missing values generated)
+(97,109 missing values generated)
+(97,195 missing values generated)
+(103,627 missing values generated)
+(103,627 missing values generated)
+(103,627 missing values generated)
+(103,627 missing values generated)
+(103,627 missing values generated)
+(103,627 missing values generated)
+(103,627 missing values generated)
+(103,627 missing values generated)
+(96,709 missing values generated)
+(96,709 missing values generated)
+(96,709 missing values generated)
+(96,709 missing values generated)
+(96,709 missing values generated)
+(96,709 missing values generated)
+(96,781 missing values generated)
+(96,853 missing values generated)
+(94,361 missing values generated)
+(94,361 missing values generated)
+(94,361 missing values generated)
+(94,361 missing values generated)
+(94,361 missing values generated)
+(94,433 missing values generated)
+(94,505 missing values generated)
+(94,591 missing values generated)
+(99,291 missing values generated)
+(99,291 missing values generated)
+(99,291 missing values generated)
+(99,291 missing values generated)
+(99,291 missing values generated)
+(99,291 missing values generated)
+(99,291 missing values generated)
+(99,363 missing values generated)
+(99,283 missing values generated)
+(99,283 missing values generated)
+(99,283 missing values generated)
+(99,283 missing values generated)
+(99,283 missing values generated)
+(99,283 missing values generated)
+(99,355 missing values generated)
+(99,427 missing values generated)
+(110,189 missing values generated)
+(110,189 missing values generated)
+(110,189 missing values generated)
+(110,189 missing values generated)
+(110,189 missing values generated)
+(110,189 missing values generated)
+(110,257 missing values generated)
+(110,323 missing values generated)
+(110,397 missing values generated)
+(110,397 missing values generated)
+(110,397 missing values generated)
+(110,397 missing values generated)
+(110,397 missing values generated)
+(110,461 missing values generated)
+(110,527 missing values generated)
+(110,605 missing values generated)
+(112,197 missing values generated)
+(112,197 missing values generated)
+(112,197 missing values generated)
+(112,197 missing values generated)
+(112,197 missing values generated)
+(112,197 missing values generated)
+(112,197 missing values generated)
+(112,197 missing values generated)
+(106,143 missing values generated)
+(106,143 missing values generated)
+(106,143 missing values generated)
+(106,143 missing values generated)
+(106,143 missing values generated)
+(106,143 missing values generated)
+(106,215 missing values generated)
+(106,285 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(110,189 missing values generated)
+(110,189 missing values generated)
+(110,189 missing values generated)
+(110,189 missing values generated)
+(110,189 missing values generated)
+(110,189 missing values generated)
+(110,257 missing values generated)
+(110,323 missing values generated)
+(110,419 missing values generated)
+(110,419 missing values generated)
+(110,419 missing values generated)
+(110,419 missing values generated)
+(110,419 missing values generated)
+(110,419 missing values generated)
+(110,483 missing values generated)
+(110,549 missing values generated)
+(94,221 missing values generated)
+(94,221 missing values generated)
+(94,221 missing values generated)
+(94,221 missing values generated)
+(94,221 missing values generated)
+(94,293 missing values generated)
+(94,365 missing values generated)
+(94,451 missing values generated)
+(94,433 missing values generated)
+(94,433 missing values generated)
+(94,433 missing values generated)
+(94,433 missing values generated)
+(94,433 missing values generated)
+(94,433 missing values generated)
+(94,505 missing values generated)
+(94,591 missing values generated)
+(89,821 missing values generated)
+(89,821 missing values generated)
+(89,821 missing values generated)
+(89,821 missing values generated)
+(89,893 missing values generated)
+(89,965 missing values generated)
+(90,051 missing values generated)
+(90,137 missing values generated)
+(89,965 missing values generated)
+(89,965 missing values generated)
+(89,965 missing values generated)
+(89,965 missing values generated)
+(89,965 missing values generated)
+(89,965 missing values generated)
+(90,051 missing values generated)
+(90,137 missing values generated)
+(112,197 missing values generated)
+(112,197 missing values generated)
+(112,197 missing values generated)
+(112,197 missing values generated)
+(112,197 missing values generated)
+(112,197 missing values generated)
+(112,197 missing values generated)
+(112,197 missing values generated)
+(87,201 missing values generated)
+(87,201 missing values generated)
+(87,201 missing values generated)
+(87,201 missing values generated)
+(87,287 missing values generated)
+(87,373 missing values generated)
+(87,459 missing values generated)
+(87,545 missing values generated)
+(95,313 missing values generated)
+(95,313 missing values generated)
+(95,313 missing values generated)
+(95,313 missing values generated)
+(95,313 missing values generated)
+(95,313 missing values generated)
+(95,313 missing values generated)
+(95,313 missing values generated)
+(88,481 missing values generated)
+(88,481 missing values generated)
+(88,481 missing values generated)
+(88,481 missing values generated)
+(88,553 missing values generated)
+(88,625 missing values generated)
+(88,697 missing values generated)
+(88,769 missing values generated)
+(86,097 missing values generated)
+(86,097 missing values generated)
+(86,097 missing values generated)
+(86,097 missing values generated)
+(86,183 missing values generated)
+(86,269 missing values generated)
+(86,355 missing values generated)
+(86,441 missing values generated)
+(97,081 missing values generated)
+(97,081 missing values generated)
+(97,081 missing values generated)
+(97,081 missing values generated)
+(97,081 missing values generated)
+(97,081 missing values generated)
+(97,081 missing values generated)
+(97,081 missing values generated)
+(89,905 missing values generated)
+(89,905 missing values generated)
+(89,905 missing values generated)
+(89,905 missing values generated)
+(89,977 missing values generated)
+(90,049 missing values generated)
+(90,121 missing values generated)
+(90,193 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(86,097 missing values generated)
+(86,097 missing values generated)
+(86,097 missing values generated)
+(86,097 missing values generated)
+(86,183 missing values generated)
+(86,269 missing values generated)
+(86,355 missing values generated)
+(86,441 missing values generated)
+(85,425 missing values generated)
+(85,425 missing values generated)
+(85,425 missing values generated)
+(85,425 missing values generated)
+(85,511 missing values generated)
+(85,597 missing values generated)
+(85,683 missing values generated)
+(85,769 missing values generated)
+(85,425 missing values generated)
+(85,425 missing values generated)
+(85,425 missing values generated)
+(85,425 missing values generated)
+(85,511 missing values generated)
+(85,597 missing values generated)
+(85,683 missing values generated)
+(85,769 missing values generated)
+(97,081 missing values generated)
+(97,081 missing values generated)
+(97,081 missing values generated)
+(97,081 missing values generated)
+(97,081 missing values generated)
+(97,081 missing values generated)
+(97,081 missing values generated)
+(97,081 missing values generated)
+(140,653 missing values generated)
+(140,653 missing values generated)
+(140,653 missing values generated)
+(140,653 missing values generated)
+(140,653 missing values generated)
+(140,653 missing values generated)
+(140,653 missing values generated)
+(140,653 missing values generated)
+(140,653 missing values generated)
+(140,653 missing values generated)
+(140,653 missing values generated)
+(140,653 missing values generated)
+(140,653 missing values generated)
+(140,653 missing values generated)
+(140,653 missing values generated)
+(140,653 missing values generated)
+(140,653 missing values generated)
+(140,653 missing values generated)
+(140,653 missing values generated)
+(140,653 missing values generated)
+(140,653 missing values generated)
+(140,653 missing values generated)
+(140,653 missing values generated)
+(140,653 missing values generated)
+(140,653 missing values generated)
+(140,653 missing values generated)
+(140,653 missing values generated)
+(140,653 missing values generated)
+(140,653 missing values generated)
+(140,653 missing values generated)
+(140,653 missing values generated)
+(140,653 missing values generated)
+(215,225 missing values generated)
+(215,225 missing values generated)
+(215,225 missing values generated)
+(215,225 missing values generated)
+(215,225 missing values generated)
+(215,225 missing values generated)
+(215,225 missing values generated)
+(215,225 missing values generated)
+
+. ** Quasi-difference k
+. foreach var of varlist logemp_laus* logmeanwks* logunemp* loglabor_laus* logq
+> cew_emp logqcew_emp_tot logqcew_wage logqcew_wage_tot logqwi*all* logvacrate*
+>  logtight* logf_cl*{
+  2.         forvalues y=1/8{
+  3.         by pair_id_numeric county_index: gen qdk`y'_`var'=diff_`var'-((0.9
+> 9*(1-seprate[_n+`y'-1]))^`y')*f`y'_`var'
+  4.         // Normalize QWI separation rates to the JOLTS mean (see paper app
+> endix on
+.         // alternative separation measures). pair_sepr_tot is scaled by 1.706
+>  and
+.         // pair_sepr_beg by 1.353 so that the average QWI-based separation ra
+> te
+.         // matches the JOLTS quarterly separation rate.
+.         by pair_id_numeric county_index: gen qdsk`y'_`var'=diff_`var'-((0.99*
+> (1-pair_sepr_tot[_n+`y'-1]/1.706))^`y')*f`y'_`var'
+  5.         by pair_id_numeric county_index: gen qdsbk`y'_`var'=diff_`var'-((0
+> .99*(1-pair_sepr_beg[_n+`y'-1]/1.353))^`y')*f`y'_`var'
+  6. }
+  7. }
+(2,361 missing values generated)
+(50,795 missing values generated)
+(53,135 missing values generated)
+(4,709 missing values generated)
+(51,023 missing values generated)
+(53,139 missing values generated)
+(7,057 missing values generated)
+(51,251 missing values generated)
+(53,367 missing values generated)
+(9,401 missing values generated)
+(51,475 missing values generated)
+(53,591 missing values generated)
+(11,745 missing values generated)
+(51,699 missing values generated)
+(53,815 missing values generated)
+(14,089 missing values generated)
+(52,023 missing values generated)
+(54,039 missing values generated)
+(16,433 missing values generated)
+(52,347 missing values generated)
+(54,363 missing values generated)
+(18,777 missing values generated)
+(52,715 missing values generated)
+(54,687 missing values generated)
+(2,345 missing values generated)
+(50,779 missing values generated)
+(53,119 missing values generated)
+(4,689 missing values generated)
+(51,003 missing values generated)
+(53,119 missing values generated)
+(7,033 missing values generated)
+(51,227 missing values generated)
+(53,343 missing values generated)
+(9,377 missing values generated)
+(51,451 missing values generated)
+(53,567 missing values generated)
+(11,721 missing values generated)
+(51,675 missing values generated)
+(53,791 missing values generated)
+(14,065 missing values generated)
+(51,999 missing values generated)
+(54,015 missing values generated)
+(16,409 missing values generated)
+(52,323 missing values generated)
+(54,339 missing values generated)
+(18,753 missing values generated)
+(52,691 missing values generated)
+(54,663 missing values generated)
+(2,345 missing values generated)
+(50,779 missing values generated)
+(53,119 missing values generated)
+(4,689 missing values generated)
+(51,003 missing values generated)
+(53,119 missing values generated)
+(7,033 missing values generated)
+(51,227 missing values generated)
+(53,343 missing values generated)
+(9,377 missing values generated)
+(51,451 missing values generated)
+(53,567 missing values generated)
+(11,721 missing values generated)
+(51,675 missing values generated)
+(53,791 missing values generated)
+(14,065 missing values generated)
+(51,999 missing values generated)
+(54,015 missing values generated)
+(16,409 missing values generated)
+(52,323 missing values generated)
+(54,339 missing values generated)
+(18,753 missing values generated)
+(52,691 missing values generated)
+(54,663 missing values generated)
+(142,985 missing values generated)
+(143,097 missing values generated)
+(143,097 missing values generated)
+(145,329 missing values generated)
+(145,441 missing values generated)
+(145,441 missing values generated)
+(147,673 missing values generated)
+(147,785 missing values generated)
+(147,785 missing values generated)
+(150,017 missing values generated)
+(150,129 missing values generated)
+(150,129 missing values generated)
+(152,361 missing values generated)
+(152,473 missing values generated)
+(152,473 missing values generated)
+(154,705 missing values generated)
+(154,817 missing values generated)
+(154,817 missing values generated)
+(157,049 missing values generated)
+(157,161 missing values generated)
+(157,161 missing values generated)
+(159,393 missing values generated)
+(159,505 missing values generated)
+(159,505 missing values generated)
+(2,345 missing values generated)
+(50,779 missing values generated)
+(53,119 missing values generated)
+(4,689 missing values generated)
+(51,003 missing values generated)
+(53,119 missing values generated)
+(7,033 missing values generated)
+(51,227 missing values generated)
+(53,343 missing values generated)
+(9,377 missing values generated)
+(51,451 missing values generated)
+(53,567 missing values generated)
+(11,721 missing values generated)
+(51,675 missing values generated)
+(53,791 missing values generated)
+(14,065 missing values generated)
+(51,999 missing values generated)
+(54,015 missing values generated)
+(16,409 missing values generated)
+(52,323 missing values generated)
+(54,339 missing values generated)
+(18,753 missing values generated)
+(52,691 missing values generated)
+(54,663 missing values generated)
+(142,985 missing values generated)
+(143,097 missing values generated)
+(143,097 missing values generated)
+(145,329 missing values generated)
+(145,441 missing values generated)
+(145,441 missing values generated)
+(147,673 missing values generated)
+(147,785 missing values generated)
+(147,785 missing values generated)
+(150,017 missing values generated)
+(150,129 missing values generated)
+(150,129 missing values generated)
+(152,361 missing values generated)
+(152,473 missing values generated)
+(152,473 missing values generated)
+(154,705 missing values generated)
+(154,817 missing values generated)
+(154,817 missing values generated)
+(157,049 missing values generated)
+(157,161 missing values generated)
+(157,161 missing values generated)
+(159,393 missing values generated)
+(159,505 missing values generated)
+(159,505 missing values generated)
+(154,721 missing values generated)
+(154,721 missing values generated)
+(154,721 missing values generated)
+(157,069 missing values generated)
+(157,069 missing values generated)
+(157,069 missing values generated)
+(159,417 missing values generated)
+(159,417 missing values generated)
+(159,417 missing values generated)
+(161,757 missing values generated)
+(161,757 missing values generated)
+(161,757 missing values generated)
+(164,097 missing values generated)
+(164,097 missing values generated)
+(164,097 missing values generated)
+(166,437 missing values generated)
+(166,437 missing values generated)
+(166,437 missing values generated)
+(168,781 missing values generated)
+(168,781 missing values generated)
+(168,781 missing values generated)
+(171,125 missing values generated)
+(171,125 missing values generated)
+(171,125 missing values generated)
+(2,393 missing values generated)
+(50,795 missing values generated)
+(53,135 missing values generated)
+(4,745 missing values generated)
+(51,023 missing values generated)
+(53,139 missing values generated)
+(7,089 missing values generated)
+(51,251 missing values generated)
+(53,367 missing values generated)
+(9,437 missing values generated)
+(51,475 missing values generated)
+(53,591 missing values generated)
+(11,781 missing values generated)
+(51,699 missing values generated)
+(53,815 missing values generated)
+(14,117 missing values generated)
+(52,023 missing values generated)
+(54,039 missing values generated)
+(16,461 missing values generated)
+(52,347 missing values generated)
+(54,363 missing values generated)
+(18,805 missing values generated)
+(52,719 missing values generated)
+(54,691 missing values generated)
+(2,393 missing values generated)
+(50,795 missing values generated)
+(53,135 missing values generated)
+(4,745 missing values generated)
+(51,023 missing values generated)
+(53,139 missing values generated)
+(7,089 missing values generated)
+(51,251 missing values generated)
+(53,367 missing values generated)
+(9,437 missing values generated)
+(51,475 missing values generated)
+(53,591 missing values generated)
+(11,781 missing values generated)
+(51,699 missing values generated)
+(53,815 missing values generated)
+(14,117 missing values generated)
+(52,023 missing values generated)
+(54,039 missing values generated)
+(16,461 missing values generated)
+(52,347 missing values generated)
+(54,363 missing values generated)
+(18,805 missing values generated)
+(52,719 missing values generated)
+(54,691 missing values generated)
+(2,345 missing values generated)
+(50,779 missing values generated)
+(53,119 missing values generated)
+(4,689 missing values generated)
+(51,003 missing values generated)
+(53,119 missing values generated)
+(7,033 missing values generated)
+(51,227 missing values generated)
+(53,343 missing values generated)
+(9,377 missing values generated)
+(51,451 missing values generated)
+(53,567 missing values generated)
+(11,721 missing values generated)
+(51,675 missing values generated)
+(53,791 missing values generated)
+(14,065 missing values generated)
+(51,999 missing values generated)
+(54,015 missing values generated)
+(16,409 missing values generated)
+(52,323 missing values generated)
+(54,339 missing values generated)
+(18,753 missing values generated)
+(52,691 missing values generated)
+(54,663 missing values generated)
+(2,345 missing values generated)
+(50,779 missing values generated)
+(53,119 missing values generated)
+(4,689 missing values generated)
+(51,003 missing values generated)
+(53,119 missing values generated)
+(7,033 missing values generated)
+(51,227 missing values generated)
+(53,343 missing values generated)
+(9,377 missing values generated)
+(51,451 missing values generated)
+(53,567 missing values generated)
+(11,721 missing values generated)
+(51,675 missing values generated)
+(53,791 missing values generated)
+(14,065 missing values generated)
+(51,999 missing values generated)
+(54,015 missing values generated)
+(16,409 missing values generated)
+(52,323 missing values generated)
+(54,339 missing values generated)
+(18,753 missing values generated)
+(52,691 missing values generated)
+(54,663 missing values generated)
+(2,361 missing values generated)
+(50,795 missing values generated)
+(53,135 missing values generated)
+(4,709 missing values generated)
+(51,023 missing values generated)
+(53,139 missing values generated)
+(7,057 missing values generated)
+(51,251 missing values generated)
+(53,367 missing values generated)
+(9,401 missing values generated)
+(51,475 missing values generated)
+(53,591 missing values generated)
+(11,745 missing values generated)
+(51,699 missing values generated)
+(53,815 missing values generated)
+(14,089 missing values generated)
+(52,023 missing values generated)
+(54,039 missing values generated)
+(16,433 missing values generated)
+(52,347 missing values generated)
+(54,363 missing values generated)
+(18,777 missing values generated)
+(52,715 missing values generated)
+(54,687 missing values generated)
+(2,345 missing values generated)
+(50,779 missing values generated)
+(53,119 missing values generated)
+(4,689 missing values generated)
+(51,003 missing values generated)
+(53,119 missing values generated)
+(7,033 missing values generated)
+(51,227 missing values generated)
+(53,343 missing values generated)
+(9,377 missing values generated)
+(51,451 missing values generated)
+(53,567 missing values generated)
+(11,721 missing values generated)
+(51,675 missing values generated)
+(53,791 missing values generated)
+(14,065 missing values generated)
+(51,999 missing values generated)
+(54,015 missing values generated)
+(16,409 missing values generated)
+(52,323 missing values generated)
+(54,339 missing values generated)
+(18,753 missing values generated)
+(52,691 missing values generated)
+(54,663 missing values generated)
+(7,613 missing values generated)
+(55,837 missing values generated)
+(58,175 missing values generated)
+(10,061 missing values generated)
+(56,171 missing values generated)
+(58,285 missing values generated)
+(12,441 missing values generated)
+(56,435 missing values generated)
+(58,549 missing values generated)
+(14,801 missing values generated)
+(56,679 missing values generated)
+(58,793 missing values generated)
+(17,185 missing values generated)
+(56,949 missing values generated)
+(59,063 missing values generated)
+(19,581 missing values generated)
+(57,329 missing values generated)
+(59,343 missing values generated)
+(21,939 missing values generated)
+(57,673 missing values generated)
+(59,687 missing values generated)
+(24,265 missing values generated)
+(58,029 missing values generated)
+(59,999 missing values generated)
+(5,241 missing values generated)
+(53,479 missing values generated)
+(55,819 missing values generated)
+(7,603 missing values generated)
+(53,725 missing values generated)
+(55,841 missing values generated)
+(9,947 missing values generated)
+(53,953 missing values generated)
+(56,069 missing values generated)
+(12,275 missing values generated)
+(54,165 missing values generated)
+(56,281 missing values generated)
+(14,619 missing values generated)
+(54,393 missing values generated)
+(56,509 missing values generated)
+(16,981 missing values generated)
+(54,739 missing values generated)
+(56,755 missing values generated)
+(19,331 missing values generated)
+(55,073 missing values generated)
+(57,089 missing values generated)
+(21,675 missing values generated)
+(55,445 missing values generated)
+(57,417 missing values generated)
+(7,613 missing values generated)
+(55,837 missing values generated)
+(58,175 missing values generated)
+(10,061 missing values generated)
+(56,171 missing values generated)
+(58,285 missing values generated)
+(12,441 missing values generated)
+(56,435 missing values generated)
+(58,549 missing values generated)
+(14,801 missing values generated)
+(56,679 missing values generated)
+(58,793 missing values generated)
+(17,185 missing values generated)
+(56,949 missing values generated)
+(59,063 missing values generated)
+(19,581 missing values generated)
+(57,329 missing values generated)
+(59,343 missing values generated)
+(21,939 missing values generated)
+(57,673 missing values generated)
+(59,687 missing values generated)
+(24,265 missing values generated)
+(58,029 missing values generated)
+(59,999 missing values generated)
+(5,241 missing values generated)
+(53,479 missing values generated)
+(55,819 missing values generated)
+(7,603 missing values generated)
+(53,725 missing values generated)
+(55,841 missing values generated)
+(9,947 missing values generated)
+(53,953 missing values generated)
+(56,069 missing values generated)
+(12,275 missing values generated)
+(54,165 missing values generated)
+(56,281 missing values generated)
+(14,619 missing values generated)
+(54,393 missing values generated)
+(56,509 missing values generated)
+(16,981 missing values generated)
+(54,739 missing values generated)
+(56,755 missing values generated)
+(19,331 missing values generated)
+(55,073 missing values generated)
+(57,089 missing values generated)
+(21,675 missing values generated)
+(55,445 missing values generated)
+(57,417 missing values generated)
+(99,409 missing values generated)
+(99,409 missing values generated)
+(99,409 missing values generated)
+(101,719 missing values generated)
+(101,719 missing values generated)
+(101,719 missing values generated)
+(104,011 missing values generated)
+(104,011 missing values generated)
+(104,011 missing values generated)
+(106,311 missing values generated)
+(106,311 missing values generated)
+(106,311 missing values generated)
+(108,629 missing values generated)
+(108,629 missing values generated)
+(108,629 missing values generated)
+(110,933 missing values generated)
+(110,933 missing values generated)
+(110,933 missing values generated)
+(113,199 missing values generated)
+(113,199 missing values generated)
+(113,199 missing values generated)
+(115,481 missing values generated)
+(115,481 missing values generated)
+(115,481 missing values generated)
+(99,385 missing values generated)
+(99,385 missing values generated)
+(99,385 missing values generated)
+(101,705 missing values generated)
+(101,705 missing values generated)
+(101,705 missing values generated)
+(104,013 missing values generated)
+(104,013 missing values generated)
+(104,013 missing values generated)
+(106,291 missing values generated)
+(106,291 missing values generated)
+(106,291 missing values generated)
+(108,587 missing values generated)
+(108,587 missing values generated)
+(108,587 missing values generated)
+(110,885 missing values generated)
+(110,885 missing values generated)
+(110,885 missing values generated)
+(113,181 missing values generated)
+(113,181 missing values generated)
+(113,181 missing values generated)
+(115,457 missing values generated)
+(115,457 missing values generated)
+(115,457 missing values generated)
+(105,985 missing values generated)
+(105,985 missing values generated)
+(105,985 missing values generated)
+(108,277 missing values generated)
+(108,277 missing values generated)
+(108,277 missing values generated)
+(110,577 missing values generated)
+(110,577 missing values generated)
+(110,577 missing values generated)
+(112,863 missing values generated)
+(112,863 missing values generated)
+(112,863 missing values generated)
+(115,171 missing values generated)
+(115,171 missing values generated)
+(115,171 missing values generated)
+(117,471 missing values generated)
+(117,471 missing values generated)
+(117,471 missing values generated)
+(119,775 missing values generated)
+(119,775 missing values generated)
+(119,775 missing values generated)
+(122,061 missing values generated)
+(122,061 missing values generated)
+(122,061 missing values generated)
+(99,045 missing values generated)
+(99,045 missing values generated)
+(99,045 missing values generated)
+(101,341 missing values generated)
+(101,341 missing values generated)
+(101,341 missing values generated)
+(103,645 missing values generated)
+(103,645 missing values generated)
+(103,645 missing values generated)
+(105,933 missing values generated)
+(105,933 missing values generated)
+(105,933 missing values generated)
+(108,245 missing values generated)
+(108,245 missing values generated)
+(108,245 missing values generated)
+(110,541 missing values generated)
+(110,541 missing values generated)
+(110,541 missing values generated)
+(112,839 missing values generated)
+(112,839 missing values generated)
+(112,839 missing values generated)
+(115,131 missing values generated)
+(115,131 missing values generated)
+(115,131 missing values generated)
+(96,661 missing values generated)
+(96,661 missing values generated)
+(96,661 missing values generated)
+(98,961 missing values generated)
+(98,961 missing values generated)
+(98,961 missing values generated)
+(101,261 missing values generated)
+(101,261 missing values generated)
+(101,261 missing values generated)
+(103,561 missing values generated)
+(103,561 missing values generated)
+(103,561 missing values generated)
+(105,861 missing values generated)
+(105,861 missing values generated)
+(105,861 missing values generated)
+(108,161 missing values generated)
+(108,161 missing values generated)
+(108,161 missing values generated)
+(110,461 missing values generated)
+(110,461 missing values generated)
+(110,461 missing values generated)
+(112,761 missing values generated)
+(112,761 missing values generated)
+(112,761 missing values generated)
+(101,737 missing values generated)
+(101,737 missing values generated)
+(101,737 missing values generated)
+(104,051 missing values generated)
+(104,051 missing values generated)
+(104,051 missing values generated)
+(106,333 missing values generated)
+(106,333 missing values generated)
+(106,333 missing values generated)
+(108,629 missing values generated)
+(108,629 missing values generated)
+(108,629 missing values generated)
+(110,947 missing values generated)
+(110,947 missing values generated)
+(110,947 missing values generated)
+(113,243 missing values generated)
+(113,243 missing values generated)
+(113,243 missing values generated)
+(115,507 missing values generated)
+(115,507 missing values generated)
+(115,507 missing values generated)
+(117,795 missing values generated)
+(117,795 missing values generated)
+(117,795 missing values generated)
+(101,757 missing values generated)
+(101,757 missing values generated)
+(101,757 missing values generated)
+(104,069 missing values generated)
+(104,069 missing values generated)
+(104,069 missing values generated)
+(106,351 missing values generated)
+(106,351 missing values generated)
+(106,351 missing values generated)
+(108,623 missing values generated)
+(108,623 missing values generated)
+(108,623 missing values generated)
+(110,931 missing values generated)
+(110,931 missing values generated)
+(110,931 missing values generated)
+(113,239 missing values generated)
+(113,239 missing values generated)
+(113,239 missing values generated)
+(115,519 missing values generated)
+(115,519 missing values generated)
+(115,519 missing values generated)
+(117,791 missing values generated)
+(117,791 missing values generated)
+(117,791 missing values generated)
+(118,291 missing values generated)
+(118,291 missing values generated)
+(118,291 missing values generated)
+(120,585 missing values generated)
+(120,585 missing values generated)
+(120,585 missing values generated)
+(122,705 missing values generated)
+(122,705 missing values generated)
+(122,705 missing values generated)
+(124,365 missing values generated)
+(124,365 missing values generated)
+(124,365 missing values generated)
+(126,759 missing values generated)
+(126,759 missing values generated)
+(126,759 missing values generated)
+(128,913 missing values generated)
+(128,913 missing values generated)
+(128,913 missing values generated)
+(130,875 missing values generated)
+(130,875 missing values generated)
+(130,875 missing values generated)
+(132,721 missing values generated)
+(132,721 missing values generated)
+(132,721 missing values generated)
+(118,817 missing values generated)
+(118,817 missing values generated)
+(118,817 missing values generated)
+(121,093 missing values generated)
+(121,093 missing values generated)
+(121,093 missing values generated)
+(123,043 missing values generated)
+(123,043 missing values generated)
+(123,043 missing values generated)
+(124,835 missing values generated)
+(124,835 missing values generated)
+(124,835 missing values generated)
+(127,207 missing values generated)
+(127,207 missing values generated)
+(127,207 missing values generated)
+(129,363 missing values generated)
+(129,363 missing values generated)
+(129,363 missing values generated)
+(131,257 missing values generated)
+(131,257 missing values generated)
+(131,257 missing values generated)
+(133,077 missing values generated)
+(133,077 missing values generated)
+(133,077 missing values generated)
+(119,217 missing values generated)
+(119,217 missing values generated)
+(119,217 missing values generated)
+(121,615 missing values generated)
+(121,615 missing values generated)
+(121,615 missing values generated)
+(123,781 missing values generated)
+(123,781 missing values generated)
+(123,781 missing values generated)
+(125,783 missing values generated)
+(125,783 missing values generated)
+(125,783 missing values generated)
+(128,039 missing values generated)
+(128,039 missing values generated)
+(128,039 missing values generated)
+(130,101 missing values generated)
+(130,101 missing values generated)
+(130,101 missing values generated)
+(132,133 missing values generated)
+(132,133 missing values generated)
+(132,133 missing values generated)
+(134,143 missing values generated)
+(134,143 missing values generated)
+(134,143 missing values generated)
+(114,391 missing values generated)
+(114,391 missing values generated)
+(114,391 missing values generated)
+(116,637 missing values generated)
+(116,637 missing values generated)
+(116,637 missing values generated)
+(118,789 missing values generated)
+(118,789 missing values generated)
+(118,789 missing values generated)
+(120,515 missing values generated)
+(120,515 missing values generated)
+(120,515 missing values generated)
+(122,787 missing values generated)
+(122,787 missing values generated)
+(122,787 missing values generated)
+(124,993 missing values generated)
+(124,993 missing values generated)
+(124,993 missing values generated)
+(127,051 missing values generated)
+(127,051 missing values generated)
+(127,051 missing values generated)
+(129,007 missing values generated)
+(129,007 missing values generated)
+(129,007 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(118,291 missing values generated)
+(118,291 missing values generated)
+(118,291 missing values generated)
+(120,585 missing values generated)
+(120,585 missing values generated)
+(120,585 missing values generated)
+(122,705 missing values generated)
+(122,705 missing values generated)
+(122,705 missing values generated)
+(124,365 missing values generated)
+(124,365 missing values generated)
+(124,365 missing values generated)
+(126,759 missing values generated)
+(126,759 missing values generated)
+(126,759 missing values generated)
+(128,913 missing values generated)
+(128,913 missing values generated)
+(128,913 missing values generated)
+(130,875 missing values generated)
+(130,875 missing values generated)
+(130,875 missing values generated)
+(132,721 missing values generated)
+(132,721 missing values generated)
+(132,721 missing values generated)
+(118,819 missing values generated)
+(118,819 missing values generated)
+(118,819 missing values generated)
+(121,095 missing values generated)
+(121,095 missing values generated)
+(121,095 missing values generated)
+(123,053 missing values generated)
+(123,053 missing values generated)
+(123,053 missing values generated)
+(124,849 missing values generated)
+(124,849 missing values generated)
+(124,849 missing values generated)
+(127,221 missing values generated)
+(127,221 missing values generated)
+(127,221 missing values generated)
+(129,375 missing values generated)
+(129,375 missing values generated)
+(129,375 missing values generated)
+(131,265 missing values generated)
+(131,265 missing values generated)
+(131,265 missing values generated)
+(133,087 missing values generated)
+(133,087 missing values generated)
+(133,087 missing values generated)
+(96,935 missing values generated)
+(96,935 missing values generated)
+(96,935 missing values generated)
+(99,369 missing values generated)
+(99,369 missing values generated)
+(99,369 missing values generated)
+(101,667 missing values generated)
+(101,667 missing values generated)
+(101,667 missing values generated)
+(103,893 missing values generated)
+(103,893 missing values generated)
+(103,893 missing values generated)
+(106,297 missing values generated)
+(106,297 missing values generated)
+(106,297 missing values generated)
+(108,631 missing values generated)
+(108,631 missing values generated)
+(108,631 missing values generated)
+(110,855 missing values generated)
+(110,855 missing values generated)
+(110,855 missing values generated)
+(113,093 missing values generated)
+(113,093 missing values generated)
+(113,093 missing values generated)
+(96,733 missing values generated)
+(96,733 missing values generated)
+(96,733 missing values generated)
+(99,033 missing values generated)
+(99,033 missing values generated)
+(99,033 missing values generated)
+(101,333 missing values generated)
+(101,333 missing values generated)
+(101,333 missing values generated)
+(103,633 missing values generated)
+(103,633 missing values generated)
+(103,633 missing values generated)
+(105,933 missing values generated)
+(105,933 missing values generated)
+(105,933 missing values generated)
+(108,233 missing values generated)
+(108,233 missing values generated)
+(108,233 missing values generated)
+(110,533 missing values generated)
+(110,533 missing values generated)
+(110,533 missing values generated)
+(112,833 missing values generated)
+(112,833 missing values generated)
+(112,833 missing values generated)
+(92,145 missing values generated)
+(92,145 missing values generated)
+(92,311 missing values generated)
+(94,453 missing values generated)
+(94,453 missing values generated)
+(94,453 missing values generated)
+(96,757 missing values generated)
+(96,757 missing values generated)
+(96,757 missing values generated)
+(99,053 missing values generated)
+(99,053 missing values generated)
+(99,053 missing values generated)
+(101,365 missing values generated)
+(101,365 missing values generated)
+(101,365 missing values generated)
+(103,665 missing values generated)
+(103,665 missing values generated)
+(103,665 missing values generated)
+(105,965 missing values generated)
+(105,965 missing values generated)
+(105,965 missing values generated)
+(108,257 missing values generated)
+(108,257 missing values generated)
+(108,257 missing values generated)
+(92,289 missing values generated)
+(92,289 missing values generated)
+(92,437 missing values generated)
+(94,597 missing values generated)
+(94,597 missing values generated)
+(94,597 missing values generated)
+(96,901 missing values generated)
+(96,901 missing values generated)
+(96,901 missing values generated)
+(99,197 missing values generated)
+(99,197 missing values generated)
+(99,197 missing values generated)
+(101,509 missing values generated)
+(101,509 missing values generated)
+(101,509 missing values generated)
+(103,809 missing values generated)
+(103,809 missing values generated)
+(103,809 missing values generated)
+(106,109 missing values generated)
+(106,109 missing values generated)
+(106,109 missing values generated)
+(108,401 missing values generated)
+(108,401 missing values generated)
+(108,401 missing values generated)
+(119,217 missing values generated)
+(119,217 missing values generated)
+(119,217 missing values generated)
+(121,615 missing values generated)
+(121,615 missing values generated)
+(121,615 missing values generated)
+(123,781 missing values generated)
+(123,781 missing values generated)
+(123,781 missing values generated)
+(125,783 missing values generated)
+(125,783 missing values generated)
+(125,783 missing values generated)
+(128,039 missing values generated)
+(128,039 missing values generated)
+(128,039 missing values generated)
+(130,101 missing values generated)
+(130,101 missing values generated)
+(130,101 missing values generated)
+(132,133 missing values generated)
+(132,133 missing values generated)
+(132,133 missing values generated)
+(134,143 missing values generated)
+(134,143 missing values generated)
+(134,143 missing values generated)
+(89,573 missing values generated)
+(89,623 missing values generated)
+(89,887 missing values generated)
+(91,945 missing values generated)
+(91,991 missing values generated)
+(91,991 missing values generated)
+(94,317 missing values generated)
+(94,363 missing values generated)
+(94,363 missing values generated)
+(96,689 missing values generated)
+(96,735 missing values generated)
+(96,735 missing values generated)
+(99,011 missing values generated)
+(99,057 missing values generated)
+(99,057 missing values generated)
+(101,333 missing values generated)
+(101,379 missing values generated)
+(101,379 missing values generated)
+(103,655 missing values generated)
+(103,701 missing values generated)
+(103,701 missing values generated)
+(105,977 missing values generated)
+(106,023 missing values generated)
+(106,023 missing values generated)
+(97,613 missing values generated)
+(97,661 missing values generated)
+(97,661 missing values generated)
+(99,913 missing values generated)
+(99,961 missing values generated)
+(99,961 missing values generated)
+(102,213 missing values generated)
+(102,261 missing values generated)
+(102,261 missing values generated)
+(104,513 missing values generated)
+(104,561 missing values generated)
+(104,561 missing values generated)
+(106,813 missing values generated)
+(106,861 missing values generated)
+(106,861 missing values generated)
+(109,113 missing values generated)
+(109,161 missing values generated)
+(109,161 missing values generated)
+(111,413 missing values generated)
+(111,461 missing values generated)
+(111,461 missing values generated)
+(113,713 missing values generated)
+(113,761 missing values generated)
+(113,761 missing values generated)
+(90,781 missing values generated)
+(90,829 missing values generated)
+(91,015 missing values generated)
+(93,081 missing values generated)
+(93,129 missing values generated)
+(93,129 missing values generated)
+(95,381 missing values generated)
+(95,429 missing values generated)
+(95,429 missing values generated)
+(97,681 missing values generated)
+(97,729 missing values generated)
+(97,729 missing values generated)
+(99,981 missing values generated)
+(100,029 missing values generated)
+(100,029 missing values generated)
+(102,281 missing values generated)
+(102,329 missing values generated)
+(102,329 missing values generated)
+(104,581 missing values generated)
+(104,629 missing values generated)
+(104,629 missing values generated)
+(106,881 missing values generated)
+(106,929 missing values generated)
+(106,929 missing values generated)
+(88,397 missing values generated)
+(88,449 missing values generated)
+(88,717 missing values generated)
+(90,697 missing values generated)
+(90,745 missing values generated)
+(90,745 missing values generated)
+(92,997 missing values generated)
+(93,045 missing values generated)
+(93,045 missing values generated)
+(95,297 missing values generated)
+(95,345 missing values generated)
+(95,345 missing values generated)
+(97,597 missing values generated)
+(97,645 missing values generated)
+(97,645 missing values generated)
+(99,897 missing values generated)
+(99,945 missing values generated)
+(99,945 missing values generated)
+(102,197 missing values generated)
+(102,245 missing values generated)
+(102,245 missing values generated)
+(104,497 missing values generated)
+(104,545 missing values generated)
+(104,545 missing values generated)
+(99,555 missing values generated)
+(99,601 missing values generated)
+(99,601 missing values generated)
+(102,029 missing values generated)
+(102,075 missing values generated)
+(102,075 missing values generated)
+(104,503 missing values generated)
+(104,549 missing values generated)
+(104,549 missing values generated)
+(106,977 missing values generated)
+(107,023 missing values generated)
+(107,023 missing values generated)
+(109,255 missing values generated)
+(109,301 missing values generated)
+(109,301 missing values generated)
+(111,533 missing values generated)
+(111,579 missing values generated)
+(111,579 missing values generated)
+(113,811 missing values generated)
+(113,857 missing values generated)
+(113,857 missing values generated)
+(116,089 missing values generated)
+(116,135 missing values generated)
+(116,135 missing values generated)
+(92,345 missing values generated)
+(92,393 missing values generated)
+(92,573 missing values generated)
+(94,785 missing values generated)
+(94,833 missing values generated)
+(94,833 missing values generated)
+(97,225 missing values generated)
+(97,273 missing values generated)
+(97,273 missing values generated)
+(99,665 missing values generated)
+(99,713 missing values generated)
+(99,713 missing values generated)
+(101,969 missing values generated)
+(102,017 missing values generated)
+(102,017 missing values generated)
+(104,273 missing values generated)
+(104,321 missing values generated)
+(104,321 missing values generated)
+(106,577 missing values generated)
+(106,625 missing values generated)
+(106,625 missing values generated)
+(108,881 missing values generated)
+(108,929 missing values generated)
+(108,929 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(234,401 missing values generated)
+(88,397 missing values generated)
+(88,449 missing values generated)
+(88,717 missing values generated)
+(90,697 missing values generated)
+(90,745 missing values generated)
+(90,745 missing values generated)
+(92,997 missing values generated)
+(93,045 missing values generated)
+(93,045 missing values generated)
+(95,297 missing values generated)
+(95,345 missing values generated)
+(95,345 missing values generated)
+(97,597 missing values generated)
+(97,645 missing values generated)
+(97,645 missing values generated)
+(99,897 missing values generated)
+(99,945 missing values generated)
+(99,945 missing values generated)
+(102,197 missing values generated)
+(102,245 missing values generated)
+(102,245 missing values generated)
+(104,497 missing values generated)
+(104,545 missing values generated)
+(104,545 missing values generated)
+(87,729 missing values generated)
+(87,781 missing values generated)
+(88,061 missing values generated)
+(90,033 missing values generated)
+(90,081 missing values generated)
+(90,081 missing values generated)
+(92,337 missing values generated)
+(92,385 missing values generated)
+(92,385 missing values generated)
+(94,641 missing values generated)
+(94,689 missing values generated)
+(94,689 missing values generated)
+(96,941 missing values generated)
+(96,989 missing values generated)
+(96,989 missing values generated)
+(99,241 missing values generated)
+(99,289 missing values generated)
+(99,289 missing values generated)
+(101,541 missing values generated)
+(101,589 missing values generated)
+(101,589 missing values generated)
+(103,841 missing values generated)
+(103,889 missing values generated)
+(103,889 missing values generated)
+(87,729 missing values generated)
+(87,781 missing values generated)
+(88,061 missing values generated)
+(90,033 missing values generated)
+(90,081 missing values generated)
+(90,081 missing values generated)
+(92,337 missing values generated)
+(92,385 missing values generated)
+(92,385 missing values generated)
+(94,641 missing values generated)
+(94,689 missing values generated)
+(94,689 missing values generated)
+(96,941 missing values generated)
+(96,989 missing values generated)
+(96,989 missing values generated)
+(99,241 missing values generated)
+(99,289 missing values generated)
+(99,289 missing values generated)
+(101,541 missing values generated)
+(101,589 missing values generated)
+(101,589 missing values generated)
+(103,841 missing values generated)
+(103,889 missing values generated)
+(103,889 missing values generated)
+(99,555 missing values generated)
+(99,601 missing values generated)
+(99,601 missing values generated)
+(102,029 missing values generated)
+(102,075 missing values generated)
+(102,075 missing values generated)
+(104,503 missing values generated)
+(104,549 missing values generated)
+(104,549 missing values generated)
+(106,977 missing values generated)
+(107,023 missing values generated)
+(107,023 missing values generated)
+(109,255 missing values generated)
+(109,301 missing values generated)
+(109,301 missing values generated)
+(111,533 missing values generated)
+(111,579 missing values generated)
+(111,579 missing values generated)
+(113,811 missing values generated)
+(113,857 missing values generated)
+(113,857 missing values generated)
+(116,089 missing values generated)
+(116,135 missing values generated)
+(116,135 missing values generated)
+(143,001 missing values generated)
+(143,113 missing values generated)
+(143,113 missing values generated)
+(145,349 missing values generated)
+(145,461 missing values generated)
+(145,461 missing values generated)
+(147,697 missing values generated)
+(147,809 missing values generated)
+(147,809 missing values generated)
+(150,037 missing values generated)
+(150,149 missing values generated)
+(150,149 missing values generated)
+(152,377 missing values generated)
+(152,489 missing values generated)
+(152,489 missing values generated)
+(154,717 missing values generated)
+(154,829 missing values generated)
+(154,829 missing values generated)
+(157,061 missing values generated)
+(157,173 missing values generated)
+(157,173 missing values generated)
+(159,405 missing values generated)
+(159,517 missing values generated)
+(159,517 missing values generated)
+(143,001 missing values generated)
+(143,113 missing values generated)
+(143,113 missing values generated)
+(145,349 missing values generated)
+(145,461 missing values generated)
+(145,461 missing values generated)
+(147,697 missing values generated)
+(147,809 missing values generated)
+(147,809 missing values generated)
+(150,037 missing values generated)
+(150,149 missing values generated)
+(150,149 missing values generated)
+(152,377 missing values generated)
+(152,489 missing values generated)
+(152,489 missing values generated)
+(154,717 missing values generated)
+(154,829 missing values generated)
+(154,829 missing values generated)
+(157,061 missing values generated)
+(157,173 missing values generated)
+(157,173 missing values generated)
+(159,405 missing values generated)
+(159,517 missing values generated)
+(159,517 missing values generated)
+(143,001 missing values generated)
+(143,113 missing values generated)
+(143,113 missing values generated)
+(145,349 missing values generated)
+(145,461 missing values generated)
+(145,461 missing values generated)
+(147,697 missing values generated)
+(147,809 missing values generated)
+(147,809 missing values generated)
+(150,037 missing values generated)
+(150,149 missing values generated)
+(150,149 missing values generated)
+(152,377 missing values generated)
+(152,489 missing values generated)
+(152,489 missing values generated)
+(154,717 missing values generated)
+(154,829 missing values generated)
+(154,829 missing values generated)
+(157,061 missing values generated)
+(157,173 missing values generated)
+(157,173 missing values generated)
+(159,405 missing values generated)
+(159,517 missing values generated)
+(159,517 missing values generated)
+(143,001 missing values generated)
+(143,113 missing values generated)
+(143,113 missing values generated)
+(145,349 missing values generated)
+(145,461 missing values generated)
+(145,461 missing values generated)
+(147,697 missing values generated)
+(147,809 missing values generated)
+(147,809 missing values generated)
+(150,037 missing values generated)
+(150,149 missing values generated)
+(150,149 missing values generated)
+(152,377 missing values generated)
+(152,489 missing values generated)
+(152,489 missing values generated)
+(154,717 missing values generated)
+(154,829 missing values generated)
+(154,829 missing values generated)
+(157,061 missing values generated)
+(157,173 missing values generated)
+(157,173 missing values generated)
+(159,405 missing values generated)
+(159,517 missing values generated)
+(159,517 missing values generated)
+(215,789 missing values generated)
+(215,789 missing values generated)
+(215,789 missing values generated)
+(216,353 missing values generated)
+(216,353 missing values generated)
+(216,353 missing values generated)
+(216,917 missing values generated)
+(216,917 missing values generated)
+(216,917 missing values generated)
+(217,481 missing values generated)
+(217,481 missing values generated)
+(217,481 missing values generated)
+(218,045 missing values generated)
+(218,045 missing values generated)
+(218,045 missing values generated)
+(218,609 missing values generated)
+(218,609 missing values generated)
+(218,609 missing values generated)
+(219,173 missing values generated)
+(219,173 missing values generated)
+(219,173 missing values generated)
+(219,737 missing values generated)
+(219,737 missing values generated)
+(219,737 missing values generated)
+
+. 
+. sort pair_id_numeric county_index time
+
+. // drop *qwi*_ret
+. foreach ind in "all"{
+  2. 
+.         by pair_id_numeric county_index: gen did_logqwi_wage=diff_logqwiw1_`i
+> nd'[_n]-diff_logqwiw2_`ind'[_n-1]
+  3.         by pair_id_numeric county_index: gen did_logqwi_wage2=diff_logqwiw
+> 3_`ind'[_n]-diff_logqwiw4_`ind'[_n-1]
+  4.         by pair_id_numeric county_index: gen did_logqwi_wagef=diff_logqwiw
+> 1f_`ind'[_n]-diff_logqwiw2f_`ind'[_n-1]
+  5.         by pair_id_numeric county_index: gen did_logqwi_wage2f=diff_logqwi
+> w3f_`ind'[_n]-diff_logqwiw4f_`ind'[_n-1]
+  6. 
+. }
+(97,091 missing values generated)
+(99,437 missing values generated)
+(116,829 missing values generated)
+(118,961 missing values generated)
+
+. 
+. foreach ind in "foo" "man" "ret"{
+  2. 
+.         by pair_id_numeric county_index: gen did_logqwi_wage_`ind'=diff_logqw
+> iw1_`ind'[_n]-diff_logqwiw2_`ind'[_n-1]
+  3.         by pair_id_numeric county_index: gen did_logqwi_wage2_`ind'=diff_l
+> ogqwiw3_`ind'[_n]-diff_logqwiw4_`ind'[_n-1]
+  4.         by pair_id_numeric county_index: gen did_logqwi_wagef_`ind'=diff_l
+> ogqwiw1f_`ind'[_n]-diff_logqwiw2f_`ind'[_n-1]
+  5.         by pair_id_numeric county_index: gen did_logqwi_wage2f_`ind'=diff_
+> logqwiw3f_`ind'[_n]-diff_logqwiw4f_`ind'[_n-1]
+  6. 
+. }
+(109,597 missing values generated)
+(112,073 missing values generated)
+(155,479 missing values generated)
+(156,417 missing values generated)
+(126,173 missing values generated)
+(128,115 missing values generated)
+(201,665 missing values generated)
+(202,723 missing values generated)
+(102,611 missing values generated)
+(104,685 missing values generated)
+(143,949 missing values generated)
+(145,425 missing values generated)
+
+. 
+. * Historical logmeanwks patches from the consolidated benefit_weeks columns
+. * (merged above with the PF series): 1999-2004 from the 2001-recession
+. * schedule, pre-1995 from the vintage weeks. The renames reproduce the
+. * original meanwks2 / (vintage) meanwks columns of the master datasets.
+. rename rec2001_meanwks2 meanwks2
+
+. gen logmeanwks2=log(meanwks2)
+(179,129 missing values generated)
+
+. replace logmeanwks=logmeanwks2 if year<2005 & year>1998
+(6,683 real changes made, 985 to missing)
+
+. 
+. drop meanwks
+
+. rename vintage_meanwks meanwks
+
+. 
+. replace logmeanwks = log(meanwks) if year<1995 | logmeanwks==.
+(24,291 real changes made)
+
+. 
+. capture drop diff_logmeanwks
+
+. sort pair_id_numeric quarter_index county_index
+
+. by pair_id_numeric quarter_index: gen diff_logmeanwks = logmeanwks[1]-logmean
+> wks[2]
+(1,969 missing values generated)
+
+. 
+. merge m:1 fipsnumeric using ${rawdata}/housing_elasticity
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                       167,042
+        from master                   166,401  (_merge==1)
+        from using                        641  (_merge==2)
+
+    Matched                            68,000  (_merge==3)
+    -----------------------------------------
+
+. drop _merge
+
+. 
+. merge m:1 fipsnumeric year quarter using ${rawdata}/IRSEquifax.dta
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                       223,090
+        from master                   150,658  (_merge==1)
+        from using                     72,432  (_merge==2)
+
+    Matched                            84,384  (_merge==3)
+    -----------------------------------------
+
+. drop _merge
+
+. 
+. merge m:1 fipsnumeric year quarter using ${rawdata}/county_debt.dta
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                       166,689
+        from master                    85,422  (_merge==1)
+        from using                     81,267  (_merge==2)
+
+    Matched                           222,052  (_merge==3)
+    -----------------------------------------
+
+. drop _merge
+
+. 
+. merge m:1 fipsnumeric year quarter using ${rawdata}/bartik_shocks
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                        55,846
+        from master                    35,016  (_merge==1)
+        from using                     20,830  (_merge==2)
+
+    Matched                           353,725  (_merge==3)
+    -----------------------------------------
+
+. drop if _merge==2
+(20,830 observations deleted)
+
+. drop _merge
+
+. 
+. merge m:1 fipsnumeric year using ${rawdata}/NewFHFA_2018_07_26
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                       267,913
+        from master                   267,913  (_merge==1)
+        from using                          0  (_merge==2)
+
+    Matched                           120,828  (_merge==3)
+    -----------------------------------------
+
+. drop if _merge==2
+(0 observations deleted)
+
+. drop _merge
+
+. rename fhfa_hpi hpi_fhfa
+
+. 
+. bys pair_id_numeric: egen st_min=min(fipsstate)
+
+. by  pair_id_numeric: egen st_max=max(fipsstate)
+
+. egen bordersegment=group(st_min st_max)
+
+. 
+. drop if pair_id_numeric==.
+(154,341 observations deleted)
+
+. 
+. sort pair_id_numeric quarter_index county_index  
+
+. 
+. by pair_id_numeric quarter_index: gen other_county_u = unemp_rate_laus[2]
+
+. 
+. * Sort the data by panel ID and time variable
+. sort pair_id_numeric quarter_index
+
+. 
+. * Option 2: Manual calculation
+. * First demean the variables within each pair
+. by pair_id_numeric: egen mean_u1 = mean(unemp_rate_laus) if year>=1996 & year
+> <=2000 & county_index==1
+(210,960 missing values generated)
+
+. by pair_id_numeric: egen mean_u2 = mean(other_county_u) if year>=1996 & year<
+> =2000 & county_index==1
+(210,960 missing values generated)
+
+. gen d1=0
+
+. gen d2=0
+
+. replace d1 = unemp_rate_laus - mean_u1 if year>=1996 & year<=2000 & county_in
+> dex==1
+(23,438 real changes made)
+
+. replace d2 = other_county_u - mean_u2 if year>=1996 & year<=2000 & county_ind
+> ex==1
+(23,428 real changes made)
+
+. 
+. * Calculate correlation components
+. gen prod = d1*d2
+
+. by pair_id_numeric: egen sum_prod = sum(prod)
+
+. by pair_id_numeric: egen sum_sq1 = sum(d1*d1)
+
+. by pair_id_numeric: egen sum_sq2 = sum(d2*d2)
+
+. 
+. * Calculate correlation
+. gen pair_corr = sum_prod/sqrt(sum_sq1*sum_sq2)
+
+. 
+. * Clean up intermediate variables if desired
+. drop mean_u1 mean_u2 d1 d2 prod sum_prod sum_sq1 sum_sq2
+
+. 
+. 
+end of do-file
+
+. 
+. 
+. save "${processed}/UIMacro_RevisionData.dta", replace
+(file
+    /Users/mac/JPE-replications/JPE-Mitman-2016256/replication-package/replic
+    > ation-package/data/processed/UIMacro_RevisionData.dta not found)
+file
+    /Users/mac/JPE-replications/JPE-Mitman-2016256/replication-package/replic
+    > ation-package/data/processed/UIMacro_RevisionData.dta saved
+
+. 
+. preserve
+
+. do MakeDataControls.do
+
+. 
+. set more off
+
+. // drop if year<2005 | (year>2010 & year<2011) | year>2012
+. 
+. sort pair_id_numeric quarter_index county_index
+
+. foreach var of varlist agi dti_*{
+  2. by pair_id_numeric quarter_index: gen diff_`var'=log(`var'[1])-log(`var'[2
+> ])
+  3. }
+(150,032 missing values generated)
+(112,306 missing values generated)
+(106,678 missing values generated)
+(106,678 missing values generated)
+
+. 
+. sort pair_id_numeric county_index quarter_index  
+
+. by pair_id_numeric county_index: gen fhfa_g=log(hpi_fhfa[_n])-log(hpi_fhfa[_n
+> -4])
+(176,904 missing values generated)
+
+. 
+. sort pair_id_numeric quarter_index county_index 
+
+. 
+. by pair_id_numeric quarter_index: gen diff_fhfa_lev=log(hpi_fhfa[1])-log(hpi_
+> fhfa[2])
+(174,464 missing values generated)
+
+. by pair_id_numeric quarter_index: gen diff_fhfa=fhfa_g[1]-fhfa_g[2]
+(182,008 missing values generated)
+
+. by pair_id_numeric quarter_index: gen diff_elas=elasticity[1]-elasticity[2]
+(194,800 missing values generated)
+
+. by pair_id_numeric quarter_index: gen diff_wharton=WRLURI[1]-WRLURI[2]
+(194,800 missing values generated)
+
+. by pair_id_numeric quarter_index: gen diff_sepbegrall=sepbegrall[1]-sepbegral
+> l[2]
+(94,420 missing values generated)
+
+. 
+. by pair_id_numeric quarter_index: gen diff_bartik_state=bartik_state[1]-barti
+> k_state[2]
+(7,032 missing values generated)
+
+. by pair_id_numeric quarter_index: gen diff_bartik_hinter=bartik_hinter[1]-bar
+> tik_hinter[2]
+(7,032 missing values generated)
+
+. by pair_id_numeric quarter_index: gen diff_bartik_county=bartik_county[1]-bar
+> tik_county[2]
+(7,032 missing values generated)
+
+. 
+. by pair_id_numeric quarter_index: gen diff_jfr1=f_cl_q[1]-f_cl_q[2]
+(215,224 missing values generated)
+
+. by pair_id_numeric quarter_index: gen diff_jfr2=f_cl2_q[1]-f_cl2_q[2]
+(215,224 missing values generated)
+
+. by pair_id_numeric quarter_index: gen diff_jfr3=f_cl[1]-f_cl[2]
+(214,660 missing values generated)
+
+. by pair_id_numeric quarter_index: gen diff_jfr4=f_cl2[1]-f_cl2[2]
+(214,660 missing values generated)
+
+. 
+. keep if county_index==1
+(117,200 observations deleted)
+
+. duplicates drop pair_id_numeric time, force
+
+Duplicates in terms of pair_id_numeric time
+
+(0 observations are duplicates)
+
+. foreach var of varlist                                                       
+>                                                                              
+>       ///
+>                                                                              
+>                                                                              
+>                                                               ///
+>         qdk1_logunemp_rate_laus   diff_logmeanwks_pf                         
+>                                                            ///               
+>                                                                              
+>                                                          ///
+>                                                                              
+>                                                                              
+>                                               ///
+>         diff_logmeanwks qdk1_logunemp_add{ ///
+>         
+  2.         qui bys pair_id_numeric fipsnumeric: egen nmissing=count(`var')
+  3.         by pair_id_numeric: egen nmissing2=min(nmissing)
+  4.         qui tab nmissing
+  5.         drop if nmissing2==0
+  6.         qui drop nmissing nmissing2
+  7. 
+. }
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+
+. 
+. gen id=pair_id_numeric
+
+. xtset id time
+
+Panel variable: id (strongly balanced)
+ Time variable: time, 2050q1 to 2122q4, but with gaps
+         Delta: 1 quarter
+
+. 
+. 
+end of do-file
+
+. save "${processed}/UIMacro_DataControls.dta", replace
+(file
+    /Users/mac/JPE-replications/JPE-Mitman-2016256/replication-package/replic
+    > ation-package/data/processed/UIMacro_DataControls.dta not found)
+file
+    /Users/mac/JPE-replications/JPE-Mitman-2016256/replication-package/replic
+    > ation-package/data/processed/UIMacro_DataControls.dta saved
+
+. 
+. restore
+
+. 
+. do MakeWageData.do
+
+. 
+. 
+. keep if county_index == 1
+(117,200 observations deleted)
+
+. sort pair_id_numeric quarter_index
+
+. tsset pair_id_numeric quarter_index
+
+Panel variable: pair_id_numeric (strongly balanced)
+ Time variable: quarter_index, -59 to 40
+         Delta: 1 unit
+
+. 
+. 
+. 
+. foreach ind in "all"{
+  2.         gen diff_logqwiw1f_`ind'_t = diff_logqwiw1f_`ind'+diff_logui_tax_r
+> ate
+  3.         gen diff_logqwiw2f_`ind'_t = diff_logqwiw2f_`ind'+diff_logui_tax_r
+> ate
+  4.         gen diff_logqwiw3f_`ind'_t = diff_logqwiw3f_`ind'+diff_logui_tax_r
+> ate
+  5.         gen diff_logqwiw4f_`ind'_t = diff_logqwiw4f_`ind'+diff_logui_tax_r
+> ate
+  6. 
+.         by pair_id_numeric: gen did_logqwi_wage_0=diff_logqwiw1_`ind'[_n]-dif
+> f_logqwiw2_`ind'[_n-1]
+  7.         by pair_id_numeric: gen did_logqwi_wage2_0=diff_logqwiw3_`ind'[_n]
+> -diff_logqwiw4_`ind'[_n-1]
+  8.         by pair_id_numeric: gen did_logqwi_wagef_0=diff_logqwiw1f_`ind'[_n
+> ]-diff_logqwiw2f_`ind'[_n-1]
+  9.         by pair_id_numeric: gen did_logqwi_wage2f_0=diff_logqwiw3f_`ind'[_
+> n]-diff_logqwiw4f_`ind'[_n-1]
+ 10. 
+.         by pair_id_numeric: gen did_logqwi_wagef_t_0=diff_logqwiw1f_`ind'_t[_
+> n]-diff_logqwiw2f_`ind'_t[_n-1]
+ 11.         by pair_id_numeric: gen did_logqwi_wage2f_t_0=diff_logqwiw3f_`ind'
+> _t[_n]-diff_logqwiw4f_`ind'_t[_n-1]
+ 12.         by pair_id_numeric: gen fdid_logqwi_wagef_t_0=diff_logqwiw1f_`ind'
+> _t[_n+1]-diff_logqwiw2f_`ind'_t[_n]
+ 13.         by pair_id_numeric: gen fdid_logqwi_wage2f_t_0=diff_logqwiw3f_`ind
+> '_t[_n+1]-diff_logqwiw4f_`ind'_t[_n]
+ 14. 
+.         
+.         by pair_id_numeric: gen fdid_logqwi_wage_0=diff_logqwiw1_`ind'[_n+1]-
+> diff_logqwiw2_`ind'[_n]
+ 15.         by pair_id_numeric: gen fdid_logqwi_wage2_0=diff_logqwiw3_`ind'[_n
+> +1]-diff_logqwiw4_`ind'[_n]
+ 16.         by pair_id_numeric: gen fdid_logqwi_wagef_0=diff_logqwiw1f_`ind'[_
+> n+1]-diff_logqwiw2f_`ind'[_n]
+ 17.         by pair_id_numeric: gen fdid_logqwi_wage2f_0=diff_logqwiw3f_`ind'[
+> _n+1]-diff_logqwiw4f_`ind'[_n]
+ 18.                 
+. }
+(55,094 missing values generated)
+(55,230 missing values generated)
+(55,094 missing values generated)
+(55,209 missing values generated)
+(48,545 missing values generated)
+(49,718 missing values generated)
+(58,414 missing values generated)
+(59,480 missing values generated)
+(58,446 missing values generated)
+(59,480 missing values generated)
+(58,446 missing values generated)
+(59,480 missing values generated)
+(48,545 missing values generated)
+(49,718 missing values generated)
+(58,414 missing values generated)
+(59,480 missing values generated)
+
+. 
+. 
+. foreach ind in "foo" "man" "ret"{
+  2. 
+.         by pair_id_numeric: gen did_logqwi_wage_`ind'_0=diff_logqwiw1_`ind'[_
+> n]-diff_logqwiw2_`ind'[_n-1]
+  3.         by pair_id_numeric: gen did_logqwi_wage2_`ind'_0=diff_logqwiw3_`in
+> d'[_n]-diff_logqwiw4_`ind'[_n-1]
+  4.         by pair_id_numeric: gen did_logqwi_wagef_`ind'_0=diff_logqwiw1f_`i
+> nd'[_n]-diff_logqwiw2f_`ind'[_n-1]
+  5.         by pair_id_numeric: gen did_logqwi_wage2f_`ind'_0=diff_logqwiw3f_`
+> ind'[_n]-diff_logqwiw4f_`ind'[_n-1]
+  6. 
+.         by pair_id_numeric: gen fdid_logqwi_wage_`ind'_0=diff_logqwiw1_`ind'[
+> _n+1]-diff_logqwiw2_`ind'[_n]
+  7.         by pair_id_numeric: gen fdid_logqwi_wage2_`ind'_0=diff_logqwiw3_`i
+> nd'[_n+1]-diff_logqwiw4_`ind'[_n]
+  8.         by pair_id_numeric: gen fdid_logqwi_wagef_`ind'_0=diff_logqwiw1f_`
+> ind'[_n+1]-diff_logqwiw2f_`ind'[_n]
+  9.         by pair_id_numeric: gen fdid_logqwi_wage2f_`ind'_0=diff_logqwiw3f_
+> `ind'[_n+1]-diff_logqwiw4f_`ind'[_n]
+ 10.                 
+. }
+(54,798 missing values generated)
+(56,036 missing values generated)
+(77,739 missing values generated)
+(78,208 missing values generated)
+(54,798 missing values generated)
+(56,036 missing values generated)
+(77,739 missing values generated)
+(78,208 missing values generated)
+(63,086 missing values generated)
+(64,057 missing values generated)
+(100,832 missing values generated)
+(101,361 missing values generated)
+(63,086 missing values generated)
+(64,057 missing values generated)
+(100,832 missing values generated)
+(101,361 missing values generated)
+(51,305 missing values generated)
+(52,342 missing values generated)
+(71,974 missing values generated)
+(72,712 missing values generated)
+(51,305 missing values generated)
+(52,342 missing values generated)
+(71,974 missing values generated)
+(72,712 missing values generated)
+
+. 
+. by pair_id_numeric: gen did_logmeanwks_0 = diff_logmeanwks[_n]-diff_logmeanwk
+> s[_n-1]
+(2,197 missing values generated)
+
+. by pair_id_numeric: gen did_logmeanwks = diff_logmeanwks[_n]-diff_logmeanwks[
+> _n-1]
+(2,197 missing values generated)
+
+. 
+. gen logqwi_wage=0
+
+. gen logqwi_wagef=0
+
+. gen logqwi_wage2=0
+
+. gen logqwi_wage2f=0
+
+. gen logqwi_wagef_t=0
+
+. gen logqwi_wage2f_t=0
+
+. 
+. foreach ind in "foo" "man" "ret"{
+  2. gen logqwi_wage_`ind'=0
+  3. gen logqwi_wagef_`ind'=0
+  4. gen logqwi_wage2_`ind'=0
+  5. gen logqwi_wage2f_`ind'=0
+  6. 
+. 
+. }
+
+. 
+. 
+. foreach var of varlist logqwi_wage*  {
+  2. forvalues y=1/12{
+  3.         local x=`y'-1
+  4.         by pair_id_numeric: gen did_`var'_`y' = did_`var'_`x'+did_`var'_0[
+> _n+`y']
+  5.         by pair_id_numeric: gen fdid_`var'_`y' = fdid_`var'_`x'+fdid_`var'
+> _0[_n+`y']
+  6.         
+.         
+. }
+  7. }
+(49,764 missing values generated)
+(49,764 missing values generated)
+(50,969 missing values generated)
+(50,969 missing values generated)
+(52,163 missing values generated)
+(52,163 missing values generated)
+(53,338 missing values generated)
+(53,338 missing values generated)
+(54,509 missing values generated)
+(54,509 missing values generated)
+(55,677 missing values generated)
+(55,677 missing values generated)
+(56,843 missing values generated)
+(56,843 missing values generated)
+(58,007 missing values generated)
+(58,007 missing values generated)
+(59,167 missing values generated)
+(59,167 missing values generated)
+(60,325 missing values generated)
+(60,325 missing values generated)
+(61,481 missing values generated)
+(61,481 missing values generated)
+(62,636 missing values generated)
+(62,636 missing values generated)
+(63,614 missing values generated)
+(63,614 missing values generated)
+(67,865 missing values generated)
+(67,865 missing values generated)
+(71,137 missing values generated)
+(71,137 missing values generated)
+(73,937 missing values generated)
+(73,937 missing values generated)
+(76,421 missing values generated)
+(76,421 missing values generated)
+(78,673 missing values generated)
+(78,673 missing values generated)
+(80,744 missing values generated)
+(80,744 missing values generated)
+(82,659 missing values generated)
+(82,659 missing values generated)
+(84,411 missing values generated)
+(84,411 missing values generated)
+(86,038 missing values generated)
+(86,038 missing values generated)
+(87,543 missing values generated)
+(87,543 missing values generated)
+(88,973 missing values generated)
+(88,973 missing values generated)
+(50,962 missing values generated)
+(50,962 missing values generated)
+(52,185 missing values generated)
+(52,185 missing values generated)
+(53,392 missing values generated)
+(53,392 missing values generated)
+(54,577 missing values generated)
+(54,577 missing values generated)
+(55,758 missing values generated)
+(55,758 missing values generated)
+(56,933 missing values generated)
+(56,933 missing values generated)
+(58,102 missing values generated)
+(58,102 missing values generated)
+(59,270 missing values generated)
+(59,270 missing values generated)
+(60,436 missing values generated)
+(60,436 missing values generated)
+(61,599 missing values generated)
+(61,599 missing values generated)
+(62,758 missing values generated)
+(62,758 missing values generated)
+(63,915 missing values generated)
+(63,915 missing values generated)
+(64,939 missing values generated)
+(64,939 missing values generated)
+(68,721 missing values generated)
+(68,721 missing values generated)
+(71,896 missing values generated)
+(71,896 missing values generated)
+(74,675 missing values generated)
+(74,675 missing values generated)
+(77,126 missing values generated)
+(77,126 missing values generated)
+(79,341 missing values generated)
+(79,341 missing values generated)
+(81,388 missing values generated)
+(81,388 missing values generated)
+(83,266 missing values generated)
+(83,266 missing values generated)
+(85,007 missing values generated)
+(85,007 missing values generated)
+(86,616 missing values generated)
+(86,616 missing values generated)
+(88,116 missing values generated)
+(88,116 missing values generated)
+(89,525 missing values generated)
+(89,525 missing values generated)
+(63,644 missing values generated)
+(63,644 missing values generated)
+(67,891 missing values generated)
+(67,891 missing values generated)
+(71,163 missing values generated)
+(71,163 missing values generated)
+(73,963 missing values generated)
+(73,963 missing values generated)
+(76,447 missing values generated)
+(76,447 missing values generated)
+(78,698 missing values generated)
+(78,698 missing values generated)
+(80,769 missing values generated)
+(80,769 missing values generated)
+(82,684 missing values generated)
+(82,684 missing values generated)
+(84,436 missing values generated)
+(84,436 missing values generated)
+(86,063 missing values generated)
+(86,063 missing values generated)
+(87,568 missing values generated)
+(87,568 missing values generated)
+(88,998 missing values generated)
+(88,998 missing values generated)
+(64,939 missing values generated)
+(64,939 missing values generated)
+(68,721 missing values generated)
+(68,721 missing values generated)
+(71,896 missing values generated)
+(71,896 missing values generated)
+(74,675 missing values generated)
+(74,675 missing values generated)
+(77,126 missing values generated)
+(77,126 missing values generated)
+(79,341 missing values generated)
+(79,341 missing values generated)
+(81,388 missing values generated)
+(81,388 missing values generated)
+(83,266 missing values generated)
+(83,266 missing values generated)
+(85,007 missing values generated)
+(85,007 missing values generated)
+(86,616 missing values generated)
+(86,616 missing values generated)
+(88,116 missing values generated)
+(88,116 missing values generated)
+(89,525 missing values generated)
+(89,525 missing values generated)
+(57,483 missing values generated)
+(57,483 missing values generated)
+(59,516 missing values generated)
+(59,516 missing values generated)
+(61,246 missing values generated)
+(61,246 missing values generated)
+(62,747 missing values generated)
+(62,747 missing values generated)
+(64,123 missing values generated)
+(64,123 missing values generated)
+(65,440 missing values generated)
+(65,440 missing values generated)
+(66,697 missing values generated)
+(66,697 missing values generated)
+(67,903 missing values generated)
+(67,903 missing values generated)
+(69,076 missing values generated)
+(69,076 missing values generated)
+(70,211 missing values generated)
+(70,211 missing values generated)
+(71,322 missing values generated)
+(71,322 missing values generated)
+(72,397 missing values generated)
+(72,397 missing values generated)
+(83,929 missing values generated)
+(83,929 missing values generated)
+(87,976 missing values generated)
+(87,976 missing values generated)
+(90,692 missing values generated)
+(90,692 missing values generated)
+(92,784 missing values generated)
+(92,784 missing values generated)
+(94,506 missing values generated)
+(94,506 missing values generated)
+(96,001 missing values generated)
+(96,001 missing values generated)
+(97,282 missing values generated)
+(97,282 missing values generated)
+(98,402 missing values generated)
+(98,402 missing values generated)
+(99,393 missing values generated)
+(99,393 missing values generated)
+(100,319 missing values generated)
+(100,319 missing values generated)
+(101,190 missing values generated)
+(101,190 missing values generated)
+(101,979 missing values generated)
+(101,979 missing values generated)
+(58,902 missing values generated)
+(58,902 missing values generated)
+(61,001 missing values generated)
+(61,001 missing values generated)
+(62,773 missing values generated)
+(62,773 missing values generated)
+(64,284 missing values generated)
+(64,284 missing values generated)
+(65,693 missing values generated)
+(65,693 missing values generated)
+(67,027 missing values generated)
+(67,027 missing values generated)
+(68,303 missing values generated)
+(68,303 missing values generated)
+(69,526 missing values generated)
+(69,526 missing values generated)
+(70,705 missing values generated)
+(70,705 missing values generated)
+(71,853 missing values generated)
+(71,853 missing values generated)
+(72,987 missing values generated)
+(72,987 missing values generated)
+(74,090 missing values generated)
+(74,090 missing values generated)
+(85,020 missing values generated)
+(85,020 missing values generated)
+(88,638 missing values generated)
+(88,638 missing values generated)
+(91,289 missing values generated)
+(91,289 missing values generated)
+(93,337 missing values generated)
+(93,337 missing values generated)
+(95,018 missing values generated)
+(95,018 missing values generated)
+(96,456 missing values generated)
+(96,456 missing values generated)
+(97,710 missing values generated)
+(97,710 missing values generated)
+(98,805 missing values generated)
+(98,805 missing values generated)
+(99,791 missing values generated)
+(99,791 missing values generated)
+(100,704 missing values generated)
+(100,704 missing values generated)
+(101,561 missing values generated)
+(101,561 missing values generated)
+(102,340 missing values generated)
+(102,340 missing values generated)
+(65,720 missing values generated)
+(65,720 missing values generated)
+(67,619 missing values generated)
+(67,619 missing values generated)
+(69,208 missing values generated)
+(69,208 missing values generated)
+(70,622 missing values generated)
+(70,622 missing values generated)
+(71,935 missing values generated)
+(71,935 missing values generated)
+(73,169 missing values generated)
+(73,169 missing values generated)
+(74,349 missing values generated)
+(74,349 missing values generated)
+(75,479 missing values generated)
+(75,479 missing values generated)
+(76,591 missing values generated)
+(76,591 missing values generated)
+(77,668 missing values generated)
+(77,668 missing values generated)
+(78,709 missing values generated)
+(78,709 missing values generated)
+(79,732 missing values generated)
+(79,732 missing values generated)
+(105,874 missing values generated)
+(105,874 missing values generated)
+(108,662 missing values generated)
+(108,662 missing values generated)
+(110,345 missing values generated)
+(110,345 missing values generated)
+(111,549 missing values generated)
+(111,549 missing values generated)
+(112,456 missing values generated)
+(112,456 missing values generated)
+(113,182 missing values generated)
+(113,182 missing values generated)
+(113,768 missing values generated)
+(113,768 missing values generated)
+(114,254 missing values generated)
+(114,254 missing values generated)
+(114,655 missing values generated)
+(114,655 missing values generated)
+(114,976 missing values generated)
+(114,976 missing values generated)
+(115,252 missing values generated)
+(115,252 missing values generated)
+(115,476 missing values generated)
+(115,476 missing values generated)
+(66,902 missing values generated)
+(66,902 missing values generated)
+(68,873 missing values generated)
+(68,873 missing values generated)
+(70,525 missing values generated)
+(70,525 missing values generated)
+(72,010 missing values generated)
+(72,010 missing values generated)
+(73,384 missing values generated)
+(73,384 missing values generated)
+(74,662 missing values generated)
+(74,662 missing values generated)
+(75,882 missing values generated)
+(75,882 missing values generated)
+(77,051 missing values generated)
+(77,051 missing values generated)
+(78,194 missing values generated)
+(78,194 missing values generated)
+(79,297 missing values generated)
+(79,297 missing values generated)
+(80,376 missing values generated)
+(80,376 missing values generated)
+(81,425 missing values generated)
+(81,425 missing values generated)
+(106,394 missing values generated)
+(106,394 missing values generated)
+(108,834 missing values generated)
+(108,834 missing values generated)
+(110,469 missing values generated)
+(110,469 missing values generated)
+(111,635 missing values generated)
+(111,635 missing values generated)
+(112,544 missing values generated)
+(112,544 missing values generated)
+(113,259 missing values generated)
+(113,259 missing values generated)
+(113,829 missing values generated)
+(113,829 missing values generated)
+(114,311 missing values generated)
+(114,311 missing values generated)
+(114,702 missing values generated)
+(114,702 missing values generated)
+(115,016 missing values generated)
+(115,016 missing values generated)
+(115,276 missing values generated)
+(115,276 missing values generated)
+(115,490 missing values generated)
+(115,490 missing values generated)
+(53,362 missing values generated)
+(53,362 missing values generated)
+(55,107 missing values generated)
+(55,107 missing values generated)
+(56,642 missing values generated)
+(56,642 missing values generated)
+(58,041 missing values generated)
+(58,041 missing values generated)
+(59,378 missing values generated)
+(59,378 missing values generated)
+(60,657 missing values generated)
+(60,657 missing values generated)
+(61,890 missing values generated)
+(61,890 missing values generated)
+(63,103 missing values generated)
+(63,103 missing values generated)
+(64,293 missing values generated)
+(64,293 missing values generated)
+(65,470 missing values generated)
+(65,470 missing values generated)
+(66,629 missing values generated)
+(66,629 missing values generated)
+(67,769 missing values generated)
+(67,769 missing values generated)
+(79,168 missing values generated)
+(79,168 missing values generated)
+(83,926 missing values generated)
+(83,926 missing values generated)
+(87,135 missing values generated)
+(87,135 missing values generated)
+(89,635 missing values generated)
+(89,635 missing values generated)
+(91,716 missing values generated)
+(91,716 missing values generated)
+(93,511 missing values generated)
+(93,511 missing values generated)
+(95,018 missing values generated)
+(95,018 missing values generated)
+(96,354 missing values generated)
+(96,354 missing values generated)
+(97,561 missing values generated)
+(97,561 missing values generated)
+(98,672 missing values generated)
+(98,672 missing values generated)
+(99,690 missing values generated)
+(99,690 missing values generated)
+(100,642 missing values generated)
+(100,642 missing values generated)
+(54,436 missing values generated)
+(54,436 missing values generated)
+(56,181 missing values generated)
+(56,181 missing values generated)
+(57,721 missing values generated)
+(57,721 missing values generated)
+(59,129 missing values generated)
+(59,129 missing values generated)
+(60,481 missing values generated)
+(60,481 missing values generated)
+(61,774 missing values generated)
+(61,774 missing values generated)
+(63,026 missing values generated)
+(63,026 missing values generated)
+(64,249 missing values generated)
+(64,249 missing values generated)
+(65,449 missing values generated)
+(65,449 missing values generated)
+(66,631 missing values generated)
+(66,631 missing values generated)
+(67,796 missing values generated)
+(67,796 missing values generated)
+(68,931 missing values generated)
+(68,931 missing values generated)
+(80,137 missing values generated)
+(80,137 missing values generated)
+(84,450 missing values generated)
+(84,450 missing values generated)
+(87,634 missing values generated)
+(87,634 missing values generated)
+(90,138 missing values generated)
+(90,138 missing values generated)
+(92,217 missing values generated)
+(92,217 missing values generated)
+(93,938 missing values generated)
+(93,938 missing values generated)
+(95,414 missing values generated)
+(95,414 missing values generated)
+(96,739 missing values generated)
+(96,739 missing values generated)
+(97,938 missing values generated)
+(97,938 missing values generated)
+(99,037 missing values generated)
+(99,037 missing values generated)
+(100,046 missing values generated)
+(100,046 missing values generated)
+(100,984 missing values generated)
+(100,984 missing values generated)
+
+. 
+. drop logqwi_wage*
+
+. 
+. foreach var of varlist logqcew_wage_tot logqwi_wtot_all logqwi_wnhf_all{
+  2. gen pv_`var'_0 = diff_`var'
+  3. forvalues y=1/12{
+  4.         local x=`y'-1
+  5.         by pair_id_numeric: gen pv_`var'_`y' = pv_`var'_`x'+(1-seprate)*0.
+> 99*diff_`var'[_n+`y']
+  6. }
+  7. }
+(1,429 missing values generated)
+(2,620 missing values generated)
+(3,805 missing values generated)
+(4,987 missing values generated)
+(6,167 missing values generated)
+(7,347 missing values generated)
+(8,527 missing values generated)
+(9,707 missing values generated)
+(10,887 missing values generated)
+(12,067 missing values generated)
+(13,247 missing values generated)
+(14,427 missing values generated)
+(15,607 missing values generated)
+(47,180 missing values generated)
+(48,330 missing values generated)
+(49,480 missing values generated)
+(50,630 missing values generated)
+(51,780 missing values generated)
+(52,930 missing values generated)
+(54,080 missing values generated)
+(55,230 missing values generated)
+(56,380 missing values generated)
+(57,530 missing values generated)
+(58,680 missing values generated)
+(59,830 missing values generated)
+(60,980 missing values generated)
+(56,098 missing values generated)
+(59,608 missing values generated)
+(62,485 missing values generated)
+(65,002 missing values generated)
+(67,242 missing values generated)
+(69,326 missing values generated)
+(71,266 missing values generated)
+(73,075 missing values generated)
+(74,770 missing values generated)
+(76,362 missing values generated)
+(77,871 missing values generated)
+(79,323 missing values generated)
+(80,711 missing values generated)
+
+. 
+. foreach var of varlist logqcew_wage_tot logqwi_wtotf_* logqwi_wnhf_*{
+  2.  by pair_id_numeric: gen dpv_`var'_0 = diff_`var'[_n]-diff_`var'[_n-1]
+  3. forvalues y=1/12{
+  4.         local x=`y'-1
+  5.         by pair_id_numeric: gen dpv_`var'_`y' = dpv_`var'_`x'+(1-seprate)*
+> 0.99*(diff_`var'[_n+`y']-diff_`var'[_n-1])
+  6. }
+  7. }
+(2,620 missing values generated)
+(3,805 missing values generated)
+(4,987 missing values generated)
+(6,167 missing values generated)
+(7,347 missing values generated)
+(8,527 missing values generated)
+(9,707 missing values generated)
+(10,887 missing values generated)
+(12,067 missing values generated)
+(13,247 missing values generated)
+(14,427 missing values generated)
+(15,607 missing values generated)
+(16,787 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(117,200 missing values generated)
+(59,608 missing values generated)
+(62,485 missing values generated)
+(65,002 missing values generated)
+(67,242 missing values generated)
+(69,326 missing values generated)
+(71,266 missing values generated)
+(73,075 missing values generated)
+(74,770 missing values generated)
+(76,362 missing values generated)
+(77,871 missing values generated)
+(79,323 missing values generated)
+(80,711 missing values generated)
+(82,052 missing values generated)
+(72,548 missing values generated)
+(77,145 missing values generated)
+(80,533 missing values generated)
+(83,191 missing values generated)
+(85,448 missing values generated)
+(87,399 missing values generated)
+(89,119 missing values generated)
+(90,643 missing values generated)
+(92,010 missing values generated)
+(93,275 missing values generated)
+(94,459 missing values generated)
+(95,557 missing values generated)
+(96,575 missing values generated)
+(78,295 missing values generated)
+(82,683 missing values generated)
+(85,838 missing values generated)
+(88,180 missing values generated)
+(90,175 missing values generated)
+(91,907 missing values generated)
+(93,436 missing values generated)
+(94,766 missing values generated)
+(95,954 missing values generated)
+(97,045 missing values generated)
+(98,049 missing values generated)
+(98,956 missing values generated)
+(99,807 missing values generated)
+(111,919 missing values generated)
+(113,652 missing values generated)
+(114,601 missing values generated)
+(115,104 missing values generated)
+(115,458 missing values generated)
+(115,724 missing values generated)
+(115,930 missing values generated)
+(116,092 missing values generated)
+(116,225 missing values generated)
+(116,343 missing values generated)
+(116,447 missing values generated)
+(116,535 missing values generated)
+(116,612 missing values generated)
+(96,524 missing values generated)
+(100,434 missing values generated)
+(103,061 missing values generated)
+(104,968 missing values generated)
+(106,418 missing values generated)
+(107,593 missing values generated)
+(108,577 missing values generated)
+(109,390 missing values generated)
+(110,091 missing values generated)
+(110,694 missing values generated)
+(111,220 missing values generated)
+(111,679 missing values generated)
+(112,092 missing values generated)
+(59,608 missing values generated)
+(62,485 missing values generated)
+(65,002 missing values generated)
+(67,242 missing values generated)
+(69,326 missing values generated)
+(71,266 missing values generated)
+(73,075 missing values generated)
+(74,770 missing values generated)
+(76,362 missing values generated)
+(77,871 missing values generated)
+(79,323 missing values generated)
+(80,711 missing values generated)
+(82,052 missing values generated)
+(49,777 missing values generated)
+(51,014 missing values generated)
+(52,251 missing values generated)
+(53,488 missing values generated)
+(54,694 missing values generated)
+(55,900 missing values generated)
+(57,106 missing values generated)
+(58,312 missing values generated)
+(59,499 missing values generated)
+(60,686 missing values generated)
+(61,873 missing values generated)
+(63,060 missing values generated)
+(64,230 missing values generated)
+(53,698 missing values generated)
+(55,192 missing values generated)
+(56,686 missing values generated)
+(58,180 missing values generated)
+(59,521 missing values generated)
+(60,862 missing values generated)
+(62,203 missing values generated)
+(63,544 missing values generated)
+(64,784 missing values generated)
+(66,024 missing values generated)
+(67,264 missing values generated)
+(68,504 missing values generated)
+(69,672 missing values generated)
+(58,314 missing values generated)
+(60,000 missing values generated)
+(61,686 missing values generated)
+(63,372 missing values generated)
+(64,760 missing values generated)
+(66,148 missing values generated)
+(67,536 missing values generated)
+(68,924 missing values generated)
+(70,160 missing values generated)
+(71,396 missing values generated)
+(72,632 missing values generated)
+(73,868 missing values generated)
+(74,991 missing values generated)
+(96,817 missing values generated)
+(98,230 missing values generated)
+(99,643 missing values generated)
+(101,056 missing values generated)
+(101,811 missing values generated)
+(102,566 missing values generated)
+(103,321 missing values generated)
+(104,076 missing values generated)
+(104,610 missing values generated)
+(105,144 missing values generated)
+(105,678 missing values generated)
+(106,212 missing values generated)
+(106,628 missing values generated)
+(74,052 missing values generated)
+(75,984 missing values generated)
+(77,916 missing values generated)
+(79,848 missing values generated)
+(81,220 missing values generated)
+(82,592 missing values generated)
+(83,964 missing values generated)
+(85,336 missing values generated)
+(86,436 missing values generated)
+(87,536 missing values generated)
+(88,636 missing values generated)
+(89,736 missing values generated)
+(90,666 missing values generated)
+(49,777 missing values generated)
+(51,014 missing values generated)
+(52,251 missing values generated)
+(53,488 missing values generated)
+(54,694 missing values generated)
+(55,900 missing values generated)
+(57,106 missing values generated)
+(58,312 missing values generated)
+(59,499 missing values generated)
+(60,686 missing values generated)
+(61,873 missing values generated)
+(63,060 missing values generated)
+(64,230 missing values generated)
+
+. 
+. // gen logqwi_wnhf_all_t=0
+. foreach var of varlist logqcew_wage_tot* logqwi_wtot_all* logqwi_wnhf_all* lo
+> gqwi_wpay_all* logmeanwks{
+  2. gen kmean_`var'_0 = diff_`var'
+  3. forvalues y=1/12{
+  4.         local x=`y'-1
+  5.         local z=`y'+1
+  6.         by pair_id_numeric: gen kmean_`var'_`y' = (`y'*kmean_`var'_`x'+dif
+> f_`var'[_n+`y'])/`z'
+  7. }
+  8. }
+(1,429 missing values generated)
+(2,620 missing values generated)
+(3,805 missing values generated)
+(4,987 missing values generated)
+(6,167 missing values generated)
+(7,347 missing values generated)
+(8,527 missing values generated)
+(9,707 missing values generated)
+(10,887 missing values generated)
+(12,067 missing values generated)
+(13,247 missing values generated)
+(14,427 missing values generated)
+(15,607 missing values generated)
+(8,449 missing values generated)
+(9,640 missing values generated)
+(10,825 missing values generated)
+(12,007 missing values generated)
+(13,187 missing values generated)
+(14,367 missing values generated)
+(15,547 missing values generated)
+(16,727 missing values generated)
+(17,907 missing values generated)
+(19,087 missing values generated)
+(20,267 missing values generated)
+(21,447 missing values generated)
+(22,627 missing values generated)
+(264 missing values generated)
+(1,439 missing values generated)
+(2,614 missing values generated)
+(3,789 missing values generated)
+(4,964 missing values generated)
+(6,139 missing values generated)
+(7,314 missing values generated)
+(8,489 missing values generated)
+(9,664 missing values generated)
+(10,839 missing values generated)
+(12,014 missing values generated)
+(13,189 missing values generated)
+(14,364 missing values generated)
+(4,944 missing values generated)
+(6,119 missing values generated)
+(7,294 missing values generated)
+(8,469 missing values generated)
+(9,644 missing values generated)
+(10,819 missing values generated)
+(11,994 missing values generated)
+(13,169 missing values generated)
+(14,344 missing values generated)
+(15,519 missing values generated)
+(16,694 missing values generated)
+(17,869 missing values generated)
+(19,044 missing values generated)
+(47,180 missing values generated)
+(48,330 missing values generated)
+(49,480 missing values generated)
+(50,630 missing values generated)
+(51,780 missing values generated)
+(52,930 missing values generated)
+(54,080 missing values generated)
+(55,230 missing values generated)
+(56,380 missing values generated)
+(57,530 missing values generated)
+(58,680 missing values generated)
+(59,830 missing values generated)
+(60,980 missing values generated)
+(47,216 missing values generated)
+(48,366 missing values generated)
+(49,516 missing values generated)
+(50,666 missing values generated)
+(51,816 missing values generated)
+(52,966 missing values generated)
+(54,116 missing values generated)
+(55,266 missing values generated)
+(56,416 missing values generated)
+(57,566 missing values generated)
+(58,716 missing values generated)
+(59,866 missing values generated)
+(61,016 missing values generated)
+(43,048 missing values generated)
+(44,198 missing values generated)
+(45,348 missing values generated)
+(46,498 missing values generated)
+(47,648 missing values generated)
+(48,798 missing values generated)
+(49,948 missing values generated)
+(51,098 missing values generated)
+(52,248 missing values generated)
+(53,398 missing values generated)
+(54,548 missing values generated)
+(55,698 missing values generated)
+(56,848 missing values generated)
+(43,048 missing values generated)
+(44,198 missing values generated)
+(45,348 missing values generated)
+(46,498 missing values generated)
+(47,648 missing values generated)
+(48,798 missing values generated)
+(49,948 missing values generated)
+(51,098 missing values generated)
+(52,248 missing values generated)
+(53,398 missing values generated)
+(54,548 missing values generated)
+(55,698 missing values generated)
+(56,848 missing values generated)
+(56,098 missing values generated)
+(59,608 missing values generated)
+(62,485 missing values generated)
+(65,002 missing values generated)
+(67,242 missing values generated)
+(69,326 missing values generated)
+(71,266 missing values generated)
+(73,075 missing values generated)
+(74,770 missing values generated)
+(76,362 missing values generated)
+(77,871 missing values generated)
+(79,323 missing values generated)
+(80,711 missing values generated)
+(56,098 missing values generated)
+(59,608 missing values generated)
+(62,485 missing values generated)
+(65,002 missing values generated)
+(67,242 missing values generated)
+(69,326 missing values generated)
+(71,266 missing values generated)
+(73,075 missing values generated)
+(74,770 missing values generated)
+(76,362 missing values generated)
+(77,871 missing values generated)
+(79,323 missing values generated)
+(80,711 missing values generated)
+(48,540 missing values generated)
+(49,777 missing values generated)
+(51,014 missing values generated)
+(52,251 missing values generated)
+(53,488 missing values generated)
+(54,694 missing values generated)
+(55,900 missing values generated)
+(57,106 missing values generated)
+(58,312 missing values generated)
+(59,499 missing values generated)
+(60,686 missing values generated)
+(61,873 missing values generated)
+(63,060 missing values generated)
+(48,540 missing values generated)
+(49,777 missing values generated)
+(51,014 missing values generated)
+(52,251 missing values generated)
+(53,488 missing values generated)
+(54,694 missing values generated)
+(55,900 missing values generated)
+(57,106 missing values generated)
+(58,312 missing values generated)
+(59,499 missing values generated)
+(60,686 missing values generated)
+(61,873 missing values generated)
+(63,060 missing values generated)
+(44,910 missing values generated)
+(46,072 missing values generated)
+(47,232 missing values generated)
+(48,390 missing values generated)
+(49,544 missing values generated)
+(50,698 missing values generated)
+(51,850 missing values generated)
+(53,002 missing values generated)
+(54,154 missing values generated)
+(55,306 missing values generated)
+(56,458 missing values generated)
+(57,610 missing values generated)
+(58,762 missing values generated)
+(44,982 missing values generated)
+(46,144 missing values generated)
+(47,304 missing values generated)
+(48,462 missing values generated)
+(49,616 missing values generated)
+(50,770 missing values generated)
+(51,922 missing values generated)
+(53,074 missing values generated)
+(54,226 missing values generated)
+(55,378 missing values generated)
+(56,530 missing values generated)
+(57,682 missing values generated)
+(58,834 missing values generated)
+(42,712 missing values generated)
+(43,864 missing values generated)
+(45,016 missing values generated)
+(46,168 missing values generated)
+(47,320 missing values generated)
+(48,472 missing values generated)
+(49,624 missing values generated)
+(50,776 missing values generated)
+(51,928 missing values generated)
+(53,080 missing values generated)
+(54,232 missing values generated)
+(55,384 missing values generated)
+(56,536 missing values generated)
+(42,712 missing values generated)
+(43,864 missing values generated)
+(45,016 missing values generated)
+(46,168 missing values generated)
+(47,320 missing values generated)
+(48,472 missing values generated)
+(49,624 missing values generated)
+(50,776 missing values generated)
+(51,928 missing values generated)
+(53,080 missing values generated)
+(54,232 missing values generated)
+(55,384 missing values generated)
+(56,536 missing values generated)
+(984 missing values generated)
+(2,197 missing values generated)
+(3,410 missing values generated)
+(4,623 missing values generated)
+(5,836 missing values generated)
+(7,049 missing values generated)
+(8,262 missing values generated)
+(9,475 missing values generated)
+(10,688 missing values generated)
+(11,901 missing values generated)
+(13,114 missing values generated)
+(14,327 missing values generated)
+(15,540 missing values generated)
+
+. 
+. // drop logqwi_wnhf_all_t
+. 
+. 
+. 
+. // foreach var of varlist logqcew_wage_tot logqwi_wtot_all logqwi_wnhf_all{
+. // gen pv0_`var' = diff_`var'
+. // forvalues y=1/12{
+. //      gen pv`y'_`var' = diff_`var'
+. //      forvalues x=1/`y'{
+. //              by pair_id_numeric: replace pv`y'_`var'  = pv`y'_`var' +(1-se
+> prate)*0.99*diff_`var'[_n+`x']
+. //      }
+. //
+. // }
+. // }
+. 
+. 
+. 
+. gen pv_stayers_0 = diff_logqwiw2f_all
+(55,198 missing values generated)
+
+. forvalues y=1/12{
+  2.         local x=`y'-1
+  3.         by pair_id_numeric: gen pv_stayers_`y' = pv_stayers_`x'+(1-seprate
+> )*0.99*(diff_logqwiw2f_all+fdid_logqwi_wagef_`x')
+  4. 
+. }
+(58,414 missing values generated)
+(63,614 missing values generated)
+(67,865 missing values generated)
+(71,137 missing values generated)
+(73,937 missing values generated)
+(76,421 missing values generated)
+(78,673 missing values generated)
+(80,744 missing values generated)
+(82,659 missing values generated)
+(84,411 missing values generated)
+(86,038 missing values generated)
+(87,543 missing values generated)
+
+. 
+. gen dpv_stayers_0 = diff_logqwiw2f_all
+(55,198 missing values generated)
+
+. forvalues y=1/12{
+  2.         local x=`y'-1
+  3.         by pair_id_numeric: gen dpv_stayers_`y' = dpv_stayers_`x'+(1-sepra
+> te)*0.99*(diff_logqwiw2f_all+fdid_logqwi_wagef_`x'-did_logqwi_wagef_0)
+  4. 
+. }
+(63,614 missing values generated)
+(67,865 missing values generated)
+(71,137 missing values generated)
+(73,937 missing values generated)
+(76,421 missing values generated)
+(78,673 missing values generated)
+(80,744 missing values generated)
+(82,659 missing values generated)
+(84,411 missing values generated)
+(86,038 missing values generated)
+(87,543 missing values generated)
+(88,973 missing values generated)
+
+. 
+. foreach ind in "foo" "ret" "man"{
+  2. 
+. gen pv_stayers_`ind'_0 = diff_logqwiw2f_`ind'
+  3. forvalues y=1/12{
+  4.         local x=`y'-1
+  5.         by pair_id_numeric: gen pv_stayers_`ind'_`y' = pv_stayers_`ind'_`x
+> '+(1-seprate)*0.99*(diff_logqwiw2f_`ind'+fdid_logqwi_wagef_`ind'_`x')
+  6. 
+. }
+  7. 
+. gen dpv_stayers_`ind'_0 = diff_logqwiw2f_`ind'
+  8. forvalues y=1/12{
+  9.         local x=`y'-1
+ 10.         by pair_id_numeric: gen dpv_stayers_`ind'_`y' = dpv_stayers_`ind'_
+> `x'+(1-seprate)*0.99*(diff_logqwiw2f_`ind'+fdid_logqwi_wagef_`ind'_`x'-did_lo
+> gqwi_wagef_`ind'_0)
+ 11. 
+. }
+ 12. }
+(71,392 missing values generated)
+(77,739 missing values generated)
+(83,929 missing values generated)
+(87,976 missing values generated)
+(90,692 missing values generated)
+(92,784 missing values generated)
+(94,506 missing values generated)
+(96,001 missing values generated)
+(97,282 missing values generated)
+(98,402 missing values generated)
+(99,393 missing values generated)
+(100,319 missing values generated)
+(101,190 missing values generated)
+(71,392 missing values generated)
+(83,929 missing values generated)
+(87,976 missing values generated)
+(90,692 missing values generated)
+(92,784 missing values generated)
+(94,506 missing values generated)
+(96,001 missing values generated)
+(97,282 missing values generated)
+(98,402 missing values generated)
+(99,393 missing values generated)
+(100,319 missing values generated)
+(101,190 missing values generated)
+(101,979 missing values generated)
+(65,619 missing values generated)
+(71,974 missing values generated)
+(79,168 missing values generated)
+(83,926 missing values generated)
+(87,135 missing values generated)
+(89,635 missing values generated)
+(91,716 missing values generated)
+(93,511 missing values generated)
+(95,018 missing values generated)
+(96,354 missing values generated)
+(97,561 missing values generated)
+(98,672 missing values generated)
+(99,690 missing values generated)
+(65,619 missing values generated)
+(79,168 missing values generated)
+(83,926 missing values generated)
+(87,135 missing values generated)
+(89,635 missing values generated)
+(91,716 missing values generated)
+(93,511 missing values generated)
+(95,018 missing values generated)
+(96,354 missing values generated)
+(97,561 missing values generated)
+(98,672 missing values generated)
+(99,690 missing values generated)
+(100,642 missing values generated)
+(94,997 missing values generated)
+(100,832 missing values generated)
+(105,874 missing values generated)
+(108,662 missing values generated)
+(110,345 missing values generated)
+(111,549 missing values generated)
+(112,456 missing values generated)
+(113,182 missing values generated)
+(113,768 missing values generated)
+(114,254 missing values generated)
+(114,655 missing values generated)
+(114,976 missing values generated)
+(115,252 missing values generated)
+(94,997 missing values generated)
+(105,874 missing values generated)
+(108,662 missing values generated)
+(110,345 missing values generated)
+(111,549 missing values generated)
+(112,456 missing values generated)
+(113,182 missing values generated)
+(113,768 missing values generated)
+(114,254 missing values generated)
+(114,655 missing values generated)
+(114,976 missing values generated)
+(115,252 missing values generated)
+(115,476 missing values generated)
+
+. 
+. 
+. forvalues j=1/12{
+  2.         by pair_id_numeric: gen U_`j' =  diff_logunemp_rate_laus[_n+`j'] -
+>  diff_logunemp_rate_laus[_n]
+  3.         by pair_id_numeric: gen QCW_`j' =  diff_logqcew_wage_tot[_n+`j'-1]
+>  - diff_logqcew_wage_tot[_n-1] 
+  4.         by pair_id_numeric: gen ben_`j' =  diff_logmeanwks[_n+`j'-1] - dif
+> f_logmeanwks[_n-1] 
+  5.         by pair_id_numeric: gen NW_`j' =  diff_logqwi_wnhf_all[_n+`j'-1] -
+>  diff_logqwi_wnhf_all[_n-1] 
+  6.         by pair_id_numeric: gen NWt_`j' =  diff_logqwi_wnhf_all_t[_n+`j'-1
+> ] - diff_logqwi_wnhf_all_t[_n-1] 
+  7.         by pair_id_numeric: gen QWITot_`j' =  diff_logqwi_wtot_all[_n+`j'-
+> 1] - diff_logqwi_wtot_all[_n-1]
+  8.         by pair_id_numeric: gen QWIPay_`j' =  diff_logqwi_wpay_all[_n+`j'-
+> 1] - diff_logqwi_wpay_all[_n-1]
+  9.         by pair_id_numeric: gen QCWt_`j' =  diff_logqcew_wage_tot_t[_n+`j'
+> -1] - diff_logqcew_wage_tot_t[_n-1] 
+ 10.         by pair_id_numeric: gen QWITott_`j' =  diff_logqwi_wtot_all_t[_n+`
+> j'-1] - diff_logqwi_wtot_all_t[_n-1]
+ 11.         by pair_id_numeric: gen QWIPayt_`j' =  diff_logqwi_wpay_all_t[_n+`
+> j'-1] - diff_logqwi_wpay_all_t[_n-1]  
+ 12.         
+. }
+(1,196 missing values generated)
+(2,620 missing values generated)
+(2,197 missing values generated)
+(59,608 missing values generated)
+(59,608 missing values generated)
+(48,330 missing values generated)
+(46,072 missing values generated)
+(9,640 missing values generated)
+(48,366 missing values generated)
+(46,144 missing values generated)
+(2,372 missing values generated)
+(3,801 missing values generated)
+(3,410 missing values generated)
+(60,807 missing values generated)
+(60,807 missing values generated)
+(49,480 missing values generated)
+(47,226 missing values generated)
+(10,821 missing values generated)
+(49,516 missing values generated)
+(47,298 missing values generated)
+(3,544 missing values generated)
+(4,973 missing values generated)
+(4,623 missing values generated)
+(61,890 missing values generated)
+(61,890 missing values generated)
+(50,630 missing values generated)
+(48,378 missing values generated)
+(11,993 missing values generated)
+(50,666 missing values generated)
+(48,450 missing values generated)
+(4,718 missing values generated)
+(6,137 missing values generated)
+(5,836 missing values generated)
+(62,891 missing values generated)
+(62,891 missing values generated)
+(51,780 missing values generated)
+(49,526 missing values generated)
+(13,157 missing values generated)
+(51,816 missing values generated)
+(49,598 missing values generated)
+(5,890 missing values generated)
+(7,309 missing values generated)
+(7,049 missing values generated)
+(64,019 missing values generated)
+(64,019 missing values generated)
+(52,930 missing values generated)
+(50,682 missing values generated)
+(14,329 missing values generated)
+(52,966 missing values generated)
+(50,754 missing values generated)
+(7,058 missing values generated)
+(8,490 missing values generated)
+(8,262 missing values generated)
+(65,050 missing values generated)
+(65,050 missing values generated)
+(54,080 missing values generated)
+(51,832 missing values generated)
+(15,510 missing values generated)
+(54,116 missing values generated)
+(51,904 missing values generated)
+(8,230 missing values generated)
+(9,665 missing values generated)
+(9,475 missing values generated)
+(66,066 missing values generated)
+(66,066 missing values generated)
+(55,230 missing values generated)
+(52,982 missing values generated)
+(16,685 missing values generated)
+(55,266 missing values generated)
+(53,054 missing values generated)
+(9,402 missing values generated)
+(10,837 missing values generated)
+(10,688 missing values generated)
+(67,071 missing values generated)
+(67,071 missing values generated)
+(56,380 missing values generated)
+(54,128 missing values generated)
+(17,857 missing values generated)
+(56,416 missing values generated)
+(54,200 missing values generated)
+(10,570 missing values generated)
+(12,006 missing values generated)
+(11,901 missing values generated)
+(68,182 missing values generated)
+(68,182 missing values generated)
+(57,530 missing values generated)
+(55,280 missing values generated)
+(19,026 missing values generated)
+(57,566 missing values generated)
+(55,352 missing values generated)
+(11,742 missing values generated)
+(13,181 missing values generated)
+(13,114 missing values generated)
+(69,241 missing values generated)
+(69,241 missing values generated)
+(58,680 missing values generated)
+(56,428 missing values generated)
+(20,201 missing values generated)
+(58,716 missing values generated)
+(56,500 missing values generated)
+(12,916 missing values generated)
+(14,359 missing values generated)
+(14,327 missing values generated)
+(70,297 missing values generated)
+(70,297 missing values generated)
+(59,830 missing values generated)
+(57,578 missing values generated)
+(21,379 missing values generated)
+(59,866 missing values generated)
+(57,650 missing values generated)
+(14,088 missing values generated)
+(15,534 missing values generated)
+(15,540 missing values generated)
+(71,303 missing values generated)
+(71,303 missing values generated)
+(60,980 missing values generated)
+(58,724 missing values generated)
+(22,554 missing values generated)
+(61,016 missing values generated)
+(58,796 missing values generated)
+
+. 
+. 
+. foreach ind in "foo" "ret" "man"{ 
+  2. forvalues j=1/12{
+  3.         by pair_id_numeric: gen NW_`ind'_`j' =  diff_logqwi_wnhf_`ind'[_n+
+> `j'-1] - diff_logqwi_wnhf_`ind'[_n-1] 
+  4.         by pair_id_numeric: gen QWITot_`ind'_`j' =  diff_logqwi_wtot_`ind'
+> [_n+`j'-1] - diff_logqwi_wtot_`ind'[_n-1]
+  5. }
+  6. }
+(78,295 missing values generated)
+(48,951 missing values generated)
+(79,231 missing values generated)
+(50,122 missing values generated)
+(79,930 missing values generated)
+(51,281 missing values generated)
+(80,437 missing values generated)
+(52,439 missing values generated)
+(81,511 missing values generated)
+(53,596 missing values generated)
+(82,306 missing values generated)
+(54,747 missing values generated)
+(83,022 missing values generated)
+(55,897 missing values generated)
+(83,518 missing values generated)
+(57,048 missing values generated)
+(84,435 missing values generated)
+(58,190 missing values generated)
+(85,213 missing values generated)
+(59,327 missing values generated)
+(85,860 missing values generated)
+(60,461 missing values generated)
+(86,402 missing values generated)
+(61,601 missing values generated)
+(72,548 missing values generated)
+(48,631 missing values generated)
+(73,667 missing values generated)
+(49,780 missing values generated)
+(74,429 missing values generated)
+(50,929 missing values generated)
+(75,161 missing values generated)
+(52,078 missing values generated)
+(76,135 missing values generated)
+(53,225 missing values generated)
+(77,083 missing values generated)
+(54,370 missing values generated)
+(77,766 missing values generated)
+(55,515 missing values generated)
+(78,648 missing values generated)
+(56,658 missing values generated)
+(79,575 missing values generated)
+(57,803 missing values generated)
+(80,426 missing values generated)
+(58,948 missing values generated)
+(81,191 missing values generated)
+(60,093 missing values generated)
+(81,893 missing values generated)
+(61,240 missing values generated)
+(96,524 missing values generated)
+(51,128 missing values generated)
+(97,388 missing values generated)
+(52,324 missing values generated)
+(97,931 missing values generated)
+(53,482 missing values generated)
+(98,394 missing values generated)
+(54,609 missing values generated)
+(98,990 missing values generated)
+(55,737 missing values generated)
+(99,496 missing values generated)
+(56,865 missing values generated)
+(99,909 missing values generated)
+(57,985 missing values generated)
+(100,245 missing values generated)
+(59,106 missing values generated)
+(100,800 missing values generated)
+(60,225 missing values generated)
+(101,144 missing values generated)
+(61,342 missing values generated)
+(101,495 missing values generated)
+(62,461 missing values generated)
+(101,897 missing values generated)
+(63,576 missing values generated)
+
+. 
+. 
+end of do-file
+
+. save "${processed}/ProcessedWages.dta", replace
+(file
+    /Users/mac/JPE-replications/JPE-Mitman-2016256/replication-package/replic
+    > ation-package/data/processed/ProcessedWages.dta not found)
+file
+    /Users/mac/JPE-replications/JPE-Mitman-2016256/replication-package/replic
+    > ation-package/data/processed/ProcessedWages.dta saved
+
+. 
+. log close
+      name:  <unnamed>
+       log:  /Users/mac/JPE-replications/JPE-Mitman-2016256/replication-package
+> /replication-package/output/logs/BuildMacroData.log
+  log type:  text
+ closed on:  19 Aug 2026, 11:25:33
+-------------------------------------------------------------------------------

@@ -1,0 +1,474 @@
+\begin{thebibliography}{88}
+\newcommand{\enquote}[1]{``#1''}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\providecommand{\urlprefix}{URL }
+
+\bibitem[{Ahn and Hamilton(2020)}]{ahn+hamilton:18}
+Ahn, Hie~Joo and James~D. Hamilton. 2020.
+\newblock \enquote{Heterogeneity and Unemployment Dynamics.}
+\newblock \emph{Journal of Business \& Economic Statistics} 38~(3):554--569.
+
+\bibitem[{Andrews(2005)}]{andrews:05}
+Andrews, Donald W.~K. 2005.
+\newblock \enquote{Cross-Section Regression with Common Shocks.}
+\newblock \emph{Econometrica} 73~(5):1551--1585.
+
+\bibitem[{Bai(2009)}]{bai:09}
+Bai, Jushan. 2009.
+\newblock \enquote{Panel Data Models with Interactive Fixed Effects.}
+\newblock \emph{Econometrica} 77~(4):1229--1279.
+
+\bibitem[{Bai and Ng(2002)}]{bai+ng:02}
+Bai, Jushan and Serena Ng. 2002.
+\newblock \enquote{Determining the Number of Factors in Approximate Factor Models.}
+\newblock \emph{Econometrica} 70~(1):191--221.
+
+\bibitem[{Barro(2010)}]{barro:10}
+Barro, Robert. 2010.
+\newblock \enquote{The Folly of Subsidizing Unemployment.}
+\newblock \emph{Wall Street Journal} .
+
+\bibitem[{{Beacon Hill Institute}(2012)}]{data:bhi-competitiveness}
+{Beacon Hill Institute}. 2012.
+\newblock \enquote{State Competitiveness Report.}
+\newblock \urlprefix\url{https://beaconhill.org/economic-competitiveness/}.
+\newblock Dataset (overall state competitiveness scores), 2005--2012 editions; accessed circa 2013 (inferred). Extract redistributed in the replication archive.
+
+\bibitem[{Bertrand, Duflo, and Mullainathan(2004)}]{bertrand+etal:04}
+Bertrand, Marianne, Esther Duflo, and Sendhil Mullainathan. 2004.
+\newblock \enquote{How Much Should We Trust Differences-In-Differences Estimates?}
+\newblock \emph{Quarterly Journal of Economics} 119~(1):249--275.
+
+\bibitem[{Braxton, Herkenhoff, and M.~Phillips(2024)}]{braxton2024can}
+Braxton, J.~Carter, Kyle~F. Herkenhoff, and Gordon M.~Phillips. 2024.
+\newblock \enquote{Can the unemployed borrow? implications for public insurance.}
+\newblock \emph{Journal of Political Economy} 132~(9):3025--3076.
+
+\bibitem[{Br{\"u}gemann(2008)}]{brugemann:08}
+Br{\"u}gemann, Bj{\"o}rn. 2008.
+\newblock \enquote{What Elasticity of the Matching Function is Consistent with U.S. Aggregate Labor Market Data?}
+\newblock mimeo, Yale University.
+
+\bibitem[{Card and Levine(2000)}]{card+levine:2000}
+Card, David and Philipp~B. Levine. 2000.
+\newblock \enquote{Extended Benefits and the Duration of UI Spells: Evidence from the New Jersey Extended Benefit Program.}
+\newblock \emph{Journal of Public Economics} 78~(1--2):107--138.
+
+\bibitem[{Cordell et~al.(2013)Cordell, Geng, Goodman, and Yang}]{cordell_etal:13}
+Cordell, Larry, Liang Geng, Laurie Goodman, and Lidan Yang. 2013.
+\newblock \enquote{The Cost of Delay.}
+\newblock Working Paper 13-15, Federal Resrve Bank of Philadelphia.
+
+\bibitem[{Dube, Lester, and Reich(2010{\natexlab{a}})}]{data:dlr-countypairs}
+Dube, Arindrajit, T.~William Lester, and Michael Reich. 2010{\natexlab{a}}.
+\newblock \enquote{Contiguous border county-pair data accompanying ``Minimum Wage Effects Across State Borders: Estimates Using Contiguous Counties''.}
+\newblock \urlprefix\url{https://doi.org/10.1162/REST_a_00039}.
+\newblock Dataset accompanying the article in the \emph{Review of Economics and Statistics} 92(4), 945--964. Cross-state contiguous county-pair list; accessed circa 2013--2014 (inferred). The pair list is redistributed in the replication archive.
+
+\bibitem[{Dube, Lester, and Reich(2010{\natexlab{b}})}]{dube+etal:10}
+Dube, Arindrajit, William Lester, and Michael Reich. 2010{\natexlab{b}}.
+\newblock \enquote{Minimum Wage Effects Across State Borders: Estimates Using Contiguous Counties.}
+\newblock \emph{Review of Economics and Statistics} 92~(4):945 -- 964.
+
+\bibitem[{{Federal Housing Finance Agency}(2018)}]{data:fhfa-hpi}
+{Federal Housing Finance Agency}. 2018.
+\newblock \enquote{House Price Index: Annual County Developmental Index, All-Transactions.}
+\newblock \urlprefix\url{https://www.fhfa.gov/data/hpi}.
+\newblock Dataset ({HPI}\_{AT}\_{BDL}\_county), 2018 vintage; accessed July 26, 2018 (inferred from the archive's vintage stamp). Vintage-of-record extract redistributed in the replication archive.
+
+\bibitem[{{Federal Reserve Bank of New York}(2018)}]{data:nyfed-ccp}
+{Federal Reserve Bank of New York}. 2018.
+\newblock \enquote{Consumer Credit Panel/{E}quifax: County-Level Household Debt-to-Income.}
+\newblock \urlprefix\url{https://www.newyorkfed.org/microeconomics/databank.html}.
+\newblock Public-use county dataset (household-debt-by-county); accessed circa 2018 (download date not recorded). Extract redistributed in the replication archive.
+
+\bibitem[{Feldstein(1978)}]{feldstein:78}
+Feldstein, Martin. 1978.
+\newblock \enquote{The Effect of Unemployment Insurance on Temporary Layoff Unemployment.}
+\newblock \emph{American Economic Review} 68~(5):834--846.
+
+\bibitem[{Gertler and Trigari(2009)}]{gertler+trigari:09}
+Gertler, Mark and Antonella Trigari. 2009.
+\newblock \enquote{Unemployment Fluctuations with Staggered Nash Bargaining.}
+\newblock \emph{Journal of Political Economy} 117~(1):38--86.
+
+\bibitem[{Gobillon and Magnac(2016)}]{gobillon+magnac:13}
+Gobillon, Laurent and Thierry Magnac. 2016.
+\newblock \enquote{Regional Policy Evaluation: Interactive Fixed Effects and Synthetic Controls.}
+\newblock \emph{Review of Economics and Statistics} 98~(3):535--551.
+
+\bibitem[{Gruber(1997)}]{gruber1997consumption}
+Gruber, Jonathan. 1997.
+\newblock \enquote{The consumption smoothing benefits of unemployment insurance.}
+\newblock \emph{The American Economic Review} 87~(1):192.
+
+\bibitem[{Gyourko, Saiz, and Summers(2008)}]{gyourko+saiz+summers:08}
+Gyourko, Joseph, Albert Saiz, and Anita Summers. 2008.
+\newblock \enquote{A New Measure of the Local Regulatory Environment for Housing Markets: The Wharton Residential Land Use Regulatory Index.}
+\newblock \emph{Urban Studies} 45~(3):693--729.
+
+\bibitem[{Haefke, Sonntag, and van Rens(2012)}]{haefke+sonntag+vanrens:12}
+Haefke, Christian, Marcus Sonntag, and Thijs van Rens. 2012.
+\newblock \enquote{Wage Rigidity and Job Creation.}
+\newblock {D}iscussion {Paper} 8968, {CEPR}.
+
+\bibitem[{Hagedorn, Handbury, and Manovskii(2015)}]{hagedorn+handbury+manovskii:15}
+Hagedorn, Marcus, Jessie Handbury, and Iourii Manovskii. 2015.
+\newblock \enquote{Demand Stimulus and Inflation: Empirical Evidence.}
+\newblock mimeo, University of Pennsylvania.
+
+\bibitem[{Hagedorn and Manovskii(2008)}]{hagedorn+manovskii:08}
+Hagedorn, Marcus and Iourii Manovskii. 2008.
+\newblock \enquote{The Cyclical Behavior of Equilibrium Unemployment and Vacancies Revisited.}
+\newblock \emph{American Economic Review} 98~(4):1692--1706.
+
+\bibitem[{Hagedorn and Manovskii(2013)}]{hagedorn+manovskii:13}
+---{}---{}---. 2013.
+\newblock \enquote{Job Selection and Wages over the Business Cycle.}
+\newblock \emph{American Economic Review} 103~(2):771--803.
+
+\bibitem[{Hagedorn, Manovskii, and Mitman(2015)}]{hagedorn+manovskii+mitman:15_micro}
+Hagedorn, Marcus, Iourii Manovskii, and Kurt Mitman. 2015.
+\newblock \enquote{Unemployment Benefits and Unemployment in the Great Recession: The Role of Micro Effects.}
+\newblock mimeo, University of Pennsylvania.
+
+\bibitem[{Hagedorn, Manovskii, and Mitman(2024)}]{hagedorn+manovskii+mitman:15}
+---{}---{}---. 2024.
+\newblock \enquote{The Impact of Unemployment Benefit Extensions on Employment: The 2014 Employment Miracle?}
+\newblock \emph{American Economic Journal: Macroeconomics} Forthcoming.
+
+\bibitem[{Hagedorn, Manovskii, and Mitman(2025)}]{data:hmm-openicpsr}
+---{}---{}---. 2025.
+\newblock \enquote{Data and Code for: The Impact of Unemployment Benefit Extensions on Employment: The 2014 Employment Miracle?}
+\newblock \urlprefix\url{https://doi.org/10.3886/E205681V1}.
+\newblock American Economic Association [publisher]; {ICPSR} [distributor], open{ICPSR} project 205681 (dataset). Documents the {EB}/{EUC}/{TEUC} weeks-of-eligibility trigger construction; the daily benefit-weeks file in the replication archive is byte-identical to the deposit's.
+
+\bibitem[{Hall(2005)}]{hall:05}
+Hall, Robert~E. 2005.
+\newblock \enquote{Employment Fluctuations with Equilibrium Wage Stickiness.}
+\newblock \emph{American Economic Review} 95~(1):50--65.
+
+\bibitem[{Hall(2013)}]{hall:13}
+---{}---{}---. 2013.
+\newblock \enquote{Some Observations on Hagedorn, Karahan, Manovskii, and Mitman, ``Unemployment Benefits and Unemployment in the Great Recession: The Role of Macro Effects''.}
+\newblock {mimeo, Nov. 6}, Stanford University.
+
+\bibitem[{Hall and Milgrom(2008)}]{hall+milgrom:08}
+Hall, Robert~E. and Paul Milgrom. 2008.
+\newblock \enquote{The Limited Influence of Unemployment on the Wage Bargain.}
+\newblock \emph{American Economic Review} 98~(4):1653--74.
+
+\bibitem[{Ham and Rea(1987)}]{ham+rea:87}
+Ham, John~C. and Smuel~A. Rea, Jr. 1987.
+\newblock \enquote{Unemployment Insurance and Male Unemployment Duration in Canada.}
+\newblock \emph{Journal of Labor Economics} 5~(3):325--353.
+
+\bibitem[{Hansen(1982)}]{hansen:82}
+Hansen, Lars~Peter. 1982.
+\newblock \enquote{Large Sample Properties of Generalized Method of Moments Estimators.}
+\newblock \emph{Econometrica} 50~(4):1029--1054.
+
+\bibitem[{Hansen and Singleton(1982)}]{hansen_singelton:82}
+Hansen, Lars~Peter and Kenneth~J. Singleton. 1982.
+\newblock \enquote{Generalized Instrumental Variables Estimation of Nonlinear Rational Expectations Models.}
+\newblock \emph{Econometrica} 50~(5):1269--1286.
+
+\bibitem[{Herkenhoff(2019)}]{herkenhoff2019impact}
+Herkenhoff, Kyle~F. 2019.
+\newblock \enquote{The impact of consumer credit access on unemployment.}
+\newblock \emph{The Review of Economic Studies} 86~(6):2605--2642.
+
+\bibitem[{Herkenhoff and Ohanian(2019)}]{herkenhoff+ohanian:13}
+Herkenhoff, Kyle~F. and Lee~E. Ohanian. 2019.
+\newblock \enquote{Foreclosure Delay and U.S. Unemployment.}
+\newblock \emph{Review of Economic Dynamics} 31:63--83.
+
+\bibitem[{Holmes(1998)}]{holmes:98}
+Holmes, Thomas~J. 1998.
+\newblock \enquote{The Effect of State Policies on the Location of Manufacturing: Evidence from State Borders.}
+\newblock \emph{Journal of Political Economy} 106~(4):667--705.
+
+\bibitem[{Hyatt, Murray, and Sandusky(2020)}]{hyatt2020business}
+Hyatt, Henry, Seth Murray, and L~Kristin Sandusky. 2020.
+\newblock \enquote{Business Income Dynamics and Labor Market Fluidity.}
+\newblock \emph{IZA Journal of Labor Economics} 10~(1).
+
+\bibitem[{Johnston and Mas(2016)}]{johnston+mas:15}
+Johnston, Andrew~C. and Alexandre Mas. 2016.
+\newblock \enquote{Potential Unemployment Insurance Duration and Labor Supply: The Individual and Market-Level Response to a Benefit Cut.}
+\newblock Working Paper 22411, National Bureau of Economic Research.
+
+\bibitem[{Kaplan, Mitman, and Violante(2020)}]{data:kmv-jpube}
+Kaplan, Greg, Kurt Mitman, and Giovanni~L. Violante. 2020.
+\newblock \enquote{Replication archive for ``Non-durable Consumption and Housing Net Worth in the {G}reat {R}ecession: Evidence from Easily Accessible Data''.}
+\newblock \urlprefix\url{https://doi.org/10.1016/j.jpubeco.2020.104176}.
+\newblock Dataset accompanying the article in the \emph{Journal of Public Economics} 189, 104176. County panel built from {IRS} Statistics of Income county income and related sources; the county file is redistributed in the replication archive.
+
+\bibitem[{Karahan, Mitman, and Moore(2022)}]{mitman2022micro}
+Karahan, Fatih, Kurt Mitman, and Brendan Moore. 2022.
+\newblock \enquote{Micro and Macro Effects of UI Policies: Evidence from Missouri.}
+\newblock Discussion Paper 14158, CEPR.
+
+\bibitem[{Katz(2010)}]{katz:10}
+Katz, Lawrence~F. 2010.
+\newblock \enquote{Long-Term Unemployment in the Great Recessions.}
+\newblock \emph{Testimony for the Joint Economic Committee U.S. Congress} .
+
+\bibitem[{Katz and Meyer(1990)}]{katz+meyer:90}
+Katz, Lawrence~F. and Bruce~D. Meyer. 1990.
+\newblock \enquote{The Impact of the Potential Duration of Unemployment Benefits on the Duration of Unemployment.}
+\newblock \emph{Journal of Public Economics} 41~(1):45--72.
+
+\bibitem[{Kolko, Neumark, and Mejia(2013)}]{kolko+neumark+mejia:13}
+Kolko, Jed, David Neumark, and Marisol~Cuellar Mejia. 2013.
+\newblock \enquote{What Do Business Climate Indexes Teach Us About State Policy And Economic Growth?}
+\newblock \emph{Journal of Regional Science} 53~(2):220--255.
+
+\bibitem[{Krause and Uhlig(2012)}]{krause+uhlig:12}
+Krause, Michael~U. and Harald Uhlig. 2012.
+\newblock \enquote{Transitions in the German Labor Market: Structure and Crisis.}
+\newblock \emph{Journal of Monetary Economics} 59~(1):64--79.
+
+\bibitem[{Krueger and Meyer(2002)}]{krueger+meyer:02}
+Krueger, A.B. and B.D. Meyer. 2002.
+\newblock \enquote{Labor Supply Effects of Social Insurance.}
+\newblock \emph{Handbook of Public Economics} 4:2327--2392.
+
+\bibitem[{Krueger, Mitman, and Perri(2016)}]{krueger2016macroeconomics}
+Krueger, Dirk, Kurt Mitman, and Fabrizio Perri. 2016.
+\newblock \enquote{Macroeconomics and household heterogeneity.}
+\newblock In \emph{Handbook of macroeconomics}, vol.~2. Elsevier, 843--921.
+
+\bibitem[{Meyer(1990)}]{meyer:90}
+Meyer, Bruce~D. 1990.
+\newblock \enquote{Unemployment Insurance and Unemployment Spells.}
+\newblock \emph{Econometrica} 58~(4):757--82.
+
+\bibitem[{Millard and Mortensen(1997)}]{millard+mortensen:97}
+Millard, Stephen~P. and Dale~T. Mortensen. 1997.
+\newblock \enquote{The Unemployment and Welfare Effects of Labor Market Policy: A Comparison of the U.S. and the U.K.}
+\newblock In \emph{Unemployment Policy: Government Options for the Labour Market}, edited by Dennis~J. Snower and Guillermo {de la Dehesa}. Cambridge: Cambridge University Press, 545--572.
+
+\bibitem[{{Missouri Census Data Center}(2012)}]{data:mcdc-geocorr}
+{Missouri Census Data Center}. 2012.
+\newblock \enquote{Geocorr: Geographic Correspondence Engine ({ZCTA}-to-county crosswalk).}
+\newblock \urlprefix\url{https://mcdc.missouri.edu/applications/geocorr.html}.
+\newblock Dataset (crosswalk with population allocation factors; edition year approximate). Accessed circa 2013 (inferred). Extract redistributed in the replication archive.
+
+\bibitem[{Mitman and Rabinovich(2015)}]{mitman+rabinovich:15}
+Mitman, Kurt and Stanislav Rabinovich. 2015.
+\newblock \enquote{Optimal unemployment insurance in an equilibrium business-cycle model.}
+\newblock \emph{Journal of Monetary Economics} 71:99--118.
+
+\bibitem[{Mitman and Rabinovich(2024)}]{mitman+rabinovich:24}
+---{}---{}---. 2024.
+\newblock \enquote{Do unemployment benefit extensions explain the emergence of jobless recoveries?}
+\newblock \emph{Journal of Economic Dynamics and Control} :104964.
+
+\bibitem[{Moffitt(1985)}]{moffitt:85}
+Moffitt, Robert. 1985.
+\newblock \enquote{Unemployment Insurance and the Distribution of Unemployment Spells.}
+\newblock \emph{Journal of Econometrics} 28~(1):85--101.
+
+\bibitem[{Moon and Weidner(2015)}]{moon2015linear}
+Moon, Hyungsik~Roger and Martin Weidner. 2015.
+\newblock \enquote{Linear regression for panel with unknown number of factors as interactive fixed effects.}
+\newblock \emph{Econometrica} 83~(4):1543--1579.
+
+\bibitem[{Mortensen and Pissarides(1994)}]{mortensen+pissarides:94}
+Mortensen, Dale~T. and Christopher Pissarides. 1994.
+\newblock \enquote{Job Creation and Job Destruction in the Theory of Unemployment.}
+\newblock \emph{Review of Economic Studies} 61~(3):397--415.
+
+\bibitem[{Mulligan(2008)}]{mulligan:08}
+Mulligan, Casey~B. 2008.
+\newblock \enquote{A Depressing Scenario: Mortgage Debt Becomes Unemployment Insurance.}
+\newblock Working Paper 14514, National Bureau of Economic Research.
+
+\bibitem[{Mulligan(2009)}]{mulligan:09}
+---{}---{}---. 2009.
+\newblock \enquote{Means-Tested Mortgage Modification: Homes Saved of Income Destroyed?}
+\newblock Working Paper 15281, National Bureau of Economic Research.
+
+\bibitem[{Mulligan(2010)}]{mulligan:10}
+---{}---{}---. 2010.
+\newblock \enquote{Foreclosures, Enforcement, and Collections under the Federal Mortgage Modification Guidlines.}
+\newblock Working Paper 15777, National Bureau of Economic Research.
+
+\bibitem[{Mulligan(2012)}]{mulligan:12}
+---{}---{}---. 2012.
+\newblock \emph{The Redistribution Recession: How Labor Market Distortions Contracted the Economy}.
+\newblock Oxford University Press.
+
+\bibitem[{{Office of Management and Budget}(2010)}]{omb:2010}
+{Office of Management and Budget}. 2010.
+\newblock \enquote{2010 Standards for Delineating Metropolitan and Micropolitan Statistical Areas; Notice.}
+\newblock \emph{Federal Register} 75~(123):37245--37252.
+
+\bibitem[{Petrongolo and Pissarides(2001)}]{petrongolo_pissarides:01}
+Petrongolo, Barbara and Christopher Pissarides. 2001.
+\newblock \enquote{Looking into the Black Box: A Survey of the Matching Function.}
+\newblock \emph{Journal of Economic Literature} 39~(2):390--431.
+
+\bibitem[{Pissarides(1998)}]{pissarides:98}
+Pissarides, Christopher. 1998.
+\newblock \enquote{The Impact of Employment Tax Cuts on Unemployment and Wages; The Role of Unemployment Benefits and Tax Structure.}
+\newblock \emph{European Economic Review} 42~(1):155--183.
+
+\bibitem[{Pissarides(2000)}]{pissarides:00}
+---{}---{}---. 2000.
+\newblock \emph{Equilibrium Unemployment Theory}.
+\newblock Cambridge, MA: MIT Press.
+
+\bibitem[{Pissarides(2009)}]{pissarides:09}
+---{}---{}---. 2009.
+\newblock \enquote{The Unemployment Volatility Puzzle: Is Wage Stickiness the Answer?}
+\newblock \emph{Econometrica} 77~(5):1339--1369.
+
+\bibitem[{{Recovery Accountability and Transparency Board}(2012)}]{data:recoverygov-arra}
+{Recovery Accountability and Transparency Board}. 2012.
+\newblock \enquote{Cumulative National Summary of {ARRA} Awards, February 17, 2009 -- December 31, 2012.}
+\newblock \urlprefix\url{https://web.archive.org/web/*/recovery.gov}.
+\newblock Dataset (Recovery.gov, since decommissioned; archival copies at web.archive.org); accessed circa 2013 (inferred). Extract redistributed in the replication archive.
+
+\bibitem[{Sahin et~al.(2014)Sahin, Song, Topa, and Violante}]{sahin+etal:2012}
+Sahin, Aysegul, Joseph Song, Giorgio Topa, and Giovanni~L. Violante. 2014.
+\newblock \enquote{Mismatch Unemployment.}
+\newblock \emph{American Economic Review} 104~(11):3529--64.
+
+\bibitem[{Saiz(2010{\natexlab{a}})}]{saiz:10}
+Saiz, Albert. 2010{\natexlab{a}}.
+\newblock \enquote{The Geographic Determinants of Housing Supply.}
+\newblock \emph{Quarterly Journal of Economics} 125~(3):1253--1296.
+
+\bibitem[{Saiz(2010{\natexlab{b}})}]{data:saiz-qje}
+---{}---{}---. 2010{\natexlab{b}}.
+\newblock \enquote{Replication data for ``The Geographic Determinants of Housing Supply''.}
+\newblock \urlprefix\url{https://doi.org/10.1162/qjec.2010.125.3.1253}.
+\newblock Dataset accompanying the article in the \emph{Quarterly Journal of Economics} 125(3), 1253--1296. {MSA}-level housing-supply elasticity and Wharton Residential Land Use Regulation Index (from Gyourko, Saiz, and Summers 2008). The {MSA} file is redistributed in the replication archive.
+
+\bibitem[{Schreiber(2008)}]{schreiber:08}
+Schreiber, Sven. 2008.
+\newblock \enquote{The Hausman Test Statistic can be Negative even Asymptotically.}
+\newblock \emph{Journal of Economics and Statistics (Jahrbuecher fuer Nationaloekonomie und Statistik)} 228~(4):394--405.
+
+\bibitem[{Shi and Wen(1999)}]{shi+wen:99}
+Shi, Shouyong and Quan Wen. 1999.
+\newblock \enquote{Labor Market Search and the Dynamic Effects of Taxes and Subsidies.}
+\newblock \emph{Journal of Monetary Economics} 43:457--495.
+
+\bibitem[{Shimer(2012{\natexlab{a}})}]{data:shimer-flows}
+Shimer, Robert. 2012{\natexlab{a}}.
+\newblock \enquote{Published job-separation series accompanying ``Reassessing the Ins and Outs of Unemployment''.}
+\newblock \urlprefix\url{https://doi.org/10.1016/j.red.2012.02.001}.
+\newblock Dataset accompanying the article in the \emph{Review of Economic Dynamics} 15(2), 127--148. Quarterly {CPS}-based separation rate 1948--2013; accessed circa 2013--2014 (inferred). Series redistributed in the replication archive.
+
+\bibitem[{Shimer(2012{\natexlab{b}})}]{shimer:05b}
+---{}---{}---. 2012{\natexlab{b}}.
+\newblock \enquote{Reassesing the Ins and Outs of Unemployment.}
+\newblock \emph{Review of Economic Dynamics} 15~(2):127--148.
+
+\bibitem[{{Small Business \& Entrepreneurship Council}(2012)}]{data:sbec-sbsi}
+{Small Business \& Entrepreneurship Council}. 2012.
+\newblock \enquote{Small Business Survival Index / Small Business Policy Index.}
+\newblock \urlprefix\url{https://sbecouncil.org/}.
+\newblock Dataset. Annual state index values 2005--2012; accessed circa 2013 (inferred). Extract redistributed in the replication archive.
+
+\bibitem[{{Tax Foundation}(2013)}]{data:tf-sbtc}
+{Tax Foundation}. 2013.
+\newblock \enquote{State Business Tax Climate Index.}
+\newblock \urlprefix\url{https://taxfoundation.org/research/all/state/state-business-tax-climate-index/}.
+\newblock Dataset (index scores), editions covering 2005--2013; accessed circa 2013 (inferred). Extract redistributed in the replication archive.
+
+\bibitem[{{The Conference Board}(2017)}]{data:tcb-hwol}
+{The Conference Board}. 2017.
+\newblock \enquote{Help Wanted OnLine ({HWOL}) Data Series.}
+\newblock \urlprefix\url{https://www.conference-board.org/}.
+\newblock Proprietary dataset (county and state job-vacancy series). County extract accessed April 2017; state series accessed July 25, 2018. Not redistributable; available by agreement from The Conference Board. The replication archive ships a public-data synthetic stand-in.
+
+\bibitem[{{U.S. Bureau of Economic Analysis}(2013)}]{data:bea-ca25n}
+{U.S. Bureau of Economic Analysis}. 2013.
+\newblock \enquote{Regional Economic Accounts, Table {CA25N}: Total Full-Time and Part-Time Employment by {NAICS} Industry.}
+\newblock \urlprefix\url{https://www.bea.gov/data/employment/employment-county-metro-and-other-areas}.
+\newblock United States Department of Commerce (dataset). County employment by industry, November 2013 local-area release; accessed circa November 2013 (inferred). Extracts redistributed in the replication archive.
+
+\bibitem[{{U.S. Bureau of Economic Analysis}(2016)}]{data:bea-gdp-state}
+---{}---{}---. 2016.
+\newblock \enquote{Prototype Quarterly Gross Domestic Product by State.}
+\newblock \urlprefix\url{https://www.bea.gov/data/gdp/gdp-state}.
+\newblock United States Department of Commerce (dataset). Real {GDP} by state, 2005Q1--2016Q1; accessed July 2016. Extract redistributed in the replication archive.
+
+\bibitem[{{U.S. Bureau of Labor Statistics}(2013)}]{data:bls-jolts}
+{U.S. Bureau of Labor Statistics}. 2013.
+\newblock \enquote{Job Openings and Labor Turnover Survey ({JOLTS}).}
+\newblock \urlprefix\url{https://www.bls.gov/jlt/}.
+\newblock United States Department of Labor (dataset). Aggregate job openings and separations; accessed circa 2013 (inferred from the archive's vintage stamp). Extract redistributed in the replication archive.
+
+\bibitem[{{U.S. Bureau of Labor Statistics}(2014)}]{data:bls-laus}
+---{}---{}---. 2014.
+\newblock \enquote{Local Area Unemployment Statistics ({LAUS}).}
+\newblock \urlprefix\url{https://www.bls.gov/lau/}.
+\newblock United States Department of Labor (dataset), including the {LAUS} additivity ratios. Archived extracts of four vintages, accessed June 22, 2013; September 2014; January 2015; and December 2015. Extracts redistributed in the replication archive.
+
+\bibitem[{{U.S. Bureau of Labor Statistics}(2015)}]{data:bls-qcew}
+---{}---{}---. 2015.
+\newblock \enquote{Quarterly Census of Employment and Wages ({QCEW}).}
+\newblock \urlprefix\url{https://www.bls.gov/cew/}.
+\newblock United States Department of Labor (dataset). County monthly employment and average weekly wages, 1975--2015; accessed circa 2015--2016 (inferred). Extracts redistributed in the replication archive.
+
+\bibitem[{{U.S. Census Bureau}(2011)}]{data:census-popest}
+{U.S. Census Bureau}. 2011.
+\newblock \enquote{Population Estimates Program: Annual County Resident Population Estimates.}
+\newblock \urlprefix\url{https://www.census.gov/programs-surveys/popest.html}.
+\newblock Dataset, archived pre-rebase (Vintage 2011) county estimates, 2000--2011; accessed circa 2012 (inferred). Vintage-of-record extract redistributed in the replication archive.
+
+\bibitem[{{U.S. Census Bureau}(2013)}]{data:census-qtax}
+---{}---{}---. 2013.
+\newblock \enquote{Quarterly Summary of State and Local Government Tax Revenue.}
+\newblock \urlprefix\url{https://www.census.gov/programs-surveys/qtax.html}.
+\newblock Dataset, Table 3 (state tax collections by type). Quarterly extract through 2013Q1; accessed circa 2013 (inferred). Extract redistributed in the replication archive.
+
+\bibitem[{{U.S. Census Bureau}(2014)}]{data:census-lehd-qwi}
+---{}---{}---. 2014.
+\newblock \enquote{Longitudinal Employer-Household Dynamics: Quarterly Workforce Indicators ({QWI}).}
+\newblock \urlprefix\url{https://lehd.ces.census.gov/data/}.
+\newblock Dataset, 2014Q3 release vintage; county private-sector extracts for 48 states; accessed September 18, 2018 (inferred from the archive's vintage stamp). Extracts redistributed in the replication archive.
+
+\bibitem[{{U.S. Census Bureau}(2015)}]{data:census-lehd-lodes}
+---{}---{}---. 2015.
+\newblock \enquote{{LEHD} Origin-Destination Employment Statistics ({LODES}).}
+\newblock \urlprefix\url{https://lehd.ces.census.gov/data/lodes/}.
+\newblock Dataset. Block-level origin--destination employment data 2002--2015, aggregated to county-to-county commuter flows; accessed circa 2017--2018 (inferred). County aggregate redistributed in the replication archive.
+
+\bibitem[{{U.S. Census Bureau}(2025)}]{data:census-geo}
+---{}---{}---. 2025.
+\newblock \enquote{Census Geography Files: Gazetteer County Centroids, {CBSA} Delineation Crosswalks, and County Cartographic Boundary Shapefile.}
+\newblock \urlprefix\url{https://www.census.gov/geographies/}.
+\newblock Datasets, including the 2025 county cartographic boundary file (cb\_2025\_us\_county\_20m; accessed 2025--2026) and Gazetteer/{CBSA} crosswalks (vintages not recorded). Extracts redistributed in the replication archive.
+
+\bibitem[{{U.S. Department of Agriculture, Economic Research Service}(2018)}]{data:usda-snap-policy}
+{U.S. Department of Agriculture, Economic Research Service}. 2018.
+\newblock \enquote{{SNAP} Policy Database.}
+\newblock \urlprefix\url{https://www.ers.usda.gov/data-products/snap-policy-data-sets}.
+\newblock Dataset. State-month {SNAP} policy indicators; accessed 2018 (inferred from the archive's vintage stamps). Extract redistributed in the replication archive.
+
+\bibitem[{{U.S. Department of Labor, Employment and Training Administration}(2013)}]{data:dol-triggers}
+{U.S. Department of Labor, Employment and Training Administration}. 2013.
+\newblock \enquote{Extended Benefits and Emergency Unemployment Compensation Trigger Notices.}
+\newblock \urlprefix\url{https://oui.doleta.gov/unemploy/trigger/}.
+\newblock Dataset (state {EB}/{EUC08} trigger reports), compiled by the authors through December 2012. Compiled series redistributed in the replication archive.
+
+\bibitem[{{U.S. Department of Labor, Employment and Training Administration}(2014)}]{data:doleta-hb394}
+---{}---{}---. 2014.
+\newblock \enquote{Unemployment Insurance Financial Data Handbook ({ET} Handbook 394).}
+\newblock \urlprefix\url{https://oui.doleta.gov/unemploy/hb394.asp}.
+\newblock Dataset (state {UI} tax receipts by fiscal year; vintage approximate, access date not recorded). Extract redistributed in the replication archive.
+
+\bibitem[{{U.S. Department of Labor, Employment and Training Administration and State Workforce Agencies}(2014)}]{data:ui-claims}
+{U.S. Department of Labor, Employment and Training Administration and State Workforce Agencies}. 2014.
+\newblock \enquote{County Unemployment-Insurance Continuing-Claims Records.}
+\newblock \urlprefix\url{https://www.dol.gov/agencies/eta}.
+\newblock Administrative dataset compiled by the authors from state workforce agency and {DOL} {ETA} continuing-claims records (vintage approximate). Compiled series redistributed in the replication archive.
+
+\end{thebibliography}
